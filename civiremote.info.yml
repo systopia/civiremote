@@ -3,5 +3,6 @@ type: module
 description: 'Core and Tools module for CiviRemote'
 package: CiviCRM
 core: 8.x
+configure: civiremote.config_form
 dependencies:
   - cmrf_core

@@ -1,0 +1,7 @@
+civiremote.config_form:
+  path: '/admin/config/services/civiremote'
+  defaults:
+    _form: '\Drupal\civiremote\Form\CiviRemoteConfigForm'
+    _title: 'CiviRemote Configuration'
+  requirements:
+    _permission: 'administer civiremote'

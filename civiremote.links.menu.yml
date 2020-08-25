@@ -1,0 +1,5 @@
+civiremote.config_form:
+  title: 'CiviRemote'
+  description: 'Configure settings for CiviRemote.'
+  route_name: civiremote.config_form
+  parent: 'system.admin_config_services'
