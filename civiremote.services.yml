@@ -1,0 +1,4 @@
+services:
+  civiremote.cmrf:
+    class: Drupal\civiremote\CiviMRF
+    arguments: ['@cmrf_core.core']

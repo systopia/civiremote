@@ -1,0 +1,49 @@
+<?php
+
+use Drupal\civiremote;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * {@inheritdoc}
+ */
+function civiremote_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'user') {
+    /* @var \Drupal\user\UserInterface $entity */
+    civiremote\User::create($entity);
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function civiremote_entity_base_field_info(EntityTypeInterface $entity_type) {
+  // Add a property to the User entity for storing the CiviRFemote ID.
+  // @see civiremote_install().
+  $fields = [];
+
+  if ($entity_type->id() === 'user') {
+    $fields['civiremote_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('CiviRemote ID'))
+      ->setDescription(t('The unique CiviRemote ID for the user in the connected CiviCRM.'))
+      ->setDisplayOptions('view', [
+        'label' => 'visible',
+        'type' => 'string',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'textfield',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
+}

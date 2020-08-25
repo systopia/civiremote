@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function civiremote_install() {
+  // Create field storage for the "civiremote_id" base field on the User entity.
+  $entity_type = \Drupal::service('entity_type.manager')->getDefinition('user');
+  \Drupal::service('entity.definition_update_manager')->updateEntityType($entity_type);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function civiremote_uninstall() {
+  // Remove field storage for the "civiremote_id" base field on the User entity.
+  $entity_type = \Drupal::service('entity_type.manager')->getDefinition('user');
+  \Drupal::service('entity.definition_update_manager')->updateEntityType($entity_type);
+}
