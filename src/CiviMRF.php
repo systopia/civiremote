@@ -22,8 +22,8 @@ class CiviMRF {
   /**
    * @param $params
    *
-   * @return string
-   *   The CiviRemote ID.
+   * @return string | false
+   *   The CiviRemote ID, or FALSE when no contact could be matched.
    */
   public function matchContact($params) {
     $call = $this->core->createCall(
@@ -35,6 +35,24 @@ class CiviMRF {
     $this->core->executeCall($call);
     $reply = $call->getReply();
     return !empty($reply['key']) ? $reply['key'] : FALSE;
+  }
+
+  /**
+   * @param $params
+   *
+   * @return array
+   *   The CiviRemote roles.
+   */
+  public function getRoles($params) {
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteContact',
+      'get_roles',
+      $params
+    );
+    $this->core->executeCall($call);
+    $reply = $call->getReply();
+    return $reply['values'];
   }
 
 }

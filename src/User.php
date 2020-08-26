@@ -50,4 +50,19 @@ class User {
     }
   }
 
+  /**
+   * @param \Drupal\user\UserInterface $user
+   */
+  public static function synchroniseRoles(UserInterface $user) {
+    if (!empty($civiremote_id = $user->get('civiremote_id'))) {
+      /* @var \Drupal\civiremote\CiviMRF $cmrf */
+      $cmrf = \Drupal::service('civiremote.cmrf');
+      $params = [
+        'remote_contact_id' => $civiremote_id,
+      ];
+      $roles = $cmrf->getRoles($params);
+      // TODO: Check for existence of roles and (un-)assign them to/from the user.
+    }
+  }
+
 }

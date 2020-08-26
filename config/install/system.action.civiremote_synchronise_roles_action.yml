@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+id: civiremote_synchronise_roles_action
+label: 'CiviRemote: Synchronise CiviRemote roles'
+type: user
+plugin: civiremote_synchronise_roles_action
+configuration: {  }
