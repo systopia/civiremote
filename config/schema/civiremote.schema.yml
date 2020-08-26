@@ -1,0 +1,4 @@
+# Schema for the configuration files of the my_bo module.
+action.configuration.civiremote_match_contact_action:
+  type: action_configuration_default
+  label: 'CiviRemote: Match contact(s) configuration'
