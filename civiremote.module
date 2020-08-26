@@ -21,8 +21,7 @@ function civiremote_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_base_field_info().
  */
 function civiremote_entity_base_field_info(EntityTypeInterface $entity_type) {
-  // Add a property to the User entity for storing the CiviRFemote ID.
-  // @see civiremote_install().
+  // Add a base field to the User entity for storing the CiviRFemote ID.
   $fields = [];
 
   if ($entity_type->id() === 'user') {
