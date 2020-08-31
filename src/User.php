@@ -40,10 +40,15 @@ class User {
   public static function matchContact(UserInterface $user) {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
     $cmrf = \Drupal::service('civiremote.cmrf');
-    // TODO: Map user properties/fields to params.
-    $params = [
-      'email' => $user->getEmail(),
-    ];
+    $config = \Drupal::config('civiremote.settings');
+    
+    // Map user properties/fields to params.
+    $params = [];
+    foreach ($config->get('match_contact_mapping') as $mapping) {
+      $params[$mapping['contact_field']] = $user->{$mapping['user_field']}->value;
+    }
+
+    // Send API call and store the returned CiviRemote ID.
     if ($civiremote_id = $cmrf->matchContact($params)) {
       $user->set('civiremote_id', $civiremote_id);
       $user->save();
