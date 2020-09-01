@@ -34,16 +34,27 @@ class User {
    *
    * @param \Drupal\user\UserInterface $user
    *   The User entity object.
+   * @param string $prefix
+   *   A prefix to be added to the CiviRemote ID by the CiviRemote API.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public static function matchContact(UserInterface $user) {
+  public static function matchContact(UserInterface $user, $prefix = '') {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
     $cmrf = \Drupal::service('civiremote.cmrf');
     $config = \Drupal::config('civiremote.settings');
-    
+
+    // Use base URL as default key prefix.
+    if (empty($prefix)) {
+      global $base_url;
+      $base_url_parts = parse_url($base_url);
+      $prefix = $base_url_parts['host'];
+      $params = [
+        'key_prefix' => $prefix,
+      ];
+    }
+
     // Map user properties/fields to params.
-    $params = [];
     foreach ($config->get('match_contact_mapping') as $mapping) {
       $params[$mapping['contact_field']] = $user->{$mapping['user_field']}->value;
     }
