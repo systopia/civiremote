@@ -34,9 +34,11 @@ class UserMatchContact extends ActionBase {
    * @inheritDoc
    */
   public function execute(UserInterface $user = NULL) {
-    $config = \Drupal::config('civiremote.settings');
-    if ($config->get('acquire_civiremote_id')) {
-      User::matchContact($user);
+    if (!$civiremote_id = $user->get('civiremote_id')->getValue()) {
+      $config = \Drupal::config('civiremote.settings');
+      if ($config->get('acquire_civiremote_id')) {
+        User::matchContact($user);
+      }
     }
   }
 
