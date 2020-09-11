@@ -1,0 +1,5 @@
+civiremote_event.config_form:
+  title: 'CiviRemote Events'
+  description: 'Configure settings for CiviRemote Events.'
+  route_name: civiremote_event.config_form
+  parent: 'civiremote.config_form'

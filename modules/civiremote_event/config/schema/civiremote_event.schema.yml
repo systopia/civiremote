@@ -1,0 +1,16 @@
+civiremote_event.settings:
+  type: config_object
+  mapping:
+    profile_form_mapping:
+      type: sequence
+      label: 'Profile to form mapping'
+      sequence:
+        type: mapping
+        label: 'Mapping of a profile ID to a form ID'
+        mapping:
+          profile_id:
+            type: string
+            label: 'Profile ID'
+          form_id:
+            type: string
+            label: 'Form ID'

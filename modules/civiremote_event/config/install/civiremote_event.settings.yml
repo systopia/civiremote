@@ -1,0 +1,3 @@
+profile_form_mapping:
+  - profile_id: 'Standard1'
+    form_id: 'civiremote_event_register_form'
