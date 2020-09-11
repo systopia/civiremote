@@ -1,9 +1,13 @@
 <?php
 
 use Drupal\civiremote;
-use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Url;
+use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_entity_insert().
@@ -12,8 +16,24 @@ use Drupal\Core\Entity\EntityTypeInterface;
  */
 function civiremote_entity_insert(EntityInterface $entity) {
   if ($entity->getEntityTypeId() == 'user') {
-    /* @var \Drupal\user\UserInterface $entity */
+    /* @var UserInterface $entity */
     civiremote\User::create($entity);
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function civiremote_user_login(UserInterface $account) {
+  // Synchronise user roles with CiviRemote roles retrieved from CiviCRM.
+  try {
+    civiremote\User::synchroniseRoles($account);
+  }
+  catch (EntityStorageException $exception) {
+    user_logout();
+    $url = Url::fromRoute('<front>')->toString();
+    $response = new RedirectResponse($url);
+    $response->send();
   }
 }
 

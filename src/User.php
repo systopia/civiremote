@@ -2,7 +2,9 @@
 
 namespace Drupal\civiremote;
 
+use Drupal\Core\Entity;
 use Drupal\user\UserInterface;
+use Drupal\user\Entity\Role;
 
 /**
  * Class User
@@ -14,10 +16,10 @@ class User {
   /**
    * Act on User entity creation.
    *
-   * @param \Drupal\user\UserInterface $user
+   * @param UserInterface $user
    *   The User entity object.
    *
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws Entity\EntityStorageException
    *
    * @see civiremote_entity_insert()
    *
@@ -32,12 +34,12 @@ class User {
   /**
    * Match a CiviCRM contact and set the returned CiviRemote ID on the user.
    *
-   * @param \Drupal\user\UserInterface $user
+   * @param UserInterface $user
    *   The User entity object.
    * @param string $prefix
    *   A prefix to be added to the CiviRemote ID by the CiviRemote API.
    *
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws Entity\EntityStorageException
    */
   public static function matchContact(UserInterface $user, $prefix = '') {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
@@ -67,17 +69,65 @@ class User {
   }
 
   /**
-   * @param \Drupal\user\UserInterface $user
+   * Synchronises CiviRemote roles retrieved from CiviCRM with the Drupal user's
+   * CiviRemote roles and creates CiviRemote roles unknown to Drupal.
+   *
+   * A CiviRemote user role is being identified by a "civiremote_" prefix in the
+   * user roles ID.
+   *
+   * @param UserInterface $user
+   *   The Drupal user object to synchronise user roles for.
+   *
+   * @throws Entity\EntityStorageException
+   *   When updating the user object fails.
    */
   public static function synchroniseRoles(UserInterface $user) {
-    if (!empty($civiremote_id = $user->get('civiremote_id'))) {
+    if (!empty($civiremote_id = $user->get('civiremote_id')->value)) {
+      // Fetch all CiviRemote roles for the current user from CiviCRM.
       /* @var \Drupal\civiremote\CiviMRF $cmrf */
       $cmrf = \Drupal::service('civiremote.cmrf');
       $params = [
         'remote_contact_id' => $civiremote_id,
       ];
-      $roles = $cmrf->getRoles($params);
-      // TODO: Check for existence of roles and (un-)assign them to/from the user.
+      $remote_roles = [];
+      foreach ($cmrf->getRoles($params) as $remote_role_id => $remote_role_label) {
+        $remote_roles['civiremote_' . $remote_role_id] = 'CiviRemote: ' . $remote_role_label;
+      }
+
+      // Fetch all CiviRemote roles known to Drupal.
+      $all_roles = user_role_names(TRUE);
+      $civiremote_roles = [];
+      foreach ($all_roles as $id => $label) {
+        if (strpos($id, 'civiremote_') === 0) {
+          $civiremote_roles[$id] = $label;
+        }
+      }
+
+      // Fetch the user's current CiviRemote roles.
+      $user_civiremote_roles = [];
+      foreach ($user->getRoles() as $id) {
+        if (strpos($id, 'civiremote_') === 0) {
+          $user_civiremote_roles[$id] = $all_roles[$id];
+        }
+      }
+
+      // Create CiviRemote roles unknown to Drupal.
+      foreach (array_diff_key($remote_roles, $civiremote_roles) as $id => $label) {
+        $role = Role::create(['id' => $id, 'label' => $label]);
+        $role->save();
+      }
+
+      // Un-assign old CiviRemote roles from user.
+      foreach (array_diff_key($user_civiremote_roles, $remote_roles) as $id => $label) {
+        $user->removeRole($id);
+        $user->save();
+      }
+
+      // Assign new roles to user.
+      foreach (array_keys(array_diff($remote_roles, $user_civiremote_roles)) as $new_role) {
+        $user->addRole($new_role);
+        $user->save();
+      }
     }
   }
 
