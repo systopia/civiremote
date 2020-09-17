@@ -4,7 +4,10 @@
 namespace Drupal\civiremote;
 
 
+use Drupal;
 use Drupal\cmrf_core\Core;
+use Drupal\Core\Session\AccountInterface;
+use Exception;
 
 class CiviMRF {
 
@@ -16,7 +19,7 @@ class CiviMRF {
   }
 
   private function connector() {
-    return \Drupal::config('civiremote.settings')->get('cmrf_connector');
+    return Drupal::config('civiremote.settings')->get('cmrf_connector');
   }
 
   /**
@@ -30,7 +33,8 @@ class CiviMRF {
       $this->connector(),
       'RemoteContact',
       'match',
-      $params
+      $params,
+      []
     );
     $this->core->executeCall($call);
     $reply = $call->getReply();
@@ -48,7 +52,8 @@ class CiviMRF {
       $this->connector(),
       'RemoteContact',
       'get_roles',
-      $params
+      $params,
+      []
     );
     $this->core->executeCall($call);
     $reply = $call->getReply();
