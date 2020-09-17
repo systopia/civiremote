@@ -55,4 +55,26 @@ class CiviMRF {
     return $reply['values'];
   }
 
+  public function getEvent($event_id, AccountInterface $account) {
+    $current_user = Drupal\user\Entity\User::load($account->id());
+    $params = [
+      'remote_contact_id' => $current_user->get('civiremote_id')->value,
+      'id' => $event_id,
+    ];
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteEvent',
+      'getsingle',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if (!isset($reply['id'])) {
+      throw new Exception(t('Could not retrieve remote event.'));
+    }
+
+    return $reply;
+  }
+
 }

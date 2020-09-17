@@ -1,0 +1,6 @@
+services:
+  civiremote_event.event_converter:
+    class: Drupal\civiremote_event\Routing\CiviRemoteEventConverter
+    arguments: ['@civiremote.cmrf', '@current_user']
+    tags:
+      - { name: paramconverter }

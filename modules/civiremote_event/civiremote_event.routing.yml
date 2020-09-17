@@ -7,15 +7,17 @@ civiremote_event.config_form:
     _permission: 'administer civiremote'
 
 civiremote_event.register_form:
-  path: '/civiremote/event/register/{event_id}/{profile_id}'
+  path: '/civiremote/event/register/{event}/{profile}'
   defaults:
     _form: '\Drupal\civiremote_event\Form\RegisterForm'
     _title: 'Register for event'
+    # Use the default profile retrieved with the event.
+    profile: null
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
   options:
     parameters:
-      event_id:
-        type: integer
-      profile_id:
-        type: integer
+      event:
+        type: civiremote_event
+      profile:
+        type: string
