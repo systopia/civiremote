@@ -4,7 +4,7 @@
 namespace Drupal\civiremote_event\Routing;
 
 
-use Drupal\civiremote\CiviMRF;
+use Drupal\civiremote_event\CiviMRF;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Drupal\Core\Session\AccountInterface;
 use Exception;
@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Route;
 class CiviRemoteEventConverter implements ParamConverterInterface {
 
   /**
-   * @var \Drupal\civiremote\CiviMRF $cmrf
+   * @var CiviMRF $cmrf
    */
   protected $cmrf;
 
@@ -26,7 +26,7 @@ class CiviRemoteEventConverter implements ParamConverterInterface {
   /**
    * CiviRemoteEventConverter constructor.
    *
-   * @param \Drupal\civiremote\CiviMRF $cmrf
+   * @param CiviMRF $cmrf
    * @param \Drupal\Core\Session\AccountInterface $account
    */
   public function __construct(CiviMRF $cmrf, AccountInterface $account) {

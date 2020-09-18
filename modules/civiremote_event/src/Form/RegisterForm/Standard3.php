@@ -8,7 +8,7 @@ use Drupal\civiremote_event\Form\RegisterForm;
 use Drupal\Core\Form\FormStateInterface;
 use stdClass;
 
-class Standard2 extends RegisterForm implements RegisterFormInterface {
+class Standard3 extends RegisterForm implements RegisterFormInterface {
 
   /**
    * {@inheritdoc}

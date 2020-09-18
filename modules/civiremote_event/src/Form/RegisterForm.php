@@ -4,16 +4,14 @@
 namespace Drupal\civiremote_event\Form;
 
 
-use Drupal;
+use Drupal\civiremote_event\CiviMRF;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
-use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\cmrf_core;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use \Drupal\Core\Routing\CurrentRouteMatch;
 
 class RegisterForm extends FormBase {
 
@@ -23,19 +21,60 @@ class RegisterForm extends FormBase {
   protected $account;
 
   /**
-   * @var cmrf_core\Core $cmrf_core
+   * @var CiviMRF $cmrf_core
    */
-  protected $cmrf_core;
+  protected $cmrf;
 
-  public function __construct(AccountInterface $account, cmrf_core\Core $cmrf_core) {
+  /**
+   * @var stdClass $event
+   */
+  protected $event;
+
+  /**
+   * @var string $profile
+   */
+  protected $profile;
+
+  /**
+   * RegisterForm constructor.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The currently logged-id user account service.
+   * @param CiviMRF $cmrf
+   *   The CiviMRF core service.
+   * @param CurrentRouteMatch $routeMatch
+   *   The current route match object.
+   */
+  public function __construct(AccountInterface $account, CiviMRF $cmrf, CurrentRouteMatch $routeMatch) {
     $this->account = $account;
-    $this->cmrf_core = $cmrf_core;
+    $this->cmrf = $cmrf;
+
+    // Extract form parameters and set them here so that implementations do not
+    // have to care about that.
+    $this->event = $routeMatch->getParameter('event');
+    $this->profile = $routeMatch->getRawParameter('profile');
+    if (!isset($this->profile)) {
+      $this->profile = $this->event->default_profile;
+    }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public static function create(ContainerInterface $container) {
+    /**
+     * Inject dependencies to the current user account and CiviMRF.
+     * @var CiviMRF $cmrf
+     * @var AccountInterface $current_user
+     * @var CurrentRouteMatch $route_match
+     */
+    $current_user = $container->get('current_user');
+    $cmrf = $container->get('civiremote_event.cmrf');
+    $route_match = $container->get('current_route_match');
     return new static(
-      $container->get('current_user'),
-      $container->get('cmrf_core.core')
+      $current_user,
+      $cmrf,
+      $route_match
     );
   }
 
@@ -54,51 +93,27 @@ class RegisterForm extends FormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @param \stdClass $event
-   *   The CiviRemote event retrieved by the RemoteEvent.get API.
-   * @param string $profile
-   *   The event profile for displaying the form.
-   *
    * @return array
    *   The form structure.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, stdClass $event = NULL, $profile = NULL) {
-    // Use default profile if not provided.
-    if (!isset($profile)) {
-      $profile = $event->default_profile;
-    }
-
-    // Retrieve form ID for given profile ID from configuration.
-    $form_id = NULL;
-    $profile_form_mapping = Drupal::config('civiremote_event.settings')
-      ->get('profile_form_mapping');
-    if (!empty($profile_form_mapping)) {
-      foreach ($profile_form_mapping as $mapping) {
-        if ($mapping['profile_id'] == $profile) {
-          $form_id = $mapping['form_id'];
-          break;
-        }
-      }
-    }
-    // Default to preset profile form implementations.
-    if (!isset($form_id) || $form_id == self::class) {
-      $form_id = self::class . '\\' . $profile;
-    }
-    if (class_exists($form_id) && is_subclass_of($form_id, FormBase::class)) {
-      // Use a form class provided through the configuration. It must have a
-      // compatible signature.
-      try {
-        $form = Drupal::formBuilder()->getForm($form_id, $event, $profile);
-      }
-      catch (Exception $exception) {
-        throw new AccessDeniedHttpException();
-      }
-    }
-    else {
-      throw new AccessDeniedHttpException();
-    }
-
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    // Is being implemented in sub classes for specific profiles.
     return $form;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $form_state->cleanValues();
+    $values = $form_state->getValues();
+    $values['profile'] = 'foobar';
+    $errors = $this->cmrf->validateEventRegistration(
+      $this->event->id,
+      $this->profile,
+      $values
+    );
+    $stop = 'here';
   }
 
   /**

@@ -6,9 +6,12 @@ namespace Drupal\civiremote;
 
 use Drupal;
 use Drupal\cmrf_core\Core;
-use Drupal\Core\Session\AccountInterface;
-use Exception;
 
+/**
+ * Class CiviMRF
+ *
+ * @package Drupal\civiremote
+ */
 class CiviMRF {
 
   /** @var Core */
@@ -18,7 +21,7 @@ class CiviMRF {
     $this->core = $core;
   }
 
-  private function connector() {
+  protected function connector() {
     return Drupal::config('civiremote.settings')->get('cmrf_connector');
   }
 
@@ -58,28 +61,6 @@ class CiviMRF {
     $this->core->executeCall($call);
     $reply = $call->getReply();
     return $reply['values'];
-  }
-
-  public function getEvent($event_id, AccountInterface $account) {
-    $current_user = Drupal\user\Entity\User::load($account->id());
-    $params = [
-      'remote_contact_id' => $current_user->get('civiremote_id')->value,
-      'id' => $event_id,
-    ];
-    $call = $this->core->createCall(
-      $this->connector(),
-      'RemoteEvent',
-      'getsingle',
-      $params,
-      []
-    );
-    $this->core->executeCall($call);
-    $reply = $call->getReply();
-    if (!isset($reply['id'])) {
-      throw new Exception(t('Could not retrieve remote event.'));
-    }
-
-    return $reply;
   }
 
 }

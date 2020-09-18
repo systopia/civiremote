@@ -8,17 +8,12 @@ use Drupal\civiremote_event\Form\RegisterForm;
 use Drupal\Core\Form\FormStateInterface;
 use stdClass;
 
-class Standard2 extends RegisterForm implements RegisterFormInterface {
+class Standard1 extends RegisterForm implements RegisterFormInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(
-    array $form,
-    FormStateInterface $form_state,
-    stdClass $event = NULL,
-    $profile = NULL
-  ) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['email'] = [
       '#type' => 'email',
       '#title' => t('E-mail address'),
