@@ -102,7 +102,24 @@ class RegisterForm extends FormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    // Is being implemented in sub classes for specific profiles.
+    // TODO: Fetch fields from API.
+
+    // Add event description.
+    if (!empty($this->event->event_description)) {
+      $form[] = [
+        '#markup' => $this->event->event_description,
+      ];
+    }
+
+    // Add submit button.
+    $form['actions'] = [
+      '#type' => 'actions',
+    ];
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->event->registration_link_text,
+    ];
+
     return $form;
   }
 
@@ -143,7 +160,7 @@ class RegisterForm extends FormBase {
       );
       $form_state->setRebuild();
     }
-    Drupal::messenger()->addMessage(t('Registration successful.'));
+    Drupal::messenger()->addMessage($this->event->thankyou_title);
   }
 
   /**

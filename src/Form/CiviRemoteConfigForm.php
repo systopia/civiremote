@@ -53,11 +53,11 @@ class CiviRemoteConfigForm extends ConfigFormBase {
 
     $form['cmrf_connector'] = [
       '#type' => 'select',
-      '#title' => t('CiviMRF Connector'),
-      '#description' => t('The CiviMRF connector to use for connecting to CiviCRM. @cmrf_connectors_link',
+      '#title' => $this->t('CiviMRF Connector'),
+      '#description' => $this->t('The CiviMRF connector to use for connecting to CiviCRM. @cmrf_connectors_link',
         [
           '@cmrf_connectors_link' => Link::fromTextAndUrl(
-            t('Configure CiviMRF Connectors'),
+            $this->t('Configure CiviMRF Connectors'),
             Url::fromRoute('entity.cmrf_connector.collection')
           )->toString(),
         ]),
@@ -68,15 +68,15 @@ class CiviRemoteConfigForm extends ConfigFormBase {
 
     $form['acquire_civiremote_id'] = [
       '#type' => 'checkbox',
-      '#title' => t('Acquire CiviRemote ID'),
-      '#description' => t('Whether to match a new user to a CiviCRM contact and store the CiviRemote ID returned by CiviCRM.'),
+      '#title' => $this->t('Acquire CiviRemote ID'),
+      '#description' => $this->t('Whether to match a new user to a CiviCRM contact and store the CiviRemote ID returned by CiviCRM.'),
       '#default_value' => $config->get('acquire_civiremote_id'),
     ];
 
     $form['match_contact_mapping'] = [
       '#type' => 'fieldset',
-      '#title' => t('Parameter mapping'),
-      '#description' => t('Acquiring CiviRemote IDs involves matching CiviCRM contacts based on Drupal user data. Configure the mapping between those two.'),
+      '#title' => $this->t('Parameter mapping'),
+      '#description' => $this->t('Acquiring CiviRemote IDs involves matching CiviCRM contacts based on Drupal user data. Configure the mapping between those two.'),
       '#description_display' => 'before',
       '#states' => [
         'visible' => [':input[name="acquire_civiremote_id"]' => ['checked' => TRUE]],
@@ -100,8 +100,8 @@ class CiviRemoteConfigForm extends ConfigFormBase {
       '#tree' => TRUE,
       '#theme' => 'table',
       '#header' => [
-        t('Drupal user field'),
-        t('CiviCRM contact field'),
+        $this->t('Drupal user field'),
+        $this->t('CiviCRM contact field'),
         NULL,
       ],
       '#rows' => [],
@@ -131,7 +131,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
       ];
       $remove_button = [
         '#type' => 'submit',
-        '#value' => t('Remove'),
+        '#value' => $this->t('Remove'),
         '#name' => 'match_contact_mapping_' . $key . '_remove',
         '#submit' => ['::mappingRemove'],
         '#ajax' => [
@@ -159,7 +159,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     }
     $form['match_contact_mapping']['add_button'] = [
       '#type' => 'submit',
-      '#value' => t('Add mapping'),
+      '#value' => $this->t('Add mapping'),
       '#name' => 'match_contact_mapping__add',
       '#submit' => ['::mappingAdd'],
       '#ajax' => [

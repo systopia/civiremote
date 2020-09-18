@@ -64,7 +64,7 @@ class CiviMRF extends civiremote\CiviMRF {
     );
     $this->core->executeCall($call);
     $reply = $call->getReply();
-    if ($call->getStatus() !== $call::STATUS_DONE) {
+    if ($call->getStatus() !== $call::STATUS_DONE && empty($reply['values'])) {
       $errors = [t('Validation failed')];
     }
     else {

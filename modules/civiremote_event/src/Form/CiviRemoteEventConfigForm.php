@@ -25,7 +25,7 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
 
     $form['profile_form_mapping'] = [
       '#type' => 'fieldset',
-      '#title' => t('Profile to form mapping'),
+      '#title' => $this->t('Profile to form mapping'),
       '#description' => t('Define which forms should handle which CiviRemote Events profiles'),
       '#description_display' => 'before',
     ];
@@ -47,8 +47,8 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
       '#tree' => TRUE,
       '#theme' => 'table',
       '#header' => [
-        t('CiviRemote Events profile ID'),
-        t('Drupal form ID'),
+        $this->t('CiviRemote Events profile ID'),
+        $this->t('Drupal form ID'),
         NULL,
       ],
       '#rows' => [],
@@ -69,7 +69,7 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
       ];
       $remove_button = [
         '#type' => 'submit',
-        '#value' => t('Remove'),
+        '#value' => $this->t('Remove'),
         '#name' => 'profile_form_mapping_' . $key . '_remove',
         '#submit' => ['::mappingRemove'],
         '#ajax' => [
@@ -97,7 +97,7 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
     }
     $form['profile_form_mapping']['add_button'] = [
       '#type' => 'submit',
-      '#value' => t('Add mapping'),
+      '#value' => $this->t('Add mapping'),
       '#name' => 'profile_form_mapping__add',
       '#submit' => ['::mappingAdd'],
       '#ajax' => [

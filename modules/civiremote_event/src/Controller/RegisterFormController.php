@@ -40,4 +40,8 @@ class RegisterFormController extends ControllerBase {
     return $build;
   }
 
+  public function title(stdClass $event = NULL, $profile = NULL) {
+    return $event->event_title;
+  }
+
 }
