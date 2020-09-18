@@ -4,11 +4,16 @@
 namespace Drupal\civiremote_event\Form;
 
 
+use Drupal;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultAllowed;
+use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use \Drupal\Core\Routing\CurrentRouteMatch;
@@ -107,20 +112,38 @@ class RegisterForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
     $values = $form_state->getValues();
-    $values['profile'] = 'foobar';
     $errors = $this->cmrf->validateEventRegistration(
       $this->event->id,
       $this->profile,
       $values
     );
-    $stop = 'here';
+    foreach ($errors as $field => $message) {
+      $form_state->setErrorByName($field, $message);
+    }
   }
 
   /**
    * @inheritDoc
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement submitForm() method.
+    $form_state->cleanValues();
+    $values = $form_state->getValues();
+    try {
+      $result = $this->cmrf->submitEventRegistration(
+        $this->event->id,
+        $this->profile,
+        $values
+      );
+    }
+    catch (Exception $exception) {
+      $form_state->set('error', TRUE);
+      Drupal::messenger()->addMessage(
+        t('Registration failed, please try again later.'),
+        MessengerInterface::TYPE_ERROR
+      );
+      $form_state->setRebuild();
+    }
+    Drupal::messenger()->addMessage(t('Registration successful.'));
   }
 
   /**
@@ -131,7 +154,7 @@ class RegisterForm extends FormBase {
    * @param string $profile
    *   The remote event profile to use for displaying the form.
    *
-   * @return \Drupal\Core\Access\AccessResult|\Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultNeutral
+   * @return AccessResult|AccessResultAllowed|AccessResultNeutral
    */
   public function access(stdClass $event, $profile) {
     // Grant access depending on flags on the remote event.

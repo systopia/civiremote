@@ -28,11 +28,10 @@ class CiviMRF extends civiremote\CiviMRF {
    *   When the event could not be retrieved.
    */
   public function getEvent($event_id, AccountInterface $account) {
-    $current_user = User::load($account->id());
     $params = [
-      'remote_contact_id' => $current_user->get('civiremote_id')->value,
       'id' => $event_id,
     ];
+    self::addRemoteContactId($params);
     $call = $this->core->createCall(
       $this->connector(),
       'RemoteEvent',
@@ -50,12 +49,12 @@ class CiviMRF extends civiremote\CiviMRF {
   }
 
   public function validateEventRegistration($event_id, $profile, $params) {
-    $current_user = User::load(\Drupal::currentUser()->id());
+    self::addRemoteContactId($params);
     $params = array_merge($params, [
-      'remote_contact_id' => $current_user->get('civiremote_id')->value,
-      'id' => $event_id,
+      'event_id' => $event_id,
       'profile' => $profile,
     ]);
+    self::addRemoteContactId($params);
     $call = $this->core->createCall(
       $this->connector(),
       'RemoteParticipant',
@@ -64,7 +63,42 @@ class CiviMRF extends civiremote\CiviMRF {
       []
     );
     $this->core->executeCall($call);
-    return $call->getReply();
+    $reply = $call->getReply();
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      $errors = [t('Validation failed')];
+    }
+    else {
+      $errors = $reply['values'];
+    }
+    return $errors;
+  }
+
+  public function submitEventRegistration($event_id, $profile, $params) {
+    $params = array_merge($params, [
+      'event_id' => $event_id,
+      'profile' => $profile,
+    ]);
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteParticipant',
+      'submit',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('Registration failed.'));
+    }
+    $reply = $call->getReply();
+    return $reply['values'];
+  }
+
+  public static function addRemoteContactId(&$params) {
+    if (!empty($params['remote_contact_id'])) {
+      $current_user = User::load(\Drupal::currentUser()->id());
+      $params['remote_contact_id'] = $current_user->get('civiremote_id')->value;
+    }
   }
 
 }
