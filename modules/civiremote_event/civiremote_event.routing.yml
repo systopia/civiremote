@@ -7,7 +7,7 @@ civiremote_event.config_form:
     _permission: 'administer civiremote'
 
 civiremote_event.register_form:
-  path: '/civiremote/event/register/{event}/{profile}'
+  path: '/civiremote/event/{event}/register/{profile}'
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
