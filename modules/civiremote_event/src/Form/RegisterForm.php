@@ -102,13 +102,59 @@ class RegisterForm extends FormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    // TODO: Fetch fields from API.
-
     // Add event description.
     if (!empty($this->event->event_description)) {
       $form[] = [
         '#markup' => $this->event->event_description,
       ];
+    }
+
+    // Fetch fields from RemoteEvent.get_registration_form API when no specific
+    // implementation is present.
+    if (static::class == self::class) {
+      $fields = $this->cmrf->getRegistrationForm($this->event->id, $this->profile);
+      $types = [
+        'Text' => 'textfield',
+        'Textarea' => 'textarea',
+        'Select' => 'select',
+        'Multi-Select' => 'select',
+        'Checkbox' => 'checkbox',
+      ];
+
+      foreach ($fields as $field_name => $field) {
+        // Create and reference the group to place the field into.
+        if (!empty($field['group_name'])) {
+          if (empty($form[$field['group_name']])) {
+            $form[$field['group_name']] = [
+              '#type' => 'fieldset',
+              '#title' => $field['group_label'],
+            ];
+          }
+          $group = &$form[$field['group_name']];
+        }
+        else {
+          $group = &$form;
+        }
+
+        // Set correct field type.
+        if ($field['validation'] == 'Email') {
+          $type = 'email';
+        }
+        else {
+          $type = $types[$field['type']];
+        }
+
+        // Build the field.
+        $group[$field_name] = [
+          '#type' => $type,
+          '#title' => $field['label'],
+          '#description' => $field['description'],
+          '#required' => !empty($field['required']),
+          '#options' => ($type == 'select' ? $field['options'] : NULL),
+          '#multiple' => ($field['type'] == 'Multi-Select'),
+          '#weight' => $field['weight'],
+        ];
+      }
     }
 
     // Add submit button.

@@ -14,8 +14,16 @@ class RegisterFormController extends ControllerBase {
     // Use default profile if not given.
     $profile = (isset($profile) ? $profile : $event->default_profile);
 
-    // Retrieve form ID for given profile ID from configuration.
+    // Try to find our own implementation.
     $form_id = '\Drupal\civiremote_event\Form\RegisterForm\\' . $profile;
+    if (
+      !class_exists($form_id)
+      || !in_array(RegisterFormInterface::class,class_implements($form_id))
+    ) {
+      $form_id = '\Drupal\civiremote_event\Form\RegisterForm';
+    }
+
+    // Use form ID for given profile ID from configuration.
     $profile_form_mapping = \Drupal::config('civiremote_event.settings')
       ->get('profile_form_mapping');
     if (!empty($profile_form_mapping)) {
@@ -26,16 +34,9 @@ class RegisterFormController extends ControllerBase {
         }
       }
     }
-    if (
-      class_exists($form_id)
-      && in_array(RegisterFormInterface::class,class_implements($form_id))
-    ) {
-      // Build the form.
-      $build = $this->formBuilder()->getForm($form_id);
-    }
-    else {
-      throw new AccessDeniedHttpException();
-    }
+
+    // Build the form.
+    $build = $this->formBuilder()->getForm($form_id);
 
     return $build;
   }

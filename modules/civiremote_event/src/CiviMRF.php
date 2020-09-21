@@ -48,6 +48,27 @@ class CiviMRF extends civiremote\CiviMRF {
     return $reply;
   }
 
+  public function getRegistrationForm($event_id, $profile) {
+    $params = [
+      'event_id' => $event_id,
+      'profile' => $profile,
+    ];
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteEvent',
+      'get_registration_form',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('Retrieving registration form failed.'));
+    }
+    $reply = $call->getReply();
+    return $reply['values'];
+  }
+
   public function validateEventRegistration($event_id, $profile, $params) {
     self::addRemoteContactId($params);
     $params = array_merge($params, [
@@ -95,10 +116,8 @@ class CiviMRF extends civiremote\CiviMRF {
   }
 
   public static function addRemoteContactId(&$params) {
-    if (!empty($params['remote_contact_id'])) {
-      $current_user = User::load(\Drupal::currentUser()->id());
-      $params['remote_contact_id'] = $current_user->get('civiremote_id')->value;
-    }
+    $current_user = User::load(\Drupal::currentUser()->id());
+    $params['remote_contact_id'] = $current_user->get('civiremote_id')->value;
   }
 
 }
