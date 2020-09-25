@@ -4,7 +4,6 @@ namespace Drupal\civiremote_event\Form\RegisterForm;
 
 use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
-use stdClass;
 
 interface RegisterFormInterface extends FormInterface {
 
