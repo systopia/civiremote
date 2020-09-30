@@ -20,6 +20,7 @@ function civiremote_token_info() {
  * Implements hook_tokens().
  */
 function civiremote_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
   if ($type == 'user' && !empty($data['user'])) {
     /** @var UserInterface $account */
     $account = $data['user'];
