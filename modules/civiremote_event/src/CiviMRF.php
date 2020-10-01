@@ -109,7 +109,27 @@ class CiviMRF extends civiremote\CiviMRF {
     );
     $this->core->executeCall($call);
     if ($call->getStatus() !== $call::STATUS_DONE) {
-      throw new Exception(t('Registration failed.'));
+      throw new Exception(t('The event registration failed.'));
+    }
+    $reply = $call->getReply();
+    return $reply['values'];
+  }
+
+  public function cancelEventRegistration($event_id) {
+    $params = [
+      'event_id' => $event_id,
+    ];
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteParticipant',
+      'cancel',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('The event registration cancellation failed.'));
     }
     $reply = $call->getReply();
     return $reply['values'];

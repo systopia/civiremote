@@ -21,3 +21,24 @@ civiremote_event.register_form:
         type: civiremote_event
       profile:
         type: string
+
+civiremote_event.registration_cancel_form:
+  path: '/civiremote/event/{event}/cancel'
+  defaults:
+    _form: '\Drupal\civiremote_event\Form\RegistrationCancelForm'
+  requirements:
+    _custom_access: '\Drupal\civiremote_event\Form\RegistrationCancelForm::access'
+  options:
+    parameters:
+      event:
+        type: civiremote_event
+civiremote_event.registration_cancel_token_form:
+  path: '/civiremote/event/cancel/{cancel_token}'
+  defaults:
+    _form: '\Drupal\civiremote_event\Form\RegistrationCancelForm'
+  requirements:
+    _custom_access: '\Drupal\civiremote_event\Form\RegistrationCancelForm::access'
+  options:
+    parameters:
+      cancel_token:
+        type: string
