@@ -1,0 +1,13 @@
+uuid: 75322c2b-6ebe-4139-8f83-d8c509823f9d
+langcode: de
+status: true
+dependencies: {  }
+id: civiremote_events
+label: 'CiviRemote Events'
+connector: civiremote
+entity: RemoteEvent
+action: get
+getcount: getcount
+getfields: get_remote_event_fields
+params: "{\r\n    \"remote_contact_id\": \"[current-user:civiremote-id]\"\r\n}"
+relationships: null
