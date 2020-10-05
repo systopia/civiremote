@@ -16,7 +16,6 @@
 namespace Drupal\civiremote_event;
 
 use Drupal\civiremote;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\user\Entity\User;
 use Exception;
 
@@ -32,8 +31,6 @@ class CiviMRF extends civiremote\CiviMRF {
    *
    * @param int $event_id
    *   The remote event ID.
-   * @param AccountInterface $account
-   *   the currently loged-in user account.
    *
    * @return array
    *   The remote event.
@@ -41,7 +38,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the event could not be retrieved.
    */
-  public function getEvent($event_id, AccountInterface $account) {
+  public function getEvent($event_id) {
     $params = [
       'id' => $event_id,
     ];

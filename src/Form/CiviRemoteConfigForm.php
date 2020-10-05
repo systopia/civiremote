@@ -42,9 +42,13 @@ class CiviRemoteConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    // Load required services.
+    /**
+     * Inject dependencies.
+     * @var cmrf_core\Core $cmrf
+     */
+    $cmrf = $container->get('cmrf_core.core');
     return new static(
-      $container->get('cmrf_core.core')
+      $cmrf
     );
   }
 

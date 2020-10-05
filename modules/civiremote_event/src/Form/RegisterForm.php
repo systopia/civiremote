@@ -25,11 +25,10 @@ use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Routing\RouteMatch;
 use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use \Drupal\Core\Routing\CurrentRouteMatch;
 
 /**
  * Generic remote event registration form.
@@ -40,12 +39,6 @@ use \Drupal\Core\Routing\CurrentRouteMatch;
  * @package Drupal\civiremote_event\Form
  */
 class RegisterForm extends FormBase implements RegisterFormInterface {
-
-  /**
-   * @var \Drupal\Core\Session\AccountInterface $account
-   *   The currently logged-in user's account service.
-   */
-  protected $account;
 
   /**
    * @var CiviMRF $cmrf_core
@@ -68,20 +61,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   /**
    * RegisterForm constructor.
    *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The currently logged-id user account service.
    * @param CiviMRF $cmrf
    *   The CiviMRF core service.
-   * @param CurrentRouteMatch $routeMatch
-   *   The current route match object.
    */
-  public function __construct(AccountInterface $account, CiviMRF $cmrf, CurrentRouteMatch $routeMatch) {
+  public function __construct(CiviMRF $cmrf) {
     // Store dependency references to passed-in services.
-    $this->account = $account;
     $this->cmrf = $cmrf;
 
     // Extract form parameters and set them here so that implementations do not
     // have to care about that.
+    $routeMatch = RouteMatch::createFromRequest($this->getRequest());
     $this->event = $routeMatch->getParameter('event');
     $this->profile = $routeMatch->getRawParameter('profile');
     if (!isset($this->profile)) {
@@ -96,16 +85,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     /**
      * Inject dependencies.
      * @var CiviMRF $cmrf
-     * @var AccountInterface $current_user
-     * @var CurrentRouteMatch $route_match
      */
-    $current_user = $container->get('current_user');
     $cmrf = $container->get('civiremote_event.cmrf');
-    $route_match = $container->get('current_route_match');
     return new static(
-      $current_user,
-      $cmrf,
-      $route_match
+      $cmrf
     );
   }
 

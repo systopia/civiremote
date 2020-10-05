@@ -24,18 +24,12 @@ use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Routing\RouteMatch;
 use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RegistrationCancelForm extends ConfirmFormBase {
-
-  /**
-   * @var \Drupal\Core\Session\AccountInterface $account
-   */
-  protected $account;
 
   /**
    * @var CiviMRF $cmrf_core
@@ -55,19 +49,15 @@ class RegistrationCancelForm extends ConfirmFormBase {
   /**
    * RegistrationCancelForm constructor.
    *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The currently logged-id user account service.
    * @param CiviMRF $cmrf
    *   The CiviMRF core service.
-   * @param CurrentRouteMatch $routeMatch
-   *   The current route match object.
    */
-  public function __construct(AccountInterface $account, CiviMRF $cmrf, CurrentRouteMatch $routeMatch) {
-    $this->account = $account;
+  public function __construct(CiviMRF $cmrf) {
     $this->cmrf = $cmrf;
 
     // Extract form parameters and set them here so that implementations do not
     // have to care about that.
+    $routeMatch = RouteMatch::createFromRequest($this->getRequest());
     $this->cancel_token = $routeMatch->getRawParameter('cancel_token');
     $this->event = $routeMatch->getParameter('event');
     // TODO: Set $this->event from the token (using RemoteParticipant.cancel with probe=1).
@@ -78,18 +68,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     /**
-     * Inject dependencies to the current user account and CiviMRF.
+     * Inject dependencies.
      * @var CiviMRF $cmrf
-     * @var AccountInterface $current_user
-     * @var CurrentRouteMatch $route_match
      */
-    $current_user = $container->get('current_user');
     $cmrf = $container->get('civiremote_event.cmrf');
-    $route_match = $container->get('current_route_match');
     return new static(
-      $current_user,
-      $cmrf,
-      $route_match
+      $cmrf
     );
   }
 
