@@ -1,5 +1,17 @@
 <?php
-
+/*------------------------------------------------------------+
+| CiviRemote - CiviCRM Remote Integration                     |
+| Copyright (C) 2020 SYSTOPIA                                 |
+| Author: J. Schuppe (schuppe@systopia.de)                    |
++-------------------------------------------------------------+
+| This program is released as free software under the         |
+| Affero GPL license. You can redistribute it and/or          |
+| modify it under the terms of this license which you         |
+| can read by viewing the included agpl.txt or online         |
+| at www.gnu.org/licenses/agpl.html. Removal of this          |
+| copyright header is strictly prohibited without             |
+| written permission from the original author(s).             |
++-------------------------------------------------------------*/
 
 namespace Drupal\civiremote_event\Form;
 
@@ -19,25 +31,37 @@ use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use \Drupal\Core\Routing\CurrentRouteMatch;
 
+/**
+ * Generic remote event registration form.
+ *
+ * This class handles all profiles not explicitly implemented in a separate form
+ * class and serves as a base class for those implementations.
+ *
+ * @package Drupal\civiremote_event\Form
+ */
 class RegisterForm extends FormBase implements RegisterFormInterface {
 
   /**
    * @var \Drupal\Core\Session\AccountInterface $account
+   *   The currently logged-in user's account service.
    */
   protected $account;
 
   /**
    * @var CiviMRF $cmrf_core
+   *   The CiviMRF core service.
    */
   protected $cmrf;
 
   /**
    * @var stdClass $event
+   *   The remote event to build the registration form for.
    */
   protected $event;
 
   /**
    * @var string $profile
+   *   The remote event profile to use for building the registration form.
    */
   protected $profile;
 
@@ -52,6 +76,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    *   The current route match object.
    */
   public function __construct(AccountInterface $account, CiviMRF $cmrf, CurrentRouteMatch $routeMatch) {
+    // Store dependency references to passed-in services.
     $this->account = $account;
     $this->cmrf = $cmrf;
 
@@ -69,7 +94,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    */
   public static function create(ContainerInterface $container) {
     /**
-     * Inject dependencies to the current user account and CiviMRF.
+     * Inject dependencies.
      * @var CiviMRF $cmrf
      * @var AccountInterface $current_user
      * @var CurrentRouteMatch $route_match
@@ -92,15 +117,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   }
 
   /**
-   * Form constructor.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   The form structure.
+   * @inheritDoc
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Prepare form steps.
@@ -164,6 +181,19 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return $form;
   }
 
+  /**
+   * Form builder for the actual registration form step.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The form structure.
+   *
+   * @throws Exception
+   */
   protected function buildRegisterForm(array $form, FormStateInterface $form_state) {
     // Add event form intro text.
     if (!empty($this->event->intro_text)) {
@@ -230,6 +260,19 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return $form;
   }
 
+  /**
+   * Form builder for the confirmation form step.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The form structure.
+   *
+   * @throws Exception
+   */
   protected function buildConfirmForm(array $form, FormStateInterface $form_state) {
     // Set confirmation page title.
     if (!empty($this->event->confirm_title)) {
@@ -277,6 +320,44 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     if (!empty($this->event->confirm_footer_text)) {
       $form[] = [
         '#markup' => $this->event->confirm_footer_text,
+      ];
+    }
+
+    return $form;
+  }
+
+  /**
+   * Form builder for the thankyou form step.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The form structure.
+   *
+   * @throws Exception
+   */
+  public function buildThankyouPage(array &$form, FormStateInterface $form_state) {
+    // Set confirmation page title.
+    if (!empty($this->event->thankyou_title)) {
+      $form['#title'] = $this->event->thankyou_title;
+    }
+
+    // Add confirmation text.
+    if (!empty($this->event->thankyou_text)) {
+      $form[] = [
+        '#markup' => $this->event->thankyou_text,
+      ];
+    }
+
+    // TODO: Show summary?
+
+    // Add confirmation footer text.
+    if (!empty($this->event->thankyou_footer_text)) {
+      $form[] = [
+        '#markup' => $this->event->thankyou_footer_text,
       ];
     }
 
@@ -334,7 +415,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Handle forward navigation.
       if ($step == array_search('confirm', $form_state->get('steps'))) {
         // Submit the form values to the CiviRemote Event API.
-        $values = $form_state->get('values');
+        $values = $form_state->get('values') ?: [];
         try {
           $result = $this->cmrf->submitEventRegistration(
             $this->event->id,
@@ -367,31 +448,6 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $form_state->setRebuild();
       }
     }
-  }
-
-  public function buildThankyouPage(array &$form, FormStateInterface $form_state) {
-    // Set confirmation page title.
-    if (!empty($this->event->thankyou_title)) {
-      $form['#title'] = $this->event->thankyou_title;
-    }
-
-    // Add confirmation text.
-    if (!empty($this->event->thankyou_text)) {
-      $form[] = [
-        '#markup' => $this->event->thankyou_text,
-      ];
-    }
-
-    // TODO: Show summary?
-
-    // Add confirmation footer text.
-    if (!empty($this->event->thankyou_footer_text)) {
-      $form[] = [
-        '#markup' => $this->event->thankyou_footer_text,
-      ];
-    }
-
-    return $form;
   }
 
   /**
