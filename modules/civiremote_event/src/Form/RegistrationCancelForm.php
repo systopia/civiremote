@@ -24,6 +24,7 @@ use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Routing\RouteMatch;
 use Exception;
 use stdClass;
@@ -35,6 +36,11 @@ class RegistrationCancelForm extends ConfirmFormBase {
    * @var CiviMRF $cmrf_core
    */
   protected $cmrf;
+
+  /**
+   * @var RedirectDestinationInterface $redirect
+   */
+  protected $redirect;
 
   /**
    * @var stdClass $event
@@ -51,9 +57,11 @@ class RegistrationCancelForm extends ConfirmFormBase {
    *
    * @param CiviMRF $cmrf
    *   The CiviMRF core service.
+   * @param RedirectDestinationInterface $redirect
    */
-  public function __construct(CiviMRF $cmrf) {
+  public function __construct(CiviMRF $cmrf, RedirectDestinationInterface $redirect) {
     $this->cmrf = $cmrf;
+    $this->redirect = $redirect;
 
     // Extract form parameters and set them here so that implementations do not
     // have to care about that.
@@ -70,10 +78,13 @@ class RegistrationCancelForm extends ConfirmFormBase {
     /**
      * Inject dependencies.
      * @var CiviMRF $cmrf
+     * @var RedirectDestinationInterface $redirect
      */
     $cmrf = $container->get('civiremote_event.cmrf');
+    $redirect = $container->get('redirect.destination');
     return new static(
-      $cmrf
+      $cmrf,
+      $redirect
     );
   }
 
@@ -98,7 +109,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
    * @inheritDoc
    */
   public function getCancelUrl() {
-    return $this->getRedirectDestination();
+    return $this->redirect->get();
   }
 
   /**
