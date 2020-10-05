@@ -102,6 +102,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
    * @inheritDoc
    */
   public function getDescription() {
+    // TODO: Show configurable description of the event cancellation?
     return NULL;
   }
 
