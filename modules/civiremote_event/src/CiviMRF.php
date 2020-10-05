@@ -59,6 +59,28 @@ class CiviMRF extends civiremote\CiviMRF {
     return $reply;
   }
 
+  public function getEventFromToken($registration_token) {
+    $params = [
+      'remote_registration_token' => $registration_token,
+      'probe' => 1,
+    ];
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteParticipant',
+      'cancel',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if (!isset($reply['event_id'])) {
+      throw new Exception(t('Could not retrieve remote event.'));
+    }
+
+    return $reply['event_id'];
+  }
+
   /**
    * Retrieves the registration form definition of a remote event with a given
    * event ID for a specific profile.
