@@ -174,6 +174,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
     return AccessResult::allowedIf(
       !empty($this->event)
       && $this->event->can_edit_registration
+      && $this->event->is_registered
     );
   }
 }
