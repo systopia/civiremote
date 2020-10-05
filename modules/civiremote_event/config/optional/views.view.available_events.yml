@@ -489,6 +489,112 @@ display:
           type_custom_false: ''
           not: false
           plugin_id: boolean
+        can_instant_register:
+          id: can_instant_register
+          table: cmrf_views_civiremote_events
+          field: can_instant_register
+          relationship: none
+          group_type: group
+          admin_label: Sofort-anmelden-Link
+          label: ''
+          exclude: true
+          alter:
+            alter_text: true
+            text: 'Sofort anmelden'
+            make_link: true
+            path: 'civiremote/event/{{ id }}/register/OneClick'
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: true
+          empty_zero: true
+          hide_alter_empty: true
+          type: boolean
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
+        can_edit_registration_1:
+          id: can_edit_registration_1
+          table: cmrf_views_civiremote_events
+          field: can_edit_registration
+          relationship: none
+          group_type: group
+          admin_label: Abmelden-Link
+          label: ''
+          exclude: true
+          alter:
+            alter_text: true
+            text: Abmelden
+            make_link: true
+            path: 'civiremote/event/{{ id }}/cancel'
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: true
+          empty_zero: true
+          hide_alter_empty: true
+          type: boolean
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
         dropbutton:
           id: dropbutton
           table: views
@@ -539,6 +645,8 @@ display:
           hide_alter_empty: true
           fields:
             can_register_1: can_register_1
+            can_instant_register: can_instant_register
+            can_edit_registration_1: can_edit_registration_1
             id: '0'
             event_title: '0'
             event_description: '0'
@@ -669,6 +777,112 @@ display:
           group_type: group
           admin_label: ''
           label: 'can_register flag'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          type: yes-no
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
+        can_edit_registration:
+          id: can_edit_registration
+          table: cmrf_views_civiremote_events
+          field: can_edit_registration
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'can_edit_registration flag'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          type: yes-no
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
+        is_registered:
+          id: is_registered
+          table: cmrf_views_civiremote_events
+          field: is_registered
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'is_registered flag'
           exclude: false
           alter:
             alter_text: false
