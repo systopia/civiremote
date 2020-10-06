@@ -69,10 +69,19 @@ display:
           columns:
             id: id
             event_title: event_title
-            event_description: event_description
-            summary: summary
-            nothing: nothing
+            event_description: event_title
+            summary: event_title
+            event_start_date: event_start_date
+            event_end_date: event_end_date
+            can_register_1: can_register_1
+            can_instant_register: can_instant_register
+            can_edit_registration_1: can_edit_registration_1
             dropbutton: dropbutton
+            max_participants: max_participants
+            registration_count: registration_count
+            can_register: can_register
+            can_edit_registration: can_edit_registration
+            is_registered: is_registered
           info:
             id:
               sortable: false
@@ -102,7 +111,35 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            nothing:
+            event_start_date:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            event_end_date:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            can_register_1:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            can_instant_register:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            can_edit_registration_1:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -116,6 +153,41 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
+            max_participants:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-medium
+            registration_count:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+            can_register:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+            can_edit_registration:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+            is_registered:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
           default: '-1'
           empty_table: false
       row:
@@ -195,8 +267,8 @@ display:
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: 'civiremote/event/{{ id }}'
             absolute: false
             external: false
             replace_spaces: false
