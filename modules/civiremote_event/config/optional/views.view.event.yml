@@ -1126,7 +1126,40 @@ display:
       title: '{{ event_title }}'
       header: {  }
       footer: {  }
-      empty: {  }
+      empty:
+        http_status_code:
+          id: http_status_code
+          table: views
+          field: http_status_code
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          status_code: 404
+          plugin_id: http_status_code
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content:
+            value: 'The requested page could not be found.'
+            format: full_html
+          plugin_id: text
+        title:
+          id: title
+          table: views
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          title: 'Page not found'
+          plugin_id: title
       relationships: {  }
       arguments:
         id:
