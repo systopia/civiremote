@@ -686,7 +686,7 @@ display:
     position: 2
     display_options:
       display_extenders: {  }
-      path: civiremote/my-events
+      path: civiremote/event/my-events
     cache_metadata:
       max-age: -1
       contexts:
