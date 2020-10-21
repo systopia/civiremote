@@ -1123,3 +1123,18 @@ display:
         - url
         - url.query_args
       tags: {  }
+  page_available_events:
+    display_plugin: page
+    id: page_available_events
+    display_title: Page
+    position: 2
+    display_options:
+      display_extenders: {  }
+      path: civiremote/event
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+      tags: {  }
