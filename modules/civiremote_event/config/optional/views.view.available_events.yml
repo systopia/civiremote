@@ -352,7 +352,7 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          text_format: plain_text
+          text_format: full_html
           plugin_id: cmrf_views_markup
         summary:
           id: summary
