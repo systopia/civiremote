@@ -8,6 +8,6 @@ connector: civiremote
 entity: RemoteEvent
 action: get
 getcount: getcount
-getfields: get_remote_event_fields
+getfields: getfields
 params: "{\r\n    \"remote_contact_id\": \"[current-user:civiremote-id]\"\r\n}"
 relationships: null
