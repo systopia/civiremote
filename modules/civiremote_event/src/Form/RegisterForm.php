@@ -185,7 +185,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       ];
     }
 
-    // Fetch fields from RemoteEvent.get_registration_form API when no specific
+    // Fetch fields from RemoteEvent.get_form API when no specific
     // implementation is present.
     $fields = $this->cmrf->getRegistrationForm($this->event->id, $this->profile);
     $form_state->set('fields', $fields);
