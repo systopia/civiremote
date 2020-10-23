@@ -199,7 +199,7 @@ display:
       fields:
         id:
           id: id
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: id
           relationship: none
           group_type: group
@@ -256,7 +256,7 @@ display:
           plugin_id: numeric
         event_title:
           id: event_title
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_title
           relationship: none
           group_type: group
@@ -305,7 +305,7 @@ display:
           plugin_id: cmrf_views_standard
         event_description:
           id: event_description
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_description
           relationship: none
           group_type: group
@@ -355,7 +355,7 @@ display:
           plugin_id: cmrf_views_markup
         summary:
           id: summary
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: summary
           relationship: none
           group_type: group
@@ -405,7 +405,7 @@ display:
           plugin_id: cmrf_views_markup
         event_start_date:
           id: event_start_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_start_date
           relationship: none
           group_type: group
@@ -457,7 +457,7 @@ display:
           plugin_id: cmrf_views_date
         event_end_date:
           id: event_end_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_end_date
           relationship: none
           group_type: group
@@ -509,7 +509,7 @@ display:
           plugin_id: cmrf_views_date
         can_register_1:
           id: can_register_1
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_register
           relationship: none
           group_type: group
@@ -562,7 +562,7 @@ display:
           plugin_id: boolean
         can_instant_register:
           id: can_instant_register
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_instant_register
           relationship: none
           group_type: group
@@ -615,7 +615,7 @@ display:
           plugin_id: boolean
         can_edit_registration_1:
           id: can_edit_registration_1
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_edit_registration
           relationship: none
           group_type: group
@@ -728,7 +728,7 @@ display:
           plugin_id: dropbutton
         max_participants:
           id: max_participants
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: max_participants
           relationship: none
           group_type: group
@@ -785,7 +785,7 @@ display:
           plugin_id: numeric
         registration_count:
           id: registration_count
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: registration_count
           relationship: none
           group_type: group
@@ -842,7 +842,7 @@ display:
           plugin_id: numeric
         can_register:
           id: can_register
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_register
           relationship: none
           group_type: group
@@ -895,7 +895,7 @@ display:
           plugin_id: boolean
         can_edit_registration:
           id: can_edit_registration
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_edit_registration
           relationship: none
           group_type: group
@@ -948,7 +948,7 @@ display:
           plugin_id: boolean
         is_registered:
           id: is_registered
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: is_registered
           relationship: none
           group_type: group
@@ -1002,7 +1002,7 @@ display:
       filters:
         can_register:
           id: can_register
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_register
           relationship: none
           group_type: group
@@ -1046,7 +1046,7 @@ display:
           plugin_id: cmrf_views_filter_boolean
         event_start_date:
           id: event_start_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_start_date
           relationship: none
           group_type: group

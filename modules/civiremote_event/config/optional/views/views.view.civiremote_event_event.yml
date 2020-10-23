@@ -48,7 +48,7 @@ display:
       fields:
         id:
           id: id
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: id
           relationship: none
           group_type: group
@@ -107,7 +107,7 @@ display:
           plugin_id: numeric
         event_title:
           id: event_title
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_title
           relationship: none
           group_type: group
@@ -156,7 +156,7 @@ display:
           plugin_id: cmrf_views_standard
         event_description:
           id: event_description
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_description
           relationship: none
           group_type: group
@@ -206,7 +206,7 @@ display:
           plugin_id: cmrf_views_markup
         summary:
           id: summary
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: summary
           relationship: none
           group_type: group
@@ -256,7 +256,7 @@ display:
           plugin_id: cmrf_views_markup
         event_start_date:
           id: event_start_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_start_date
           relationship: none
           group_type: group
@@ -308,7 +308,7 @@ display:
           plugin_id: cmrf_views_date
         event_end_date:
           id: event_end_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_end_date
           relationship: none
           group_type: group
@@ -360,7 +360,7 @@ display:
           plugin_id: cmrf_views_date
         registration_start_date:
           id: registration_start_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: registration_start_date
           relationship: none
           group_type: group
@@ -412,7 +412,7 @@ display:
           plugin_id: cmrf_views_date
         registration_end_date:
           id: registration_end_date
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: registration_end_date
           relationship: none
           group_type: group
@@ -464,7 +464,7 @@ display:
           plugin_id: cmrf_views_date
         is_monetary:
           id: is_monetary
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: is_monetary
           relationship: none
           group_type: group
@@ -517,7 +517,7 @@ display:
           plugin_id: boolean
         is_active:
           id: is_active
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: is_active
           relationship: none
           group_type: group
@@ -570,7 +570,7 @@ display:
           plugin_id: boolean
         is_public:
           id: is_public
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: is_public
           relationship: none
           group_type: group
@@ -623,7 +623,7 @@ display:
           plugin_id: boolean
         registration_link_text:
           id: registration_link_text
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: registration_link_text
           relationship: none
           group_type: group
@@ -672,7 +672,7 @@ display:
           plugin_id: cmrf_views_standard
         event_type_id:
           id: event_type_id
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: event_type_id
           relationship: none
           group_type: group
@@ -729,7 +729,7 @@ display:
           plugin_id: numeric
         max_participants:
           id: max_participants
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: max_participants
           relationship: none
           group_type: group
@@ -786,7 +786,7 @@ display:
           plugin_id: numeric
         registration_count:
           id: registration_count
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: registration_count
           relationship: none
           group_type: group
@@ -843,7 +843,7 @@ display:
           plugin_id: numeric
         has_waitlist:
           id: has_waitlist
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: has_waitlist
           relationship: none
           group_type: group
@@ -896,7 +896,7 @@ display:
           plugin_id: boolean
         can_register:
           id: can_register
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_register
           relationship: none
           group_type: group
@@ -949,7 +949,7 @@ display:
           plugin_id: boolean
         can_instant_register:
           id: can_instant_register
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_instant_register
           relationship: none
           group_type: group
@@ -1002,7 +1002,7 @@ display:
           plugin_id: boolean
         can_edit_registration:
           id: can_edit_registration
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: can_edit_registration
           relationship: none
           group_type: group
@@ -1163,7 +1163,7 @@ display:
       arguments:
         id:
           id: id
-          table: cmrf_views_civiremote_events
+          table: cmrf_views_civiremote_event_events
           field: id
           relationship: none
           group_type: group
