@@ -1,15 +1,14 @@
-uuid: 9d5d5115-c9a0-4415-9608-7f879b001bba
 langcode: de
 status: true
 dependencies:
   module:
     - cmrf_views
-id: event
-label: 'CiviRemote: Event'
+id: civiremote_event_available_events
+label: 'CiviRemote: Available events'
 module: views
-description: 'Displays a single CiviRemote event.'
+description: 'Displays available CiviRemote events.'
 tag: civiremote
-base_table: cmrf_views_civiremote_events
+base_table: cmrf_views_civiremote_event_events
 base_field: ''
 display:
   default:
@@ -22,7 +21,7 @@ display:
         type: none
         options: {  }
       cache:
-        type: tag
+        type: none
         options: {  }
       query:
         type: views_query
@@ -38,14 +37,165 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       pager:
-        type: some
+        type: mini
         options:
-          items_per_page: 1
+          items_per_page: 10
           offset: 0
+          id: 0
+          total_pages: null
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          tags:
+            previous: ‹‹
+            next: ››
       style:
-        type: default
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          override: true
+          sticky: false
+          caption: ''
+          summary: ''
+          description: ''
+          columns:
+            id: id
+            event_title: event_title
+            event_description: event_title
+            summary: event_title
+            event_start_date: event_start_date
+            event_end_date: event_end_date
+            can_register_1: can_register_1
+            can_instant_register: can_instant_register
+            can_edit_registration_1: can_edit_registration_1
+            dropbutton: dropbutton
+            max_participants: max_participants
+            registration_count: registration_count
+            can_register: can_register
+            can_edit_registration: can_edit_registration
+            is_registered: is_registered
+          info:
+            id:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            event_title:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            event_description:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            summary:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            event_start_date:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            event_end_date:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            can_register_1:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            can_instant_register:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            can_edit_registration_1:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            dropbutton:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            max_participants:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-medium
+            registration_count:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+            can_register:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+            can_edit_registration:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+            is_registered:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: priority-low
+          default: '-1'
+          empty_table: false
       row:
         type: fields
+        options:
+          inline: {  }
+          separator: ''
+          hide_empty: false
+          default_field_elements: true
       fields:
         id:
           id: id
@@ -103,8 +253,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          entity_type: null
-          entity_field: null
           plugin_id: numeric
         event_title:
           id: event_title
@@ -113,13 +261,13 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: ''
-          exclude: true
+          label: Veranstaltungstitel
+          exclude: false
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: 'civiremote/event/{{ id }}'
             absolute: false
             external: false
             replace_spaces: false
@@ -162,7 +310,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Beschreibung der Veranstaltung'
+          label: 'Event description'
           exclude: false
           alter:
             alter_text: false
@@ -195,7 +343,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: true
+          element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -245,7 +393,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: true
+          element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -253,7 +401,7 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          text_format: full_html
+          text_format: plain_text
           plugin_id: cmrf_views_markup
         event_start_date:
           id: event_start_date
@@ -262,7 +410,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Startdatum der Veranstaltung'
+          label: 'Event Start Date'
           exclude: false
           alter:
             alter_text: false
@@ -295,7 +443,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: true
+          element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -303,7 +451,7 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          date_format: long
+          date_format: medium
           custom_date_format: ''
           timezone: ''
           plugin_id: cmrf_views_date
@@ -314,7 +462,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Enddatum der Veranstaltung'
+          label: 'Event End Date'
           exclude: false
           alter:
             alter_text: false
@@ -347,7 +495,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: true
+          element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -355,548 +503,12 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          date_format: long
+          date_format: short
           custom_date_format: ''
           timezone: ''
           plugin_id: cmrf_views_date
-        registration_start_date:
-          id: registration_start_date
-          table: cmrf_views_civiremote_events
-          field: registration_start_date
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Anfangsdatum der Anmeldung'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          date_format: 'time span'
-          custom_date_format: ''
-          timezone: ''
-          plugin_id: cmrf_views_date
-        registration_end_date:
-          id: registration_end_date
-          table: cmrf_views_civiremote_events
-          field: registration_end_date
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Enddatum der Anmeldung'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          date_format: 'raw time hence'
-          custom_date_format: ''
-          timezone: ''
-          plugin_id: cmrf_views_date
-        is_monetary:
-          id: is_monetary
-          table: cmrf_views_civiremote_events
-          field: is_monetary
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Gebührenpflichtige Veranstaltung?'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          type: yes-no
-          type_custom_true: ''
-          type_custom_false: ''
-          not: false
-          plugin_id: boolean
-        is_active:
-          id: is_active
-          table: cmrf_views_civiremote_events
-          field: is_active
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'ist Aktiv'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          type: yes-no
-          type_custom_true: ''
-          type_custom_false: ''
-          not: false
-          plugin_id: boolean
-        is_public:
-          id: is_public
-          table: cmrf_views_civiremote_events
-          field: is_public
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Ist die Veranstaltung öffentlich?'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          type: yes-no
-          type_custom_true: ''
-          type_custom_false: ''
-          not: false
-          plugin_id: boolean
-        registration_link_text:
-          id: registration_link_text
-          table: cmrf_views_civiremote_events
-          field: registration_link_text
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Link-Text der Veranstaltungsanmeldung'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          plugin_id: cmrf_views_standard
-        event_type_id:
-          id: event_type_id
-          table: cmrf_views_civiremote_events
-          field: event_type_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Veranstaltungstyp
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-          plugin_id: numeric
-        max_participants:
-          id: max_participants
-          table: cmrf_views_civiremote_events
-          field: max_participants
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Maximale Teilnehmerzahl'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-          plugin_id: numeric
-        registration_count:
-          id: registration_count
-          table: cmrf_views_civiremote_events
-          field: registration_count
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Registration Count'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-          plugin_id: numeric
-        has_waitlist:
-          id: has_waitlist
-          table: cmrf_views_civiremote_events
-          field: has_waitlist
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Warteliste aktiviert'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          type: yes-no
-          type_custom_true: ''
-          type_custom_false: ''
-          not: false
-          plugin_id: boolean
-        can_register:
-          id: can_register
+        can_register_1:
+          id: can_register_1
           table: cmrf_views_civiremote_events
           field: can_register
           relationship: none
@@ -1001,8 +613,8 @@ display:
           type_custom_false: ''
           not: false
           plugin_id: boolean
-        can_edit_registration:
-          id: can_edit_registration
+        can_edit_registration_1:
+          id: can_edit_registration_1
           table: cmrf_views_civiremote_events
           field: can_edit_registration
           relationship: none
@@ -1061,7 +673,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: ''
+          label: Operationen
           exclude: false
           alter:
             alter_text: false
@@ -1103,110 +715,418 @@ display:
           empty_zero: false
           hide_alter_empty: true
           fields:
-            can_register: can_register
+            can_register_1: can_register_1
             can_instant_register: can_instant_register
-            can_edit_registration: can_edit_registration
+            can_edit_registration_1: can_edit_registration_1
             id: '0'
             event_title: '0'
             event_description: '0'
             summary: '0'
             event_start_date: '0'
             event_end_date: '0'
-            registration_start_date: '0'
-            registration_end_date: '0'
-            is_monetary: '0'
-            is_active: '0'
-            is_public: '0'
-            registration_link_text: '0'
-            event_type_id: '0'
           destination: true
           plugin_id: dropbutton
-      filters: {  }
+        max_participants:
+          id: max_participants
+          table: cmrf_views_civiremote_events
+          field: max_participants
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Maximum Participants'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          plugin_id: numeric
+        registration_count:
+          id: registration_count
+          table: cmrf_views_civiremote_events
+          field: registration_count
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Registration Count'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          plugin_id: numeric
+        can_register:
+          id: can_register
+          table: cmrf_views_civiremote_events
+          field: can_register
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'can_register flag'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          type: yes-no
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
+        can_edit_registration:
+          id: can_edit_registration
+          table: cmrf_views_civiremote_events
+          field: can_edit_registration
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'can_edit_registration flag'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          type: yes-no
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
+        is_registered:
+          id: is_registered
+          table: cmrf_views_civiremote_events
+          field: is_registered
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'is_registered flag'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          type: yes-no
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
+      filters:
+        can_register:
+          id: can_register
+          table: cmrf_views_civiremote_events
+          field: can_register
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Only events I can register for'
+            description: ''
+            use_operator: false
+            operator: can_register_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: can_register
+            required: true
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              civiremote_remote-user: '0'
+          is_grouped: true
+          group_info:
+            label: ''
+            description: ''
+            identifier: can_register
+            optional: true
+            widget: radios
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items:
+              1:
+                title: 'Available only'
+                operator: '='
+                value: '1'
+          plugin_id: cmrf_views_filter_boolean
+        event_start_date:
+          id: event_start_date
+          table: cmrf_views_civiremote_events
+          field: event_start_date
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: event_start_date_op
+            label: 'Event Start Date'
+            description: ''
+            use_operator: true
+            operator: event_start_date_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: event_start_date
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              civiremote_remote-user: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: cmrf_views_filter_date
       sorts: {  }
-      title: '{{ event_title }}'
       header: {  }
       footer: {  }
-      empty:
-        http_status_code:
-          id: http_status_code
-          table: views
-          field: http_status_code
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          status_code: 404
-          plugin_id: http_status_code
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: 'The requested page could not be found.'
-            format: full_html
-          plugin_id: text
-        title:
-          id: title
-          table: views
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          title: 'Page not found'
-          plugin_id: title
+      empty: {  }
       relationships: {  }
-      arguments:
-        id:
-          id: id
-          table: cmrf_views_civiremote_events
-          field: id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          default_action: 'not found'
-          exception:
-            value: all
-            title_enable: false
-            title: All
-          title_enable: false
-          title: ''
-          default_argument_type: fixed
-          default_argument_options:
-            argument: ''
-          default_argument_skip_url: false
-          summary_options:
-            base_path: ''
-            count: true
-            items_per_page: 25
-            override: false
-          summary:
-            sort_order: asc
-            number_of_records: 0
-            format: default_summary
-          specify_validation: false
-          validate:
-            type: none
-            fail: 'not found'
-          validate_options: {  }
-          plugin_id: cmrf_views_argument_standard
+      arguments: {  }
       display_extenders: {  }
+      title: 'Available Events'
+      use_ajax: true
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
         - url
+        - url.query_args
       tags: {  }
-  page_1:
-    display_plugin: page
-    id: page_1
-    display_title: Page
+  block_available_events:
+    display_plugin: block
+    id: block_available_events
+    display_title: 'Block: Available Events'
     position: 1
+    display_options:
+      display_extenders: {  }
+      display_description: ''
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+      tags: {  }
+  page_available_events:
+    display_plugin: page
+    id: page_available_events
+    display_title: Page
+    position: 2
     display_options:
       display_extenders: {  }
       path: civiremote/event
@@ -1215,4 +1135,5 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
+        - url.query_args
       tags: {  }
