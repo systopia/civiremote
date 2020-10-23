@@ -400,7 +400,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         // Submit the form values to the CiviRemote Event API.
         $values = $form_state->get('values') ?: [];
         try {
-          $result = $this->cmrf->submitEventRegistration(
+          $result = $this->cmrf->createEventRegistration(
             $this->event->id,
             $this->profile,
             $values

@@ -99,12 +99,13 @@ class CiviMRF extends civiremote\CiviMRF {
     $params = [
       'event_id' => $event_id,
       'profile' => $profile,
+      'action' => 'create',
     ];
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
       $this->connector(),
-      'RemoteEvent',
-      'get_registration_form',
+      'RemoteParticipant',
+      'get_form',
       $params,
       []
     );
@@ -169,7 +170,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be submitted.
    */
-  public function submitEventRegistration($event_id, $profile, $params = []) {
+  public function createEventRegistration($event_id, $profile, $params = []) {
     $params = array_merge($params, [
       'event_id' => $event_id,
       'profile' => $profile,
@@ -178,7 +179,7 @@ class CiviMRF extends civiremote\CiviMRF {
     $call = $this->core->createCall(
       $this->connector(),
       'RemoteParticipant',
-      'submit',
+      'create',
       $params,
       []
     );
