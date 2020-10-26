@@ -120,7 +120,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
    * @inheritDoc
    */
   public function getCancelUrl() {
-    return $this->redirect->get();
+    return NULL;
   }
 
   /**
