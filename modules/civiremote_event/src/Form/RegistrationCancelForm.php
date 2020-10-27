@@ -48,9 +48,9 @@ class RegistrationCancelForm extends ConfirmFormBase {
   protected $event;
 
   /**
-   * @var string $cancel_token
+   * @var string $remote_token
    */
-  protected $cancel_token;
+  protected $remote_token;
 
   /**
    * RegistrationCancelForm constructor.
@@ -67,12 +67,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
     // have to care about that.
     $routeMatch = RouteMatch::createFromRequest($this->getRequest());
     $this->event = $routeMatch->getParameter('event');
-    $this->cancel_token = $routeMatch->getRawParameter('cancel_token');
-    // Retrieve event using the token, overwriting the event object.
-    if (!empty($this->cancel_token)) {
+    $this->remote_token = $routeMatch->getRawParameter('remote_token');
+    // Retrieve event using the remote token, overwriting the event object.
+    if (!empty($this->remote_token)) {
       try {
         $this->event = $this->cmrf->getEvent(
-          $this->cmrf->getEventFromToken($this->cancel_token)
+          $this->cmrf->getEventFromToken($this->remote_token)
         );
       }
       catch (Exception $exception) {
@@ -163,12 +163,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
    * @param stdClass $event
    *   The remote event retrieved by the RemoteEvent.get API.
    *
-   * @param string $cancel_token
-   *   The cancellation token.
+   * @param string $remote_token
+   *   The remote token.
    *
    * @return AccessResult|AccessResultAllowed|AccessResultNeutral
    */
-  public function access(stdClass $event = NULL, $cancel_token = NULL) {
+  public function access(stdClass $event = NULL, $remote_token = NULL) {
     // Grant access depending on flags on the remote event, which will have been
     // retrieved using a given remote token in the constructor already.
     return AccessResult::allowedIf(
