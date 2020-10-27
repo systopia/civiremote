@@ -42,3 +42,24 @@ civiremote_event.registration_cancel_token_form:
     parameters:
       remote_token:
         type: string
+
+civiremote_event.registration_update_form:
+  path: '/civiremote/event/{event}/update'
+  defaults:
+    _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
+  requirements:
+    _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
+  options:
+    parameters:
+      event:
+        type: civiremote_event
+civiremote_event.registration_update_token_form:
+  path: '/civiremote/event/update/{remote_token}'
+  defaults:
+    _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
+  requirements:
+    _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
+  options:
+    parameters:
+      remote_token:
+        type: string
