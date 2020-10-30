@@ -15,6 +15,7 @@
 
 namespace Drupal\civiremote_event;
 
+use Drupal;
 use Drupal\civiremote;
 use Drupal\user\Entity\User;
 use Exception;
@@ -59,6 +60,18 @@ class CiviMRF extends civiremote\CiviMRF {
     return $reply;
   }
 
+  /**
+   * Retrieves a remote event by a given token.
+   *
+   * @param $registration_token
+   *   The registration token to retrieve the remote event for.
+   *
+   * @return int
+   *   The event ID.
+   *
+   * @throws Exception
+   *   When the event could not be retrieved.
+   */
   public function getEventFromToken($registration_token) {
     $params = [
       'remote_registration_token' => $registration_token,
@@ -78,7 +91,7 @@ class CiviMRF extends civiremote\CiviMRF {
       throw new Exception(t('Could not retrieve remote event.'));
     }
 
-    return $reply['event_id'];
+    return (int) $reply['event_id'];
   }
 
   /**
@@ -92,6 +105,7 @@ class CiviMRF extends civiremote\CiviMRF {
    *
    * @return array
    *   The remote event registration form definition.
+   *
    * @throws Exception
    *   When the registration form definition could not be retrieved.
    */
@@ -128,6 +142,7 @@ class CiviMRF extends civiremote\CiviMRF {
    *   Additional parameters to send to the API.
    *
    * @return array
+   *   The errors that occurred during the remote event registration validation.
    */
   public function validateEventRegistration($event_id, $profile, $params = []) {
     self::addRemoteContactId($params);
@@ -231,7 +246,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The parameters array to add the CiviRemote ID to.
    */
   public static function addRemoteContactId(&$params) {
-    $current_user = User::load(\Drupal::currentUser()->id());
+    /* @var User $current_user */
+    $current_user = User::load(Drupal::currentUser()->id());
     $params['remote_contact_id'] = $current_user->get('civiremote_id')->value;
   }
 

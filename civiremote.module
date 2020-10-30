@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_entity_insert().
- *
- * {@inheritdoc}
  */
 function civiremote_entity_insert(EntityInterface $entity) {
   if ($entity->getEntityTypeId() == 'user') {

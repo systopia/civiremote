@@ -15,6 +15,7 @@
 
 namespace Drupal\civiremote;
 
+use Drupal;
 use Drupal\Core\Entity;
 use Drupal\user\UserInterface;
 use Drupal\user\Entity\Role;
@@ -38,7 +39,7 @@ class User {
    *
    */
   public static function create(UserInterface $user) {
-    $config = \Drupal::config('civiremote.settings');
+    $config = Drupal::config('civiremote.settings');
     if ($config->get('acquire_civiremote_id')) {
       self::matchContact($user);
     }
@@ -56,17 +57,16 @@ class User {
    */
   public static function matchContact(UserInterface $user, $prefix = '') {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
-    $cmrf = \Drupal::service('civiremote.cmrf');
-    $config = \Drupal::config('civiremote.settings');
+    $cmrf = Drupal::service('civiremote.cmrf');
+    $config = Drupal::config('civiremote.settings');
+    $params = [];
 
     // Use base URL as default key prefix.
     if (empty($prefix)) {
       global $base_url;
       $base_url_parts = parse_url($base_url);
       $prefix = $base_url_parts['host'];
-      $params = [
-        'key_prefix' => $prefix,
-      ];
+      $params['key_prefix'] = $prefix;
     }
 
     // Map user properties/fields to params.
@@ -98,7 +98,7 @@ class User {
     if (!empty($civiremote_id = $user->get('civiremote_id')->value)) {
       // Fetch all CiviRemote roles for the current user from CiviCRM.
       /* @var \Drupal\civiremote\CiviMRF $cmrf */
-      $cmrf = \Drupal::service('civiremote.cmrf');
+      $cmrf = Drupal::service('civiremote.cmrf');
       $params = [
         'remote_contact_id' => $civiremote_id,
       ];

@@ -41,7 +41,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RegisterForm extends FormBase implements RegisterFormInterface {
 
   /**
-   * @var CiviMRF $cmrf_core
+   * @var CiviMRF $cmrf
    *   The CiviMRF core service.
    */
   protected $cmrf;

@@ -131,13 +131,18 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
     $config = $this->config('civiremote_event.settings');
     $config->set('profile_form_mapping', $form_state->getValue('profile_form_mapping_table'));
     $config->save();
-    return parent::submitForm($form, $form_state);
+    parent::submitForm($form, $form_state);
   }
 
   /**
    * Submit handler for the "remove mapping" button.
    *
    * Removes the mapping from the storage and causes a form rebuild.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function mappingRemove(array &$form, FormStateInterface $form_state) {
     $key = $form_state->getTriggeringElement()['#civiremote_profile_form_mapping_key'];
@@ -178,6 +183,9 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
+   *
+   * @return array
+   *   A render array.
    */
   public function addmoreCallback(array &$form, FormStateInterface $form_state) {
     return $form['profile_form_mapping']['profile_form_mapping_table'];

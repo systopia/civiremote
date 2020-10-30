@@ -31,7 +31,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RegistrationUpdateForm extends FormBase {
 
   /**
-   * @var CiviMRF $cmrf_core
+   * @var CiviMRF $cmrf
    */
   protected $cmrf;
 

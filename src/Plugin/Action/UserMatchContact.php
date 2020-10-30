@@ -16,6 +16,7 @@
 namespace Drupal\civiremote\Plugin\Action;
 
 
+use Drupal;
 use Drupal\civiremote\User;
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
@@ -47,7 +48,7 @@ class UserMatchContact extends ActionBase {
    */
   public function execute(UserInterface $user = NULL) {
     if (!$civiremote_id = $user->get('civiremote_id')->getValue()) {
-      $config = \Drupal::config('civiremote.settings');
+      $config = Drupal::config('civiremote.settings');
       if ($config->get('acquire_civiremote_id')) {
         User::matchContact($user);
       }

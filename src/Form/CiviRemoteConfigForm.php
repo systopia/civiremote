@@ -15,6 +15,7 @@
 
 namespace Drupal\CiviRemote\Form;
 
+use Drupal;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -129,7 +130,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     foreach ($match_contact_mapping as $key => $mapping) {
       // Retrieve all user fields as select options.
       /* @var \Drupal\Core\Entity\EntityFieldManager $entityFieldManager */
-      $entityFieldManager = \Drupal::service('entity_field.manager');
+      $entityFieldManager = Drupal::service('entity_field.manager');
       $user_fields = $entityFieldManager->getFieldDefinitions('user', 'user');
       array_walk($user_fields, function (&$field) {
         /* @var BaseFieldDefinition | FieldConfig $field */
@@ -199,13 +200,18 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     $config->set('acquire_civiremote_id', $form_state->getValue('acquire_civiremote_id'));
     $config->set('match_contact_mapping', $form_state->getValue('match_contact_mapping_table'));
     $config->save();
-    return parent::submitForm($form, $form_state);
+    parent::submitForm($form, $form_state);
   }
 
   /**
    * Submit handler for the "remove mapping" button.
    *
    * Removes the mapping from the storage and causes a form rebuild.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function mappingRemove(array &$form, FormStateInterface $form_state) {
     $key = $form_state->getTriggeringElement()['#civiremote_match_contact_mapping_key'];
@@ -223,7 +229,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
    *
    * @param array $form
    *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   * @param FormStateInterface $form_state
    *   The current state of the form.
    */
   public function mappingAdd(array &$form, FormStateInterface $form_state) {
@@ -246,6 +252,9 @@ class CiviRemoteConfigForm extends ConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
+   *
+   * @return array
+   *   A render array.
    */
   public function addmoreCallback(array &$form, FormStateInterface $form_state) {
     return $form['match_contact_mapping']['match_contact_mapping_table'];

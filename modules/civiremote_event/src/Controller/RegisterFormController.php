@@ -15,6 +15,7 @@
 
 namespace Drupal\civiremote_event\Controller;
 
+use Drupal;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
 use Drupal\Core\Controller\ControllerBase;
 use stdClass;
@@ -29,9 +30,7 @@ class RegisterFormController extends ControllerBase {
     $form_id = $this->getFormId($profile);
 
     // Build the form.
-    $build = $this->formBuilder()->getForm($form_id);
-
-    return $build;
+    return $this->formBuilder()->getForm($form_id);
   }
 
   public function title(stdClass $event = NULL, $profile = NULL) {
@@ -53,7 +52,7 @@ class RegisterFormController extends ControllerBase {
       }
 
       // Use form ID for given profile ID from configuration.
-      $profile_form_mapping = \Drupal::config('civiremote_event.settings')
+      $profile_form_mapping = Drupal::config('civiremote_event.settings')
         ->get('profile_form_mapping');
       if (!empty($profile_form_mapping)) {
         foreach ($profile_form_mapping as $mapping) {
