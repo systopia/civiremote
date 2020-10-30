@@ -63,24 +63,3 @@ civiremote_event.registration_update_token_form:
     parameters:
       remote_token:
         type: string
-
-civiremote_event.registration_invitation_form:
-  path: '/civiremote/event/{event}/invitation'
-  defaults:
-    _form: '\Drupal\civiremote_event\Form\RegistrationInvitationForm'
-  requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationInvitationForm::access'
-  options:
-    parameters:
-      event:
-        type: civiremote_event
-civiremote_event.registration_invitation_token_form:
-  path: '/civiremote/event/invitation/{remote_token}'
-  defaults:
-    _form: '\Drupal\civiremote_event\Form\RegistrationInvitationForm'
-  requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationInvitationForm::access'
-  options:
-    parameters:
-      remote_token:
-        type: string

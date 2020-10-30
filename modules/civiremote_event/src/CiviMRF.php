@@ -110,6 +110,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   When the registration form definition could not be retrieved.
    */
   public function getRegistrationForm($event_id, $profile) {
+    // TODO: This should work with a token, too (so that no separate
+    //   token-resolving API call is necessary)
     $params = [
       'event_id' => $event_id,
       'profile' => $profile,

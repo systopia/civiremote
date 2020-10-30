@@ -192,7 +192,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $types = [
       'Text' => 'textfield',
       'Textarea' => 'textarea',
-      'Select' => 'select',
+      'Select' => 'select', // TODO: or radio?
       'Multi-Select' => 'select',
       'Checkbox' => 'checkbox',
     ];

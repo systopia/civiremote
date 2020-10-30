@@ -30,6 +30,8 @@ use Drupal\Core\Form\FormStateInterface;
 class OneClick extends RegisterForm implements RegisterFormInterface {
 
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // TODO: Add 'form' step when there are fields (e.g. for invitation).
+
     if (empty($form_state->get('steps'))) {
       $steps = [
         // Confirmation step, right before final submission.
