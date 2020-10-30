@@ -100,7 +100,8 @@ class RegistrationUpdateForm extends FormBase {
    * @inheritDoc
    */
   public function getFormId() {
-    return 'civiremote_event_registration_update_form';  }
+    return 'civiremote_event_registration_update_form';
+  }
 
   /**
    * @inheritDoc
