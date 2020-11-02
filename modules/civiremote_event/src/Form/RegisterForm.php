@@ -59,6 +59,19 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   protected $profile;
 
   /**
+   * @var string $remote_token
+   *   The remote event token to use for retrieving information about the
+   *   registration form.
+   */
+  protected $remote_token;
+
+  /**
+   * @var array $fields
+   *   The remote event form fields.
+   */
+  protected $fields;
+
+  /**
    * RegisterForm constructor.
    *
    * @param CiviMRF $cmrf
@@ -73,9 +86,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $routeMatch = RouteMatch::createFromRequest($this->getRequest());
     $this->event = $routeMatch->getParameter('event');
     $this->profile = $routeMatch->getRawParameter('profile');
-    if (!isset($this->profile)) {
-      $this->profile = $this->event->default_profile;
-    }
+    $this->remote_token = $routeMatch->getRawParameter('remote_token');
+    $this->fields = $this->cmrf->getRegistrationForm(
+      (isset($this->event) ? $this->event->id : NULL),
+      $this->profile,
+      $this->remote_token
+    );
+    $this->event = $this->cmrf->getEvent($this->fields['event_id']['value']);
+    $this->profile = $this->fields['profile']['value'] ?: $this->event->default_profile;
   }
 
   /**
@@ -99,20 +117,38 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return 'civiremote_event_register_form';
   }
 
+  public static function fieldTypes() {
+    return [
+      'Text' => 'textfield',
+      'Textarea' => 'textarea',
+      'Select' => 'select', // Can be replaced with 'radios' in buildForm().
+      'Multi-Select' => 'select',
+      'Checkbox' => 'checkbox',
+    ];
+  }
+
+  public function hasFields() {
+    return !empty(array_filter($this->fields, function($field) {
+      return in_array($field['type'], array_keys(self::fieldTypes()));
+    }));
+  }
+
   /**
    * @inheritDoc
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Prepare form steps.
     if (empty($form_state->get('steps'))) {
-      $steps = [
+      $steps = [];
+      if ($this->hasFields()) {
         // Generic form step, can be replaced in implementations.
-        'form',
-        // Confirmation step, right before final submission.
-        'confirm',
-        // Thank you step, right after final submission.
-        'thankyou',
-      ];
+        $steps[] = 'form';
+      }
+      // Confirmation step, right before final submission.
+      $steps[] = 'confirm';
+      // Thank you step, right after final submission.
+      $steps[] = 'thankyou';
+
       $form_state->set('steps', $steps);
       // Initialize with first step.
       $form_state->set('step', 0);
@@ -187,15 +223,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // Fetch fields from RemoteEvent.get_form API when no specific
     // implementation is present.
-    $fields = $this->cmrf->getRegistrationForm($this->event->id, $this->profile);
+    $fields = $this->fields;
     $form_state->set('fields', $fields);
-    $types = [
-      'Text' => 'textfield',
-      'Textarea' => 'textarea',
-      'Select' => 'select', // TODO: or radio?
-      'Multi-Select' => 'select',
-      'Checkbox' => 'checkbox',
-    ];
+    $types = self::fieldTypes();
 
     foreach ($fields as $field_name => $field) {
       // Create and reference the group to place the field into.
@@ -212,10 +242,18 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $group = &$form;
       }
 
-      // Set correct field type.
+      // Set field type to "email" when its input is to be validated as such.
       if ($field['validation'] == 'Email') {
         $type = 'email';
       }
+      // Use radio buttons for select fields with up to 10 options.
+      elseif (
+        $types[$field['type']] == 'select'
+        && count($field['options']) <= 10
+      ) {
+        $type = 'radios';
+      }
+      // Use default field types from mapping.
       else {
         $type = $types[$field['type']];
       }
@@ -226,7 +264,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#title' => $field['label'],
         '#description' => $field['description'],
         '#required' => !empty($field['required']),
-        '#options' => ($type == 'select' ? $field['options'] : NULL),
+        '#options' => ($type == 'select' || $type == 'radios' ? $field['options'] : NULL),
         '#multiple' => ($field['type'] == 'Multi-Select'),
         '#weight' => $field['weight'],
         '#default_value' => $form_state->getValue($field_name, NULL),
@@ -369,6 +407,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $errors = $this->cmrf->validateEventRegistration(
       $this->event->id,
       $this->profile,
+      $this->remote_token,
       $values
     );
     if (!empty($errors)) {
@@ -403,6 +442,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $result = $this->cmrf->createEventRegistration(
             $this->event->id,
             $this->profile,
+            $this->remote_token,
             $values
           );
 
@@ -436,20 +476,30 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   /**
    * Custom access callback for this form's route.
    *
+   * Note: The parameters passed in here are not being used, since they have
+   * been processed in the constructor already. Instead, class members are being
+   * used for deciding about access.
+   *
    * @param stdClass $event
    *   The remote event retrieved by the RemoteEvent.get API.
    * @param string $profile
    *   The remote event profile to use for displaying the form.
+   * @param string $remote_token
+   *   The remote token to use for retrieving the form.
    *
    * @return AccessResult|AccessResultAllowed|AccessResultNeutral
    */
-  public function access(stdClass $event, $profile) {
+  public function access(stdClass $event = NULL, $profile = NULL, $remote_token = NULL) {
     // Grant access depending on flags on the remote event.
     return AccessResult::allowedIf(
-      $event->can_register
+      !empty($this->event)
+      && $this->event->can_register
       && (
-        !isset($profile)
-        || in_array($profile, explode(',', $event->enabled_profiles))
+        !isset($this->profile)
+        || in_array(
+          $this->profile,
+          explode(',', $this->event->enabled_profiles)
+        )
       )
     );
   }

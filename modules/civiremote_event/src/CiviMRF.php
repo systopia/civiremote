@@ -19,6 +19,7 @@ use Drupal;
 use Drupal\civiremote;
 use Drupal\user\Entity\User;
 use Exception;
+use stdClass;
 
 /**
  * CiviMRF implementations for CiviRemote events.
@@ -33,7 +34,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @param int $event_id
    *   The remote event ID.
    *
-   * @return array
+   * @return stdClass
    *   The remote event.
    *
    * @throws Exception
@@ -57,7 +58,7 @@ class CiviMRF extends civiremote\CiviMRF {
       throw new Exception(t('Could not retrieve remote event.'));
     }
 
-    return $reply;
+    return (object) $reply;
   }
 
   /**
@@ -96,12 +97,14 @@ class CiviMRF extends civiremote\CiviMRF {
 
   /**
    * Retrieves the registration form definition of a remote event with a given
-   * event ID for a specific profile.
+   * event ID for a specific profile, or with a remote event token.
    *
    * @param int $event_id
    *   The remote event ID.
    * @param string $profile
    *   The remote event profile name.
+   * @param string $remote_token
+   *   The remote event token.
    *
    * @return array
    *   The remote event registration form definition.
@@ -109,12 +112,11 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the registration form definition could not be retrieved.
    */
-  public function getRegistrationForm($event_id, $profile) {
-    // TODO: This should work with a token, too (so that no separate
-    //   token-resolving API call is necessary)
+  public function getRegistrationForm($event_id, $profile, $remote_token = NULL) {
     $params = [
       'event_id' => $event_id,
       'profile' => $profile,
+      'token' => $remote_token,
       'action' => 'create',
     ];
     self::addRemoteContactId($params);
@@ -140,17 +142,20 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote event ID.
    * @param string $profile
    *   The remote event profile name.
+   * @param string $remote_token
+   *   The remote token.
    * @param array $params
    *   Additional parameters to send to the API.
    *
    * @return array
    *   The errors that occurred during the remote event registration validation.
    */
-  public function validateEventRegistration($event_id, $profile, $params = []) {
+  public function validateEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
     self::addRemoteContactId($params);
     $params = array_merge($params, [
       'event_id' => $event_id,
       'profile' => $profile,
+      'token' => $remote_token
     ]);
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
@@ -178,6 +183,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote event ID.
    * @param string $profile
    *   The remote event profile name.
+   * @param string $remote_token
+   *   The remote token.
    * @param array $params
    *   Additional parameters to send to the API.
    *
@@ -187,10 +194,11 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be submitted.
    */
-  public function createEventRegistration($event_id, $profile, $params = []) {
+  public function createEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
     $params = array_merge($params, [
       'event_id' => $event_id,
       'profile' => $profile,
+      'token' => $remote_token
     ]);
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
