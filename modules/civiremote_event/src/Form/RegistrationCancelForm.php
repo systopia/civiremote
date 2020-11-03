@@ -33,18 +33,28 @@ class RegistrationCancelForm extends ConfirmFormBase {
 
   /**
    * @var CiviMRF $cmrf
+   *   The CiviMRF core service.
    */
   protected $cmrf;
 
   /**
    * @var stdClass $event
+   *   The remote event to build the registration form for.
    */
   protected $event;
 
   /**
    * @var string $remote_token
+   *   The remote event token to use for retrieving information about the
+   *   registration form.
    */
   protected $remote_token;
+
+  /**
+   * @var array $fields
+   *   The remote event form fields.
+   */
+  protected $fields;
 
   /**
    * RegistrationCancelForm constructor.
@@ -63,14 +73,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
     // Retrieve event using the remote token, overwriting the event object.
     // TODO: Use get_form API action, see RegisterForm::__construct()!
     if (!empty($this->remote_token)) {
-      try {
-        $this->event = $this->cmrf->getEvent(
-          $this->cmrf->getEventFromToken($this->remote_token)
-        );
-      }
-      catch (Exception $exception) {
-        // Do nothing here. Access is being checked in self::access().
-      }
+      $this->fields = $this->cmrf->getRegistrationForm(
+        (isset($this->event) ? $this->event->id : NULL),
+        NULL,
+        $this->remote_token
+      );
+      $this->event = $this->cmrf->getEvent($this->fields['event_id']['value']);
     }
   }
 
