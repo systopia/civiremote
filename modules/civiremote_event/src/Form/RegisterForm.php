@@ -269,7 +269,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#options' => ($type == 'select' || $type == 'radios' ? $field['options'] : NULL),
         '#multiple' => ($field['type'] == 'Multi-Select'),
         '#weight' => $field['weight'],
-        '#default_value' => $form_state->getValue($field_name, NULL),
+        '#default_value' => $form_state->getValue($field_name, $field['value'] ?: NULL),
       ];
     }
 
