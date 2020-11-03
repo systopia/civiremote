@@ -260,6 +260,12 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $type = $types[$field['type']];
       }
 
+      // Prepare field default values.
+      if ($types[$field['type']] == 'date' && !empty($field['value'])) {
+        $default_value = date_create_from_format('Ymd', $field['value'])
+          ->format('Y-m-d');
+      }
+
       // Build the field.
       $group[$field_name] = [
         '#type' => $type,
@@ -269,7 +275,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#options' => ($type == 'select' || $type == 'radios' ? $field['options'] : NULL),
         '#multiple' => ($field['type'] == 'Multi-Select'),
         '#weight' => $field['weight'],
-        '#default_value' => $form_state->getValue($field_name, $field['value'] ?: NULL),
+        '#default_value' => $form_state->getValue($field_name, $default_value ?: NULL),
       ];
     }
 
