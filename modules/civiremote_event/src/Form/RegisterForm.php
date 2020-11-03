@@ -124,6 +124,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Select' => 'select', // Can be replaced with 'radios' in buildForm().
       'Multi-Select' => 'select',
       'Checkbox' => 'checkbox',
+      'Date' => 'date',
     ];
   }
 
@@ -386,6 +387,21 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   }
 
   /**
+   * Pre-processes submitted form values for sending to the CiviCRM API.
+   *
+   * @param array $values
+   *   The form values, keyed by field name.
+   */
+  public function preprocessValues(array &$values) {
+    foreach ($values as $field_name => &$value) {
+      // Use CiviCRM date format for date fields.
+      if (self::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
+        $value = date_create($value)->format('Ymd');
+      }
+    }
+  }
+
+  /**
    * {@inheritDoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
@@ -404,6 +420,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $form_state->cleanValues();
       $values = $form_state->getValues();
     }
+    $this->preprocessValues($values);
     $errors = $this->cmrf->validateEventRegistration(
       $this->event->id,
       $this->profile,
