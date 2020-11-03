@@ -125,6 +125,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Multi-Select' => 'select',
       'Checkbox' => 'checkbox',
       'Date' => 'date',
+      'Timestamp' => 'date',
     ];
   }
 
