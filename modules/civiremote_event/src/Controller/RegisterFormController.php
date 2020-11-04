@@ -34,6 +34,9 @@ class RegisterFormController extends ControllerBase {
   }
 
   public function title(stdClass $event = NULL, $profile = NULL) {
+    // TODO: Extract from remote_token (see form class constructors).
+    // TODO: Resolving event, profile and remote_token should be a service with
+    //   a static cache to save API calls.
     return $event->event_title;
   }
 
