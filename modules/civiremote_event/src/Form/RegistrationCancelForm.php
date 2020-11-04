@@ -76,7 +76,8 @@ class RegistrationCancelForm extends ConfirmFormBase {
       $this->fields = $this->cmrf->getRegistrationForm(
         (isset($this->event) ? $this->event->id : NULL),
         NULL,
-        $this->remote_token
+        $this->remote_token,
+        'cancel'
       );
       $this->event = $this->cmrf->getEvent($this->fields['event_id']['value']);
     }

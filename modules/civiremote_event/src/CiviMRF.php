@@ -105,6 +105,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote event profile name.
    * @param string $remote_token
    *   The remote event token.
+   * @param string $action
+   *   The action the form definition should be retrieved for.
    *
    * @return array
    *   The remote event registration form definition.
@@ -112,12 +114,12 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the registration form definition could not be retrieved.
    */
-  public function getRegistrationForm($event_id, $profile, $remote_token = NULL) {
+  public function getRegistrationForm($event_id, $profile, $remote_token = NULL, $action = 'create') {
     $params = [
       'event_id' => $event_id,
       'profile' => $profile,
       'token' => $remote_token,
-      'action' => 'create',
+      'action' => $action,
     ];
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
