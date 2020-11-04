@@ -551,10 +551,10 @@ display:
           type_custom_false: ''
           not: false
           plugin_id: boolean
-        can_edit_registration:
-          id: can_edit_registration
+        can_cancel_registration:
+          id: can_cancel_registration
           table: cmrf_views_civiremote_event_events
-          field: can_edit_registration
+          field: can_cancel_registration
           relationship: none
           group_type: group
           admin_label: 'Cancel link'
@@ -562,7 +562,7 @@ display:
           exclude: true
           alter:
             alter_text: true
-            text: Abmelden
+            text: 'Cancel registration'
             make_link: true
             path: 'civiremote/event/{{ id }}/cancel'
             absolute: false
@@ -654,7 +654,7 @@ display:
           hide_alter_empty: true
           fields:
             can_edit_registration_1: can_edit_registration_1
-            can_edit_registration: can_edit_registration
+            can_cancel_registration: can_cancel_registration
             id: '0'
             event_type_id: '0'
             event_title: '0'

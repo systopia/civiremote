@@ -386,12 +386,12 @@ display:
           field: can_register
           relationship: none
           group_type: group
-          admin_label: Registrieren-Link
+          admin_label: 'Registration link'
           label: ''
           exclude: true
           alter:
             alter_text: true
-            text: Registrieren
+            text: Register
             make_link: true
             path: 'civiremote/event/{{ id }}/register'
             absolute: false
@@ -439,12 +439,12 @@ display:
           field: can_instant_register
           relationship: none
           group_type: group
-          admin_label: Sofort-anmelden-Link
+          admin_label: 'Instant registration link'
           label: ''
           exclude: true
           alter:
             alter_text: true
-            text: 'Sofort anmelden'
+            text: 'Register instantly'
             make_link: true
             path: 'civiremote/event/{{ id }}/register/OneClick'
             absolute: false
@@ -492,12 +492,12 @@ display:
           field: can_edit_registration
           relationship: none
           group_type: group
-          admin_label: Bearbeiten-Link
+          admin_label: 'Edit registration link'
           label: ''
           exclude: true
           alter:
             alter_text: true
-            text: Bearbeiten
+            text: 'Edit registration'
             make_link: true
             path: 'civiremote/event/{{ id }}/update'
             absolute: false
@@ -539,18 +539,18 @@ display:
           type_custom_false: ''
           not: false
           plugin_id: boolean
-        can_edit_registration_1:
-          id: can_edit_registration_1
+        can_cancel_registration:
+          id: can_cancel_registration
           table: cmrf_views_civiremote_event_events
-          field: can_edit_registration
+          field: can_cancel_registration
           relationship: none
           group_type: group
-          admin_label: Abmelden-Link
+          admin_label: 'Cancel registration link'
           label: ''
           exclude: true
           alter:
             alter_text: true
-            text: Abmelden
+            text: 'Cancel registration'
             make_link: true
             path: 'civiremote/event/{{ id }}/cancel'
             absolute: false
@@ -644,7 +644,7 @@ display:
             can_register_1: can_register_1
             can_instant_register: can_instant_register
             can_edit_registration_2: can_edit_registration_2
-            can_edit_registration_1: can_edit_registration_1
+            can_cancel_registration: can_cancel_registration
             id: '0'
             event_start_date: '0'
             event_end_date: '0'
