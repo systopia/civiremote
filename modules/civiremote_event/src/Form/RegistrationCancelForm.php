@@ -172,7 +172,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
     // retrieved using a given remote token in the constructor already.
     return AccessResult::allowedIf(
       !empty($this->event)
-      && $this->event->can_edit_registration
+      && $this->event->can_cancel_registration
       && $this->event->is_registered
     );
   }
