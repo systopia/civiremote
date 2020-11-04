@@ -265,6 +265,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $default_value = date_create_from_format('Ymd', $field['value'])
           ->format('Y-m-d');
       }
+      else {
+        $default_value = $field['value'];
+      }
 
       // Build the field.
       $group[$field_name] = [
