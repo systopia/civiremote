@@ -71,7 +71,6 @@ class RegistrationCancelForm extends ConfirmFormBase {
     $this->event = $routeMatch->getParameter('event');
     $this->remote_token = $routeMatch->getRawParameter('remote_token');
     // Retrieve event using the remote token, overwriting the event object.
-    // TODO: Use get_form API action, see RegisterForm::__construct()!
     if (!empty($this->remote_token)) {
       $this->fields = $this->cmrf->getRegistrationForm(
         (isset($this->event) ? $this->event->id : NULL),
@@ -138,7 +137,10 @@ class RegistrationCancelForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Submit to the RemoteParticipant.cancel API.
     try {
-      $result = $this->cmrf->cancelEventRegistration($this->event->id);
+      $result = $this->cmrf->cancelEventRegistration(
+        $this->event->id,
+        $this->remote_token
+      );
     }
     catch (Exception $exception) {
       $form_state->set('error', TRUE);

@@ -226,6 +226,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *
    * @param int $event_id
    *   The remote event ID.
+   * @param string $remote_token
+   *   The remote event token.
    *
    * @return array
    *   The API response of the remote event registration cancellation.
@@ -233,9 +235,10 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be cancelled.
    */
-  public function cancelEventRegistration($event_id) {
+  public function cancelEventRegistration($event_id, $remote_token = NULL) {
     $params = [
       'event_id' => $event_id,
+      'token' => $remote_token
     ];
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
