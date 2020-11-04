@@ -92,7 +92,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $this->profile,
       $this->remote_token
     );
-    $this->event = $this->cmrf->getEvent($this->fields['event_id']['value']);
+    $this->event = $this->cmrf->getEvent(
+      $this->fields['event_id']['value'],
+      $this->remote_token
+    );
     $this->profile = $this->fields['profile']['value'] ?: $this->event->default_profile;
   }
 

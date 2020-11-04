@@ -33,6 +33,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *
    * @param int $event_id
    *   The remote event ID.
+   * @param string $remote_token
+   *   The remote event token.
    *
    * @return stdClass
    *   The remote event.
@@ -40,9 +42,10 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the event could not be retrieved.
    */
-  public function getEvent($event_id) {
+  public function getEvent($event_id, $remote_token = NULL) {
     $params = [
       'id' => $event_id,
+      'token' => $remote_token,
     ];
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
