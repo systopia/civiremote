@@ -240,6 +240,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             '#type' => 'fieldset',
             '#title' => $field['group_label'],
           ];
+          if (
+            array_key_exists('confirm', $this->fields)
+            && $field['group_name'] != 'confirmation'
+          ) {
+            $form[$field['group_name']]['#states'] = [
+              'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+            ];
+          }
         }
         $group = &$form[$field['group_name']];
       }
@@ -283,6 +291,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#weight' => $field['weight'],
         '#default_value' => $form_state->getValue($field_name, $default_value ?: NULL),
       ];
+      if (
+        array_key_exists('confirm', $this->fields)
+        && $field_name != 'confirm'
+      ) {
+        $group[$field_name]['#states'] = [
+          'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+          'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
+        ];
+      }
     }
 
     // Add event form footer text.
@@ -330,6 +347,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             '#type' => 'fieldset',
             '#title' => $field['group_label'],
           ];
+          if (
+            array_key_exists('confirm', $this->fields)
+            && $field['group_name'] != 'confirmation'
+          ) {
+            $form[$field['group_name']]['#states'] = [
+              'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+            ];
+          }
         }
         $group = &$form[$field['group_name']];
       }
@@ -349,6 +374,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
         '#value' => $form_state->getValue($field_name, NULL),
       ];
+      if (
+        array_key_exists('confirm', $this->fields)
+        && $field_name != 'confirm'
+      ) {
+        $group[$field_name]['#states'] = [
+          'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+          'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
+        ];
+      }
     }
 
     // Add confirmation footer text.
