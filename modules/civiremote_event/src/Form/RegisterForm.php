@@ -129,6 +129,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Checkbox' => 'checkbox',
       'Date' => 'date',
       'Timestamp' => 'date',
+      'Value' => 'value',
     ];
   }
 
@@ -364,24 +365,32 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Build the field.
       $value = $form_state->get('values')[$field_name];
-      $group[$field_name] = [
-        '#type' => 'item',
-        '#title' => $field['label'],
-        '#description' => $field['description'],
-        '#required' => !empty($field['required']),
-        '#multiple' => ($field['type'] == 'Multi-Select'),
-        '#weight' => $field['weight'],
-        '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
-        '#value' => $form_state->getValue($field_name, NULL),
-      ];
-      if (
-        array_key_exists('confirm', $this->fields)
-        && $field_name != 'confirm'
-      ) {
-        $group[$field_name]['#states'] = [
-          'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-          'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
+      if (self::fieldTypes()[$field['type']] == 'value') {
+        $group[$field_name] = [
+          '#type' => 'value',
+          '#value' => $value,
         ];
+      }
+      else {
+        $group[$field_name] = [
+          '#type' => 'item',
+          '#title' => $field['label'],
+          '#description' => $field['description'],
+          '#required' => !empty($field['required']),
+          '#multiple' => ($field['type'] == 'Multi-Select'),
+          '#weight' => $field['weight'],
+          '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
+          '#value' => $form_state->getValue($field_name, NULL),
+        ];
+        if (
+          array_key_exists('confirm', $this->fields)
+          && $field_name != 'confirm'
+        ) {
+          $group[$field_name]['#states'] = [
+            'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+            'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
+          ];
+        }
       }
     }
 
