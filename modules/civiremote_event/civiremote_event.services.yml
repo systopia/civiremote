@@ -4,6 +4,11 @@ services:
     arguments: [ '@cmrf_core.core' ]
   civiremote_event.event_converter:
     class: Drupal\civiremote_event\Routing\CiviRemoteEventConverter
-    arguments: ['@civiremote_event.cmrf', '@current_user']
+    arguments: ['@civiremote_event.cmrf']
+    tags:
+      - { name: paramconverter }
+  civiremote_event.remote_token_converter:
+    class: Drupal\civiremote_event\Routing\RemoteTokenConverter
+    arguments: ['@civiremote_event.cmrf']
     tags:
       - { name: paramconverter }

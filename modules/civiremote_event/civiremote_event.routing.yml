@@ -11,7 +11,7 @@ civiremote_event.register_form:
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
-    # Use the default profile retrieved with the event.
+    # The profile is optional.
     profile: null
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
@@ -20,7 +20,7 @@ civiremote_event.register_form:
       event:
         type: civiremote_event
       profile:
-        type: string
+        type: civiremote_remote_token
 civiremote_event.register_token_form:
   path: '/civiremote/event/register/{remote_token}'
   defaults:
@@ -31,7 +31,7 @@ civiremote_event.register_token_form:
   options:
     parameters:
       remote_token:
-        type: string
+        type: civiremote_remote_token
 
 civiremote_event.registration_cancel_form:
   path: '/civiremote/event/{event}/cancel'
@@ -52,7 +52,7 @@ civiremote_event.registration_cancel_token_form:
   options:
     parameters:
       remote_token:
-        type: string
+        type: civiremote_remote_token
 
 civiremote_event.registration_update_form:
   path: '/civiremote/event/{event}/update'
@@ -73,4 +73,4 @@ civiremote_event.registration_update_token_form:
   options:
     parameters:
       remote_token:
-        type: string
+        type: civiremote_remote_token

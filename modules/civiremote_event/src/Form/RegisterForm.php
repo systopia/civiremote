@@ -42,7 +42,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
   /**
    * @var CiviMRF $cmrf
-   *   The CiviMRF core service.
+   *   The CiviMRF service.
    */
   protected $cmrf;
 
@@ -75,7 +75,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    * RegisterForm constructor.
    *
    * @param CiviMRF $cmrf
-   *   The CiviMRF core service.
+   *   The CiviMRF service.
    */
   public function __construct(CiviMRF $cmrf) {
     // Store dependency references to passed-in services.

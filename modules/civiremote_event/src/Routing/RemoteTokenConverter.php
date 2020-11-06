@@ -22,7 +22,7 @@ use Exception;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Route;
 
-class CiviRemoteEventConverter implements ParamConverterInterface {
+class RemoteTokenConverter implements ParamConverterInterface {
 
   /**
    * @var CiviMRF $cmrf
@@ -45,7 +45,7 @@ class CiviRemoteEventConverter implements ParamConverterInterface {
    */
   public function convert($value, $definition, $name, array $defaults) {
     try {
-      return $this->cmrf->getEvent($value);
+      return $this->cmrf->getEvent(NULL, $value);
     }
     catch (Exception $exception) {
       // We don't care for the error and assume the user does not have access to
@@ -58,7 +58,7 @@ class CiviRemoteEventConverter implements ParamConverterInterface {
    * @inheritDoc
    */
   public function applies($definition, $name, Route $route) {
-    return !empty($definition['type']) && $definition['type'] == 'civiremote_event';
+    return !empty($definition['type']) && $definition['type'] == 'civiremote_remote_token';
   }
 
 }
