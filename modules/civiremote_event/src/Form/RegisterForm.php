@@ -382,6 +382,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
           '#value' => $form_state->getValue($field_name, NULL),
         ];
+        if (self::fieldTypes()[$field['type']] == 'date') {
+          $group[$field_name]['#markup'] = Drupal::service('date.formatter')
+            ->format(strtotime($group[$field_name]['#value']));
+        }
         if (
           array_key_exists('confirm', $this->fields)
           && $field_name != 'confirm'
