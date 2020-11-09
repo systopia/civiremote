@@ -286,7 +286,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#type' => $type,
         '#title' => $field['label'],
         '#description' => $field['description'],
-        '#required' => !empty($field['required']),
+        // We don't use #required here, since this depends on #states.
+//        '#required' => !empty($field['required']),
+        // Instead, we use our own attribute for the label, which serves as
+        // a distinction in template_preprocess implementations.
+        '#label_attributes' => ['display_required' => !empty($field['required'])],
         '#options' => ($type == 'select' || $type == 'radios' ? $field['options'] : NULL),
         '#multiple' => ($field['type'] == 'Multi-Select'),
         '#weight' => $field['weight'],
@@ -298,8 +302,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       ) {
         $group[$field_name]['#states'] = [
           'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-          'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
         ];
+
+        // Only add #required state when the field is actually required.
+        if (!empty($field['required'])) {
+          $group[$field_name]['#states']['required'] = [
+            [':input[name="confirm"]' => ['value' => 1]]
+          ];
+        }
       }
     }
 
@@ -376,7 +386,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           '#type' => 'item',
           '#title' => $field['label'],
           '#description' => $field['description'],
-          '#required' => !empty($field['required']),
+          // We don't use #required here, since this depends on #states.
+//          '#required' => !empty($field['required']),
+          // Instead, we use our own attribute for the label, which serves as
+          // a distinction in template_preprocess implementations.
+          '#label_attributes' => ['display_required' => !empty($field['required'])],
           '#multiple' => ($field['type'] == 'Multi-Select'),
           '#weight' => $field['weight'],
           '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
@@ -394,6 +408,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
             'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
           ];
+
+          // Only add #required state when the field is actually required.
+          if (!empty($field['required'])) {
+            $group[$field_name]['#states']['required'] = [
+              [':input[name="confirm"]' => ['value' => 1]]
+            ];
+          }
         }
       }
     }
