@@ -415,6 +415,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $group[$field_name]['#markup'] = Drupal::service('date.formatter')
             ->format(strtotime($group[$field_name]['#value']));
         }
+        if (self::fieldTypes()[$field['type']] == 'checkbox') {
+          $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
+        }
         if (
           array_key_exists('confirm', $this->fields)
           && $field_name != 'confirm'
