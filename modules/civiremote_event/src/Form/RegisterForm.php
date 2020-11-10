@@ -314,6 +314,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       else {
         $group[$field_name]['#required'] = !empty($field['required']);
       }
+
+      // Display prefix/suffix content.
+      if (!empty($field['prefix'])) {
+        $group[$field_name]['#prefix'] = $field['prefix'];
+        // TODO: Display with Dialog API when $field['prefix_display'] = 'dialog'.
+      }
+      if (!empty($field['suffix'])) {
+        $group[$field_name]['#suffix'] = $field['suffix'];
+        // TODO: Display with Dialog API when $field['suffix_display'] = 'dialog'.
+      }
     }
 
     // Add event form footer text.
@@ -422,6 +432,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         else {
           $group[$field_name]['#required'] = !empty($field['required']);
         }
+      }
+
+      // Display prefix/suffix content.
+      if (!empty($field['prefix'])) {
+        $group[$field_name]['#prefix'] = $field['prefix'];
+        // TODO: Display with Dialog API when $field['prefix_display'] = 'dialog'.
+      }
+      if (!empty($field['suffix'])) {
+        $group[$field_name]['#suffix'] = $field['suffix'];
+        // TODO: Display with Dialog API when $field['suffix_display'] = 'dialog'.
       }
     }
 
