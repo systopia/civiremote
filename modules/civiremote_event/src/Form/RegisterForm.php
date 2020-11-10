@@ -311,6 +311,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           ];
         }
       }
+      else {
+        $group[$field_name]['#required'] = !empty($field['required']);
+      }
     }
 
     // Add event form footer text.
@@ -415,6 +418,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               [':input[name="confirm"]' => ['value' => 1]]
             ];
           }
+        }
+        else {
+          $group[$field_name]['#required'] = !empty($field['required']);
         }
       }
     }

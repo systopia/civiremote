@@ -22,7 +22,7 @@ function civiremote_event_views_data_alter(array &$data) {
 function civiremote_event_preprocess_form_element_label(&$variables) {
   $element = &$variables['element'];
   if (!empty($element['#attributes']['display_required'])) {
-    $variables['required'] = $element['#attributes']['display_required'];
+    $variables['required'] = $variables['required'] || $element['#attributes']['display_required'];
     unset($element['#attributes']['display_required']);
   }
 }
@@ -30,7 +30,7 @@ function civiremote_event_preprocess_form_element_label(&$variables) {
 function civiremote_event_preprocess_fieldset(&$variables) {
   $element = &$variables['element'];
   if (!empty($element['#label_attributes']['display_required'])) {
-    $variables['required'] = $element['#label_attributes']['display_required'];
+    $variables['required'] = $variables['required'] || $element['#label_attributes']['display_required'];
     unset($element['#label_attributes']['display_required']);
   }
 }
@@ -38,7 +38,7 @@ function civiremote_event_preprocess_fieldset(&$variables) {
 function civiremote_event_preprocess_details(&$variables) {
   $element = &$variables['element'];
   if (!empty($element['#label_attributes']['display_required'])) {
-    $variables['required'] = $element['#label_attributes']['display_required'];
+    $variables['required'] = $variables['required'] || $element['#label_attributes']['display_required'];
     unset($element['#label_attributes']['display_required']);
   }
 }
@@ -46,7 +46,7 @@ function civiremote_event_preprocess_details(&$variables) {
 function civiremote_event_preprocess_textarea(&$variables) {
   $element = &$variables['element'];
   if (!empty($element['#label_attributes']['display_required'])) {
-    $variables['required'] = $element['#label_attributes']['display_required'];
+    $variables['required'] = $variables['required'] || $element['#label_attributes']['display_required'];
     unset($element['#label_attributes']['display_required']);
   }
 }
