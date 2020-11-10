@@ -284,6 +284,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Build the field.
       $group[$field_name] = [
         '#type' => $type,
+        '#name' => $field_name,
         '#title' => $field['label'],
         '#description' => $field['description'],
         // We don't use #required here, since this depends on #states.
@@ -397,6 +398,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       else {
         $group[$field_name] = [
           '#type' => 'item',
+          '#name' => $field_name,
           '#title' => $field['label'],
           '#description' => $field['description'],
           // We don't use #required here, since this depends on #states.
