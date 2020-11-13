@@ -1,0 +1,6 @@
+dialog:
+  version: 1.x
+  js:
+    js/dialog.js: {}
+  dependencies:
+    - core/drupal.dialog

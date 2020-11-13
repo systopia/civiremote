@@ -327,11 +327,27 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Display prefix/suffix content.
       if (!empty($field['prefix'])) {
         $group[$field_name]['#prefix'] = $field['prefix'];
-        // TODO: Display with Dialog API when $field['prefix_display'] = 'dialog'.
+        if ($field['prefix_display'] == 'dialog') {
+          $group[$field_name]['#prefix'] =
+            '<div class="dialog-wrapper">'
+            . '<div class="dialog-content js-hide">'
+            . $group[$field_name]['#prefix']
+            . '</div>'
+            . '</div>';
+          $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
+        }
       }
       if (!empty($field['suffix'])) {
         $group[$field_name]['#suffix'] = $field['suffix'];
-        // TODO: Display with Dialog API when $field['suffix_display'] = 'dialog'.
+        if ($field['suffix_display'] == 'dialog') {
+          $group[$field_name]['#suffix'] =
+            '<div class="dialog-wrapper">'
+            . '<div class="dialog-content js-hide">'
+            . $group[$field_name]['#suffix']
+            . '</div>'
+            . '</div>';
+          $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
+        }
       }
     }
 
