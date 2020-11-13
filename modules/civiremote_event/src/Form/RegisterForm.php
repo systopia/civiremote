@@ -127,6 +127,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Select' => 'select', // Can be replaced with 'radios' in buildForm().
       'Multi-Select' => 'select',
       'Checkbox' => 'checkbox',
+      'Radio' => 'radio',
       'Date' => 'date',
       'Timestamp' => 'date',
       'Value' => 'value',
@@ -284,7 +285,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Build the field.
       $group[$field_name] = [
         '#type' => $type,
-        '#name' => $field_name,
+        '#name' => $field['name'],
         '#title' => $field['label'],
         '#description' => $field['description'],
         // We don't use #required here, since this depends on #states.
@@ -297,6 +298,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#weight' => $field['weight'],
         '#default_value' => $form_state->getValue($field_name, $default_value ?: NULL),
       ];
+
+      // Set #return_value for single Radios for later processing.
+      if ($type == 'radio' && $field_name != $field['name']) {
+        $group[$field_name]['#return_value'] = $field_name;
+        $group[$field_name]['#parents'][] = $field['name'];
+      }
+
       if (
         array_key_exists('confirm', $this->fields)
         && $field_name != 'confirm'
@@ -388,8 +396,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
 
       // Build the field.
-      $value = $form_state->get('values')[$field_name];
-      if (self::fieldTypes()[$field['type']] == 'value') {
+      $value = $form_state->get('values')[$field['name']];
+      $type = self::fieldTypes()[$field['type']];
+      if ($type == 'value') {
         $group[$field_name] = [
           '#type' => 'value',
           '#value' => $value,
@@ -411,12 +420,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
           '#value' => $form_state->getValue($field_name, NULL),
         ];
-        if (self::fieldTypes()[$field['type']] == 'date') {
+        if ($type == 'date') {
           $group[$field_name]['#markup'] = Drupal::service('date.formatter')
             ->format(strtotime($group[$field_name]['#value']));
         }
-        if (self::fieldTypes()[$field['type']] == 'checkbox') {
+        if ($type == 'checkbox') {
           $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
+        }
+        if ($type == 'radio') {
+          $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
         }
         if (
           array_key_exists('confirm', $this->fields)
@@ -505,12 +517,31 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    *   The form values, keyed by field name.
    */
   public function preprocessValues(array &$values) {
+    $new_values = [];
+    $radio_fields = array_filter($this->fields, function($field) {
+      return self::fieldTypes()[$field['type']] == 'radio';
+    });
+    $radio_field_names = array_map(function($field) {
+      return $field['name'];
+    }, $radio_fields);
     foreach ($values as $field_name => &$value) {
       // Use CiviCRM date format for date fields.
       if (self::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
         $value = date_create($value)->format('Ymd');
       }
+
+      // Set single radio element values.
+      if (
+        !array_key_exists($field_name, $this->fields)
+        && in_array($field_name, $radio_field_names)
+      ) {
+        if (!empty($value)) {
+          $new_values[$value] = (int) !empty($value);
+        }
+        unset($values[$field_name]);
+      }
     }
+    $values += $new_values;
   }
 
   /**
