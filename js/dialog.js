@@ -8,9 +8,10 @@
             .text(Drupal.t('Show'))
             .prependTo($(this))
             .on('click', function () {
+              let dialogId = $(this).closest('.dialog-wrapper')
+                  .data('dialog-id');
               Drupal.dialog(
-                  $(this).closest('.dialog-wrapper')
-                      .find('.dialog-content'),
+                  $('#' + dialogId),
                   {
                     buttons: [{
                       text: 'Close',
@@ -18,7 +19,7 @@
                         $(this).dialog('close');
                       }
                     }]
-                  }).showModal();
+                  }).show();
               return false;
             })
       });

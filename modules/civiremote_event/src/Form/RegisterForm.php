@@ -19,6 +19,7 @@ namespace Drupal\civiremote_event\Form;
 use Drupal;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultNeutral;
@@ -328,9 +329,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (!empty($field['prefix'])) {
         $group[$field_name]['#prefix'] = $field['prefix'];
         if ($field['prefix_display'] == 'dialog') {
+          $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
           $group[$field_name]['#prefix'] =
-            '<div class="dialog-wrapper">'
-            . '<div class="dialog-content js-hide">'
+            '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
+            . '<div class="dialog-content js-hide" id="' . $html_id . '">'
             . $group[$field_name]['#prefix']
             . '</div>'
             . '</div>';
@@ -340,9 +342,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (!empty($field['suffix'])) {
         $group[$field_name]['#suffix'] = $field['suffix'];
         if ($field['suffix_display'] == 'dialog') {
+          $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
           $group[$field_name]['#suffix'] =
-            '<div class="dialog-wrapper">'
-            . '<div class="dialog-content js-hide">'
+            '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
+            . '<div class="dialog-content js-hide" id="' . $html_id . '">'
             . $group[$field_name]['#suffix']
             . '</div>'
             . '</div>';
