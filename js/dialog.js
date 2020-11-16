@@ -13,13 +13,14 @@
               Drupal.dialog(
                   $('#' + dialogId),
                   {
+                    width: '90%',
                     buttons: [{
                       text: 'Close',
                       click: function () {
                         $(this).dialog('close');
                       }
                     }]
-                  }).show();
+                  }).showModal();
               return false;
             })
       });
