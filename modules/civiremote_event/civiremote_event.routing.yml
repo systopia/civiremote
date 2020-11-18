@@ -16,6 +16,7 @@ civiremote_event.register_form:
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
   options:
+    no_cache: TRUE
     parameters:
       event:
         type: civiremote_event
@@ -29,6 +30,7 @@ civiremote_event.register_token_form:
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
   options:
+    no_cache: TRUE
     parameters:
       remote_token:
         type: civiremote_remote_token
@@ -40,6 +42,7 @@ civiremote_event.registration_cancel_form:
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegistrationCancelForm::access'
   options:
+    no_cache: TRUE
     parameters:
       event:
         type: civiremote_event
@@ -50,6 +53,7 @@ civiremote_event.registration_cancel_token_form:
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegistrationCancelForm::access'
   options:
+    no_cache: TRUE
     parameters:
       remote_token:
         type: civiremote_remote_token
@@ -61,6 +65,7 @@ civiremote_event.registration_update_form:
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
   options:
+    no_cache: TRUE
     parameters:
       event:
         type: civiremote_event
@@ -71,6 +76,7 @@ civiremote_event.registration_update_token_form:
   requirements:
     _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
   options:
+    no_cache: TRUE
     parameters:
       remote_token:
         type: civiremote_remote_token
