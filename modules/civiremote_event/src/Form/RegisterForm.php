@@ -592,7 +592,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     if (!empty($errors)) {
       $form_state->set('step', array_search('form', $form_state->get('steps')));
       foreach ($errors as $field => $message) {
-        $form_state->setErrorByName($field, $message);
+        $form_state->setErrorByName($field, $this->fields[$field]['label'] . ': ' . $message);
       }
     }
   }
