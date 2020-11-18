@@ -20,6 +20,7 @@ use Drupal;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultNeutral;
@@ -132,7 +133,22 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Date' => 'date',
       'Timestamp' => 'date',
       'Value' => 'value',
+      'fieldset' => 'fieldset',
     ];
+  }
+
+  public function groupParents($field_name) {
+    $parents = [];
+    $parent = $this->fields[$field_name]['parent'];
+    if (
+      !empty($parent)
+      && array_key_exists($parent, $this->fields)
+    ) {
+      array_unshift($parents, $parent);
+      $parents = array_merge($this->groupParents($parent), $parents);
+    }
+
+    return $parents;
   }
 
   public function hasFields() {
@@ -231,32 +247,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // Fetch fields from RemoteEvent.get_form API when no specific
     // implementation is present.
-    $fields = $this->fields;
-    $form_state->set('fields', $fields);
+    $form_state->set('fields', $this->fields);
     $types = self::fieldTypes();
 
-    foreach ($fields as $field_name => $field) {
-      // Create and reference the group to place the field into.
-      if (!empty($field['group_name'])) {
-        if (empty($form[$field['group_name']])) {
-          $form[$field['group_name']] = [
-            '#type' => 'fieldset',
-            '#title' => $field['group_label'],
-          ];
-          if (
-            array_key_exists('confirm', $this->fields)
-            && $field['group_name'] != 'confirmation'
-          ) {
-            $form[$field['group_name']]['#states'] = [
-              'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-            ];
-          }
-        }
-        $group = &$form[$field['group_name']];
-      }
-      else {
-        $group = &$form;
-      }
+    foreach ($form_state->get('fields') as $field_name => $field) {
+      // Build hierarchy and retrieve the parent fieldset (or the form itself).
+      $group_parents = $this->groupParents($field_name);
+      $group = &NestedArray::getValue($form, $group_parents);
 
       // Set field type to "email" when its input is to be validated as such.
       if ($field['validation'] == 'Email') {
@@ -275,30 +272,40 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
 
       // Prepare field default values.
-      if ($types[$field['type']] == 'date' && !empty($field['value'])) {
-        $default_value = date_create_from_format('Ymd', $field['value'])
-          ->format('Y-m-d');
+      switch ($type) {
+        case 'date':
+          $default_value = date_create_from_format('Ymd', $field['value'])
+            ->format('Y-m-d');
+          break;
+        default:
+          $default_value = isset($field['value']) ? $field['value'] : NULL;
+          break;
       }
-      else {
-        $default_value = $field['value'];
-      }
+      $default_value = $form_state->getValue($field_name, $default_value);
 
-      // Build the field.
+      // Build the field (or fieldset).
       $group[$field_name] = [
         '#type' => $type,
         '#name' => $field['name'],
-        '#title' => $field['label'],
-        '#description' => $field['description'],
-        // We don't use #required here, since this depends on #states.
-//        '#required' => !empty($field['required']),
-        // Instead, we use our own attribute for the label, which serves as
-        // a distinction in template_preprocess implementations.
-        '#label_attributes' => ['display_required' => !empty($field['required'])],
-        '#options' => ($type == 'select' || $type == 'radios' ? $field['options'] : NULL),
-        '#multiple' => ($field['type'] == 'Multi-Select'),
-        '#weight' => $field['weight'],
-        '#default_value' => $form_state->getValue($field_name, $default_value ?: NULL),
       ];
+      if (!empty($field['label'])) {
+        $group[$field_name]['#title'] = $field['label'];
+      }
+      if (!empty($field['description'])) {
+        $group[$field_name]['#description'] = $field['description'];
+      }
+      if (!empty($field['weight'])) {
+        $group[$field_name]['#weight'] = $field['weight'];
+      }
+      if ($field['type'] == 'Multi-Select') {
+        $group[$field_name]['#multiple'] = TRUE;
+      }
+      if (isset($default_value)) {
+        $group[$field_name]['#default_value'] = $default_value;
+      }
+      if ($type == 'select' || $type == 'radios') {
+        $group[$field_name]['#options'] = $field['options'];
+      }
 
       // Set #return_value for single Radios for later processing.
       if ($type == 'radio' && $field_name != $field['name']) {
@@ -306,6 +313,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $group[$field_name]['#parents'][] = $field['name'];
       }
 
+      // Make the field's visibility and necessity depend on the "confirm" field
+      // if it exists.
       if (
         array_key_exists('confirm', $this->fields)
         && $field_name != 'confirm'
@@ -317,8 +326,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         // Only add #required state when the field is actually required.
         if (!empty($field['required'])) {
           $group[$field_name]['#states']['required'] = [
-            [':input[name="confirm"]' => ['value' => 1]]
+            [':input[name="confirm"]' => ['value' => 1]],
           ];
+          $group[$field_name]['#label_attributes']['display_required'] = TRUE;
         }
       }
       else {
@@ -392,63 +402,53 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // Show summary.
     foreach ($form_state->get('fields') as $field_name => $field) {
-      // Create and reference the group to place the field into.
-      if (!empty($field['group_name'])) {
-        if (empty($form[$field['group_name']])) {
-          $form[$field['group_name']] = [
-            '#type' => 'fieldset',
-            '#title' => $field['group_label'],
-          ];
-          if (
-            array_key_exists('confirm', $this->fields)
-            && $field['group_name'] != 'confirmation'
-          ) {
-            $form[$field['group_name']]['#states'] = [
-              'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-            ];
-          }
-        }
-        $group = &$form[$field['group_name']];
-      }
-      else {
-        $group = &$form;
-      }
+      // Build hierarchy and retrieve the parent fieldset (or the form itself).
+      $group_parents = $this->groupParents($field_name);
+      $group = &NestedArray::getValue($form, $group_parents);
 
       // Build the field.
-      $value = $form_state->get('values')[$field['name']];
+      $value = $form_state->getValue($field['name']);
       $type = self::fieldTypes()[$field['type']];
-      if ($type == 'value') {
         $group[$field_name] = [
-          '#type' => 'value',
-          '#value' => $value,
-        ];
-      }
-      else {
-        $group[$field_name] = [
-          '#type' => 'item',
+          '#type' => (in_array($type, ['fieldset', 'value']) ? $type : 'item'),
           '#name' => $field_name,
-          '#title' => $field['label'],
-          '#description' => $field['description'],
-          // We don't use #required here, since this depends on #states.
-//          '#required' => !empty($field['required']),
-          // Instead, we use our own attribute for the label, which serves as
-          // a distinction in template_preprocess implementations.
-          '#label_attributes' => ['display_required' => !empty($field['required'])],
-          '#multiple' => ($field['type'] == 'Multi-Select'),
-          '#weight' => $field['weight'],
-          '#markup' => (!empty($field['options']) ? $field['options'][$value] : $value),
-          '#value' => $form_state->getValue($field_name, NULL),
         ];
-        if ($type == 'date') {
-          $group[$field_name]['#markup'] = Drupal::service('date.formatter')
-            ->format(strtotime($group[$field_name]['#value']));
+        if (!empty($field['label'])) {
+          $group[$field_name]['#title'] = $field['label'];
         }
-        if ($type == 'checkbox') {
-          $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
+        if (!empty($field['description'])) {
+          $group[$field_name]['#description'] = $field['description'];
         }
-        if ($type == 'radio') {
-          $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
+        if (!empty($field['weight'])) {
+          $group[$field_name]['#weight'] = $field['weight'];
         }
+        // TODO: Is #multiple being evaluated for #type = item?
+        if ($field['type'] == 'Multi-Select') {
+          $group[$field_name]['#multiple'] = TRUE;
+        }
+
+        // Set value.
+        if (isset($value)) {
+          $group[$field_name]['#value'] = $value;
+        }
+
+        // Set markup.
+        switch ($type) {
+          case 'date';
+            $group[$field_name]['#markup'] = Drupal::service('date.formatter')
+              ->format(strtotime($group[$field_name]['#value']));
+            break;
+          case 'checkbox':
+            $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
+            break;
+          case 'radio':
+            $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
+            break;
+          default:
+            $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
+            break;
+        }
+
         if (
           array_key_exists('confirm', $this->fields)
           && $field_name != 'confirm'
@@ -457,28 +457,35 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
             'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
           ];
+      }
 
-          // Only add #required state when the field is actually required.
-          if (!empty($field['required'])) {
-            $group[$field_name]['#states']['required'] = [
-              [':input[name="confirm"]' => ['value' => 1]]
-            ];
+        // Display prefix/suffix content.
+        if (!empty($field['prefix'])) {
+          $group[$field_name]['#prefix'] = $field['prefix'];
+          if ($field['prefix_display'] == 'dialog') {
+            $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
+            $group[$field_name]['#prefix'] =
+              '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
+              . '<div class="dialog-content js-hide" id="' . $html_id . '">'
+              . $group[$field_name]['#prefix']
+              . '</div>'
+              . '</div>';
+            $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
           }
         }
-        else {
-          $group[$field_name]['#required'] = !empty($field['required']);
+        if (!empty($field['suffix'])) {
+          $group[$field_name]['#suffix'] = $field['suffix'];
+          if ($field['suffix_display'] == 'dialog') {
+            $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
+            $group[$field_name]['#suffix'] =
+              '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
+              . '<div class="dialog-content js-hide" id="' . $html_id . '">'
+              . $group[$field_name]['#suffix']
+              . '</div>'
+              . '</div>';
+            $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
+          }
         }
-      }
-
-      // Display prefix/suffix content.
-      if (!empty($field['prefix'])) {
-        $group[$field_name]['#prefix'] = $field['prefix'];
-        // TODO: Display with Dialog API when $field['prefix_display'] = 'dialog'.
-      }
-      if (!empty($field['suffix'])) {
-        $group[$field_name]['#suffix'] = $field['suffix'];
-        // TODO: Display with Dialog API when $field['suffix_display'] = 'dialog'.
-      }
     }
 
     // Add confirmation footer text.
