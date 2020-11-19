@@ -27,6 +27,7 @@ use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatch;
 use Exception;
 use stdClass;
@@ -194,9 +195,17 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $submit_label = $this->t('Next');
     }
 
-    // Add submit button.
+    // Get highest weight for actions to be placed at the end of the form.
+    $weight = 0;
+    foreach (Element::getVisibleChildren($form) as $el) {
+      if ($form[$el]['#weight'] >= $weight) {
+        $weight = $form[$el]['#weight'];
+      }
+    }
+    // Add submit buttons.
     $form['actions'] = [
       '#type' => 'actions',
+      '#weight' => ++$weight,
     ];
     if ($step > 0 && $step != array_search('thankyou', $steps)) {
       $form['actions']['back'] = [
