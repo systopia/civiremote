@@ -358,7 +358,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         if ($field['prefix_display'] == 'dialog') {
           $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
           $group[$field_name]['#prefix'] =
-            '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
+            '<div
+            class="dialog-wrapper"
+            data-dialog-id="' . $html_id . '"
+            data-dialog-label="' . $field['prefix_dialog_label'] . '"
+            >'
             . '<div class="dialog-content js-hide" id="' . $html_id . '">'
             . $group[$field_name]['#prefix']
             . '</div>'
@@ -371,7 +375,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         if ($field['suffix_display'] == 'dialog') {
           $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
           $group[$field_name]['#suffix'] =
-            '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
+            '<div
+            class="dialog-wrapper"
+            data-dialog-id="' . $html_id . '"
+            data-dialog-label="' . $field['suffix_dialog_label'] . '"
+            >'
             . '<div class="dialog-content js-hide" id="' . $html_id . '">'
             . $group[$field_name]['#suffix']
             . '</div>'

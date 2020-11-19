@@ -5,7 +5,7 @@
         $('<button>')
             .addClass('dialog-toggle js-show btn btn-info')
             .attr('form', '')
-            .text(Drupal.t('Show'))
+            .text($(this).data('dialog-label'))
             .prependTo($(this))
             .on('click', function () {
               let dialogId = $(this).closest('.dialog-wrapper')
