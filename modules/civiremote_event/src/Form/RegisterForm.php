@@ -462,6 +462,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           case 'radio':
             $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
             break;
+          case 'value':
+            break;
           default:
             $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
             break;
