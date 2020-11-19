@@ -138,6 +138,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     ];
   }
 
+  public static function highestWeight($context) {
+    $weight = 0;
+    foreach (Element::getVisibleChildren($context) as $element) {
+      if (isset($context[$element]['#weight']) && $context[$element]['#weight'] >= $weight) {
+        $weight = $context[$element]['#weight'];
+      }
+    }
+    return $weight;
+  }
+
   public function groupParents($field_name) {
     $parents = [];
     $parent = isset($this->fields[$field_name]['parent']) ? $this->fields[$field_name]['parent'] : NULL;
@@ -195,17 +205,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $submit_label = $this->t('Next');
     }
 
-    // Get highest weight for actions to be placed at the end of the form.
-    $weight = 0;
-    foreach (Element::getVisibleChildren($form) as $el) {
-      if (isset($form[$el]['#weight']) && $form[$el]['#weight'] >= $weight) {
-        $weight = $form[$el]['#weight'];
-      }
-    }
     // Add submit buttons.
     $form['actions'] = [
       '#type' => 'actions',
-      '#weight' => ++$weight,
+      '#weight' => self::highestWeight($form) + 1,
     ];
     if ($step > 0 && $step != array_search('thankyou', $steps)) {
       $form['actions']['back'] = [
@@ -382,6 +385,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     if (!empty($this->event->footer_text)) {
       $form[] = [
         '#markup' => $this->event->footer_text,
+        '#weight' => self::highestWeight($form) + 1,
       ];
     }
 
