@@ -140,7 +140,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
   public function groupParents($field_name) {
     $parents = [];
-    $parent = $this->fields[$field_name]['parent'];
+    $parent = isset($this->fields[$field_name]['parent']) ? $this->fields[$field_name]['parent'] : NULL;
     if (
       !empty($parent)
       && array_key_exists($parent, $this->fields)
@@ -198,7 +198,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Get highest weight for actions to be placed at the end of the form.
     $weight = 0;
     foreach (Element::getVisibleChildren($form) as $el) {
-      if ($form[$el]['#weight'] >= $weight) {
+      if (isset($form[$el]['#weight']) && $form[$el]['#weight'] >= $weight) {
         $weight = $form[$el]['#weight'];
       }
     }
@@ -265,7 +265,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $group = &NestedArray::getValue($form, $group_parents);
 
       // Set field type to "email" when its input is to be validated as such.
-      if ($field['validation'] == 'Email') {
+      if (isset($field['validation']) && $field['validation'] == 'Email') {
         $type = 'email';
       }
       // Use radio buttons for select fields with up to 10 options.
