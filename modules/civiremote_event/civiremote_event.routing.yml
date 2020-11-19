@@ -21,7 +21,7 @@ civiremote_event.register_form:
       event:
         type: civiremote_event
       profile:
-        type: civiremote_remote_token
+        type: string
 civiremote_event.register_token_form:
   path: '/civiremote/event/register/{remote_token}'
   defaults:
