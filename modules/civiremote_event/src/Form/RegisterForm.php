@@ -281,13 +281,18 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
 
       // Prepare field default values.
+      $default_value = NULL;
       switch ($type) {
         case 'date':
-          $default_value = date_create_from_format('Ymd', $field['value'])
-            ->format('Y-m-d');
+          if (!empty($field['value'])) {
+            $default_value = date_create_from_format('Ymd', $field['value'])
+              ->format('Y-m-d');
+          }
           break;
         default:
-          $default_value = isset($field['value']) ? $field['value'] : NULL;
+          if (isset($field['value'])) {
+            $default_value = $field['value'];
+          }
           break;
       }
       $default_value = $form_state->getValue($field_name, $default_value);
