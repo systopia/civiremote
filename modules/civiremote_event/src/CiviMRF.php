@@ -48,15 +48,20 @@ class CiviMRF extends civiremote\CiviMRF {
       'token' => $remote_token,
     ];
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
-      'RemoteEvent',
-      'getsingle',
-      $params,
-      []
-    );
-    $this->core->executeCall($call);
-    $reply = $call->getReply();
+
+    $reply = &drupal_static(__FUNCTION__ . '_' . implode('_', $params));
+    if (!isset($reply)) {
+      $call = $this->core->createCall(
+        $this->connector(),
+        'RemoteEvent',
+        'getsingle',
+        $params,
+        []
+      );
+      $this->core->executeCall($call);
+      $reply = $call->getReply();
+    }
+
     if (!isset($reply['id'])) {
       throw new Exception(t('Could not retrieve remote event.'));
     }
@@ -75,6 +80,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *
    * @throws Exception
    *   When the event could not be retrieved.
+   *
+   * @deprecated Use self::getEvent() instead.
    */
   public function getEventFromToken($registration_token) {
     $params = [
@@ -125,18 +132,23 @@ class CiviMRF extends civiremote\CiviMRF {
       'context' => $context,
     ];
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
-      'RemoteParticipant',
-      'get_form',
-      $params,
-      []
-    );
-    $this->core->executeCall($call);
-    if ($call->getStatus() !== $call::STATUS_DONE) {
-      throw new Exception(t('Retrieving registration form failed.'));
+
+    $reply = &drupal_static(__FUNCTION__ . '_' . implode('_', $params));
+    if (!isset($reply)) {
+      $call = $this->core->createCall(
+        $this->connector(),
+        'RemoteParticipant',
+        'get_form',
+        $params,
+        []
+      );
+      $this->core->executeCall($call);
+      if ($call->getStatus() !== $call::STATUS_DONE) {
+        throw new Exception(t('Retrieving registration form failed.'));
+      }
+      $reply = $call->getReply();
     }
-    $reply = $call->getReply();
+
     return $reply['values'];
   }
 
