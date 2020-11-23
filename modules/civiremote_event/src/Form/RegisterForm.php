@@ -456,25 +456,30 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         // Set value.
         if (isset($value)) {
           $group[$field_name]['#value'] = $value;
-        }
 
-        // Set markup.
-        switch ($type) {
-          case 'date';
-            $group[$field_name]['#markup'] = Drupal::service('date.formatter')
-              ->format(strtotime($group[$field_name]['#value']));
-            break;
-          case 'checkbox':
-            $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
-            break;
-          case 'radio':
-            $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
-            break;
-          case 'value':
-            break;
-          default:
-            $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
-            break;
+          // Set markup.
+          switch ($type) {
+            case 'date';
+            try {
+              $group[$field_name]['#markup'] = Drupal::service('date.formatter')
+                ->format(strtotime($group[$field_name]['#value']));
+            }
+            catch (Exception $exception) {
+              // There was no valid date value, do nothing.
+            }
+              break;
+            case 'checkbox':
+              $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
+              break;
+            case 'radio':
+              $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
+              break;
+            case 'value':
+              break;
+            default:
+              $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
+              break;
+          }
         }
 
         if (
