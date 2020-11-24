@@ -565,6 +565,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     if (!empty($this->event->confirm_footer_text)) {
       $form[] = [
         '#markup' => $this->event->confirm_footer_text,
+        '#weight' => self::highestWeight($form) + 1,
       ];
     }
 
