@@ -323,6 +323,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if ($type == 'select' || $type == 'radios') {
         $group[$field_name]['#options'] = $field['options'];
       }
+      if ($type == 'select' && isset($field['empty_label'])) {
+        $group[$field_name]['#empty_option'] = $field['empty_label'];
+      }
 
       // Set #return_value for single Radios for later processing.
       if ($type == 'radio' && $field_name != $field['name']) {
