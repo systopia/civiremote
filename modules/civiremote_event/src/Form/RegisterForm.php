@@ -439,6 +439,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $value = $form_state->getValue($field['name']);
       $type = self::fieldTypes()[$field['type']];
 
+      // Unset $value when the value does not belong to the field.
+      if ($field_name != $field['name'] && $value != $field_name) {
+        $value = NULL;
+      }
+
       // Display fields only when there is a submitted value or empty values are
       // to be displayed. Fieldsets and "value" type elements will always be
       // included in the form.
