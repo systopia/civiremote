@@ -103,7 +103,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $this->remote_token
     );
     $this->fields = $form['values'];
-    $this->messages = $form['status_messages'];
+    $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
     $this->event = $this->cmrf->getEvent(
       $this->fields['event_id']['value'],
       $this->remote_token
