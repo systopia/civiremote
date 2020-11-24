@@ -680,7 +680,7 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              civiremote_remote-user: '0'
+              civiremote_remote_user: '0'
           is_grouped: true
           group_info:
             label: ''
@@ -728,7 +728,7 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
-              civiremote_remote-user: '0'
+              civiremote_remote_user: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''

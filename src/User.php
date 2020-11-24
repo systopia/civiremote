@@ -104,6 +104,8 @@ class User {
       ];
       $remote_roles = [];
       foreach ($cmrf->getRoles($params) as $remote_role_id => $remote_role_label) {
+        // Transform to valid role machine name.
+        $remote_role_id = preg_replace('[^a-z0-9_]+', '_', $remote_role_id);
         $remote_roles['civiremote_' . $remote_role_id] = 'CiviRemote: ' . $remote_role_label;
       }
 
