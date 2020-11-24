@@ -76,6 +76,12 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   protected $fields;
 
   /**
+   * @var array $messages
+   *   Status messages to be displayed on the remote event form.
+   */
+  protected $messages;
+
+  /**
    * RegisterForm constructor.
    *
    * @param CiviMRF $cmrf
@@ -91,11 +97,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $this->event = $routeMatch->getParameter('event');
     $this->profile = $routeMatch->getRawParameter('profile');
     $this->remote_token = $routeMatch->getRawParameter('remote_token');
-    $this->fields = $this->cmrf->getRegistrationForm(
+    $form = $this->cmrf->getForm(
       (isset($this->event) ? $this->event->id : NULL),
       $this->profile,
       $this->remote_token
     );
+    $this->fields = $form['values'];
+    $this->messages = $form['status_messages'];
     $this->event = $this->cmrf->getEvent(
       $this->fields['event_id']['value'],
       $this->remote_token
@@ -202,6 +210,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $form_state->setSubmitted();
     }
     else {
+      // Show messages returned by the API.
+      if (!empty($this->messages)) {
+        foreach ($this->messages as $message) {
+          Drupal::messenger()->addMessage(
+            $message['message'],
+            Utils::messageSeverity($message['severity'])
+          );
+        }
+      }
       $form = $this->buildRegisterForm($form, $form_state);
       $submit_label = $this->t('Next');
     }

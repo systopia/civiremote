@@ -124,7 +124,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the registration form definition could not be retrieved.
    */
-  public function getRegistrationForm($event_id, $profile, $remote_token = NULL, $context = 'create') {
+  public function getForm($event_id, $profile, $remote_token = NULL, $context = 'create') {
     $params = [
       'event_id' => $event_id,
       'profile' => $profile,
@@ -144,12 +144,12 @@ class CiviMRF extends civiremote\CiviMRF {
       );
       $this->core->executeCall($call);
       if ($call->getStatus() !== $call::STATUS_DONE) {
-        throw new Exception(t('Retrieving registration form failed.'));
+        throw new Exception(t('Retrieving form failed.'));
       }
       $reply = $call->getReply();
     }
 
-    return $reply['values'];
+    return $reply;
   }
 
   /**

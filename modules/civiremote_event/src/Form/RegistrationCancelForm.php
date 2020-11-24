@@ -17,6 +17,7 @@ namespace Drupal\civiremote_event\Form;
 
 
 use Drupal;
+use Drupal\civiremote\Utils;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultAllowed;
@@ -57,6 +58,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
   protected $fields;
 
   /**
+   * @var array $messages
+   *   Status messages to be displayed on the remote event form.
+   */
+  protected $messages;
+
+  /**
    * RegistrationCancelForm constructor.
    *
    * @param CiviMRF $cmrf
@@ -72,12 +79,14 @@ class RegistrationCancelForm extends ConfirmFormBase {
     $this->remote_token = $routeMatch->getRawParameter('remote_token');
     // Retrieve event using the remote token, overwriting the event object.
     if (!empty($this->remote_token)) {
-      $this->fields = $this->cmrf->getRegistrationForm(
+      $form = $this->cmrf->getForm(
         (isset($this->event) ? $this->event->id : NULL),
         NULL,
         $this->remote_token,
         'cancel'
       );
+      $this->fields = $form['values'];
+      $this->messages = $form['status_messages'];
       $this->event = $this->cmrf->getEvent(
         $this->fields['event_id']['value'],
         $this->remote_token
@@ -156,6 +165,16 @@ class RegistrationCancelForm extends ConfirmFormBase {
    * @inheritDoc
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // Show messages returned by the API.
+    if (!empty($this->messages)) {
+      foreach ($this->messages as $message) {
+        Drupal::messenger()->addMessage(
+          $message['message'],
+          Utils::messageSeverity($message['severity'])
+        );
+      }
+    }
+
     // TODO: Display information about the event registration.
 
     return parent::buildForm($form, $form_state);
