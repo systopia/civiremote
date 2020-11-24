@@ -166,6 +166,9 @@ class CiviMRF extends civiremote\CiviMRF {
    *
    * @return array
    *   The errors that occurred during the remote event registration validation.
+   *
+   * @throws Exception
+   *   When the remote event registration could not be validated.
    */
   public function validateEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
     self::addRemoteContactId($params);
@@ -185,12 +188,9 @@ class CiviMRF extends civiremote\CiviMRF {
     $this->core->executeCall($call);
     $reply = $call->getReply();
     if ($call->getStatus() !== $call::STATUS_DONE && empty($reply['values'])) {
-      $errors = [t('Validation failed')];
+      throw new Exception(t('The event registration validation failed.'));
     }
-    else {
-      $errors = $reply['values'];
-    }
-    return $errors;
+    return $reply;
   }
 
   /**
@@ -230,7 +230,7 @@ class CiviMRF extends civiremote\CiviMRF {
       throw new Exception(t('The event registration failed.'));
     }
     $reply = $call->getReply();
-    return $reply['values'];
+    return $reply;
   }
 
   /**

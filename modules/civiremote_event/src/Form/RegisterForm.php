@@ -17,6 +17,7 @@ namespace Drupal\civiremote_event\Form;
 
 
 use Drupal;
+use Drupal\civiremote\Utils;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
 use Drupal\Component\Utility\Html;
@@ -664,17 +665,53 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $values = $form_state->getValues();
     }
     $this->preprocessValues($values);
-    $errors = $this->cmrf->validateEventRegistration(
-      $this->event->id,
-      $this->profile,
-      $this->remote_token,
-      $values
-    );
-    if (!empty($errors)) {
-      $form_state->set('step', array_search('form', $form_state->get('steps')));
-      foreach ($errors as $field => $message) {
-        $form_state->setErrorByName($field, $this->fields[$field]['label'] . ': ' . $message);
+    try {
+      $result = $this->cmrf->validateEventRegistration(
+        $this->event->id,
+        $this->profile,
+        $this->remote_token,
+        $values
+      );
+
+      // Show messages returned by the API.
+      if (!empty($result['status_messages'])) {
+        foreach ($result['status_messages'] as $message) {
+          if ($message['severity'] == 'error') {
+            if (!empty($message['reference'])) {
+              $form_state->setErrorByName(
+                $message['reference'],
+                $this->fields[$message['reference']]['label'] . ': ' . $message['message']
+              );
+            }
+            else {
+              $form_state->set('error', TRUE);
+              Drupal::messenger()->addMessage(
+                $message['reference'],
+                MessengerInterface::TYPE_ERROR
+              );
+              $form_state->setRebuild();
+            }
+          }
+          else {
+            Drupal::messenger()->addMessage(
+              $message['message'],
+              Utils::messageSeverity($message['severity'])
+            );
+          }
+        }
+
+        if (!empty($form_state->getErrors())) {
+          $form_state->set('step', array_search('form', $form_state->get('steps')));
+        }
       }
+    }
+    catch (Exception $exception) {
+      $form_state->set('error', TRUE);
+      Drupal::messenger()->addMessage(
+        t('Registration validation failed, please try again later.'),
+        MessengerInterface::TYPE_ERROR
+      );
+      $form_state->setRebuild();
     }
   }
 
@@ -706,6 +743,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             $this->remote_token,
             $values
           );
+
+          // Show messages returned by the API.
+          if (!empty($result['status_messages'])) {
+            foreach ($result['status_messages'] as $message) {
+              Drupal::messenger()->addMessage(
+                $message['message'],
+                Utils::messageSeverity($message['severity'])
+              );
+            }
+          }
 
           // Advance to "Thank you" step.
           $form_state->set(
