@@ -438,90 +438,97 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Build the field.
       $value = $form_state->getValue($field['name']);
       $type = self::fieldTypes()[$field['type']];
-        $group[$field_name] = [
-          '#type' => (in_array($type, ['fieldset', 'value']) ? $type : 'item'),
-          '#name' => $field_name,
-        ];
-        if (!empty($field['label'])) {
-          $group[$field_name]['#title'] = $field['label'];
-        }
-        if (!empty($field['description'])) {
-          $group[$field_name]['#description'] = $field['description'];
-        }
-        if (!empty($field['weight'])) {
-          $group[$field_name]['#weight'] = $field['weight'];
-        }
-        // TODO: Is #multiple being evaluated for #type = item?
-        if ($field['type'] == 'Multi-Select') {
-          $group[$field_name]['#multiple'] = TRUE;
-        }
+      $group[$field_name] = [
+        '#type' => (in_array($type, ['fieldset', 'value']) ? $type : 'item'),
+        '#name' => $field_name,
+      ];
+      if (!empty($field['label'])) {
+        $group[$field_name]['#title'] = $field['label'];
+      }
+      if (!empty($field['description'])) {
+        $group[$field_name]['#description'] = $field['description'];
+      }
+      if (!empty($field['weight'])) {
+        $group[$field_name]['#weight'] = $field['weight'];
+      }
+      // TODO: Is #multiple being evaluated for #type = item?
+      if ($field['type'] == 'Multi-Select') {
+        $group[$field_name]['#multiple'] = TRUE;
+      }
 
-        // Set value.
-        if (isset($value)) {
-          $group[$field_name]['#value'] = $value;
+      // Set value.
+      if (isset($value)) {
+        $group[$field_name]['#value'] = $value;
 
-          // Set markup.
-          switch ($type) {
-            case 'date';
+        // Set markup.
+        switch ($type) {
+          case 'date';
             try {
               $group[$field_name]['#markup'] = Drupal::service('date.formatter')
                 ->format(strtotime($group[$field_name]['#value']));
-            }
-            catch (Exception $exception) {
+            } catch (Exception $exception) {
               // There was no valid date value, do nothing.
             }
-              break;
-            case 'checkbox':
-              $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
-              break;
-            case 'radio':
-              $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
-              break;
-            case 'value':
-              break;
-            default:
-              $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
-              break;
-          }
+            break;
+          case 'checkbox':
+            $group[$field_name]['#markup'] = $value ? $this->t('Yes') : $this->t('No');
+            break;
+          case 'radio':
+            $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
+            break;
+          case 'value':
+            break;
+          default:
+            $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
+            break;
         }
-
-        if (
-          array_key_exists('confirm', $this->fields)
-          && $field_name != 'confirm'
-        ) {
-          $group[$field_name]['#states'] = [
-            'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-            'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
-          ];
       }
 
-        // Display prefix/suffix content.
-        if (!empty($field['prefix'])) {
-          $group[$field_name]['#prefix'] = $field['prefix'];
-          if ($field['prefix_display'] == 'dialog') {
-            $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
-            $group[$field_name]['#prefix'] =
-              '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
-              . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $group[$field_name]['#prefix']
-              . '</div>'
-              . '</div>';
-            $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
-          }
+      if (
+        array_key_exists('confirm', $this->fields)
+        && $field_name != 'confirm'
+      ) {
+        $group[$field_name]['#states'] = [
+          'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+          'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
+        ];
+      }
+
+      // Display prefix/suffix content.
+      if (!empty($field['prefix'])) {
+        $group[$field_name]['#prefix'] = $field['prefix'];
+        if ($field['prefix_display'] == 'dialog') {
+          $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
+          $group[$field_name]['#prefix'] =
+            '<div
+            class="dialog-wrapper"
+            data-dialog-id="' . $html_id . '"
+            data-dialog-label="' . $field['prefix_dialog_label'] . '"
+            >'
+            . '<div class="dialog-content js-hide" id="' . $html_id . '">'
+            . $group[$field_name]['#prefix']
+            . '</div>'
+            . '</div>';
+          $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
         }
-        if (!empty($field['suffix'])) {
-          $group[$field_name]['#suffix'] = $field['suffix'];
-          if ($field['suffix_display'] == 'dialog') {
-            $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
-            $group[$field_name]['#suffix'] =
-              '<div class="dialog-wrapper" data-dialog-id="' . $html_id . '">'
-              . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $group[$field_name]['#suffix']
-              . '</div>'
-              . '</div>';
-            $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
-          }
+      }
+      if (!empty($field['suffix'])) {
+        $group[$field_name]['#suffix'] = $field['suffix'];
+        if ($field['suffix_display'] == 'dialog') {
+          $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
+          $group[$field_name]['#suffix'] =
+            '<div
+            class="dialog-wrapper"
+            data-dialog-id="' . $html_id . '"
+            data-dialog-label="' . $field['suffix_dialog_label'] . '"
+            >'
+            . '<div class="dialog-content js-hide" id="' . $html_id . '">'
+            . $group[$field_name]['#suffix']
+            . '</div>'
+            . '</div>';
+          $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
         }
+      }
     }
 
     // Add confirmation footer text.
