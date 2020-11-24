@@ -298,7 +298,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           }
           break;
       }
-      $default_value = $form_state->getValue($field_name, $default_value);
+      $default_value = $form_state->getValue($field['name'], $default_value);
 
       // Build the field (or fieldset).
       $group[$field_name] = [
