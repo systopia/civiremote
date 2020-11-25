@@ -310,6 +310,18 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               ->format('Y-m-d');
           }
           break;
+        case 'radios':
+          if (
+            isset($field['value'])
+            && array_key_exists($field['value'], $field['options'])
+          ) {
+            $default_value = $field['value'];
+          }
+          else {
+            reset($field['options']);
+            $default_value = key($field['options']);
+          }
+          break;
         default:
           if (isset($field['value'])) {
             $default_value = $field['value'];
@@ -646,11 +658,6 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       return $field['name'];
     }, $radio_fields);
     foreach ($values as $field_name => &$value) {
-      // Use CiviCRM date format for date fields.
-      if (self::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
-        $value = date_create($value)->format('Ymd');
-      }
-
       // Set single radio element values.
       if (
         !array_key_exists($field_name, $this->fields)
@@ -660,6 +667,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $new_values[$value] = (int) !empty($value);
         }
         unset($values[$field_name]);
+      }
+
+      // Use CiviCRM date format for date fields.
+      if (!empty($value) && self::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
+        $value = date_create($value)->format('Ymd');
       }
     }
     $values += $new_values;
