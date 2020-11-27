@@ -463,7 +463,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
 
     // Show summary.
-    foreach ($form_state->get('fields') as $field_name => $field) {
+
+    $fields = $form_state->get('fields');
+    foreach ($fields as $field_name => $field) {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
       $group_parents = $this->groupParents($field_name);
       $group = &NestedArray::getValue($form, $group_parents);
@@ -481,13 +483,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // to be displayed. Fieldsets and "value" type elements will always be
       // included in the form.
       if (
-        !empty($value)
+        ($field_name == 'confirm' && $value == 0)
+        || ($field_name != 'confirm' && !empty($value))
         || !empty($field['summary_show_empty'])
         || in_array($type, ['fieldset', 'value'])
       ) {
         $group[$field_name] = [
           '#type' => (in_array($type, ['fieldset', 'value']) ? $type : 'item'),
-          '#name' => $field_name,
+          '#name' => $field['name'],
         ];
         if (!empty($field['label'])) {
           $group[$field_name]['#title'] = $field['label'];
@@ -580,14 +583,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
     }
 
-    // Remove empty fieldsets.
-    foreach ($form_state->get('fields') as $field_name => $field) {
+    // Remove empty fieldsets (starting with last field to cater for nested
+    // fieldsets).
+    foreach (array_reverse($fields, TRUE) as $field_name => $field) {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
       $group_parents = $this->groupParents($field_name);
       $group = &NestedArray::getValue($form, $group_parents);
       $type = self::fieldTypes()[$field['type']];
       if (
-        $type == 'fieldset'
+        array_key_exists($field_name, $group)
+        && $type == 'fieldset'
         && empty(Element::getVisibleChildren($group[$field_name]))
       ) {
         unset($group[$field_name]);
