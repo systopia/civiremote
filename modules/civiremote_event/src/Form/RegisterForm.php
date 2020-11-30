@@ -25,6 +25,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultNeutral;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -141,6 +142,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Checkbox' => 'checkbox',
       'Radio' => 'radio',
       'Date' => 'date',
+      'Datetime' => 'datetime',
       'Timestamp' => 'date',
       'Value' => 'value',
       'fieldset' => 'fieldset',
@@ -308,6 +310,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           if (!empty($field['value'])) {
             $default_value = date_create_from_format('Ymd', $field['value'])
               ->format('Y-m-d');
+          }
+          break;
+        case 'datetime':
+          if (!empty($field['value'])) {
+            $default_value = date_create_from_format('YmdHis', $field['value'])
+              ->format('Y-m-d H:i:s');
+            $default_value = new DrupalDateTime($default_value);
           }
           break;
         case 'radios':
@@ -677,6 +686,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Use CiviCRM date format for date fields.
       if (!empty($value) && self::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
         $value = date_create($value)->format('Ymd');
+      }
+      // Use CiviCRM date format for datetime fields.
+      if (!empty($value) && self::fieldTypes()[$this->fields[$field_name]['type']] == 'datetime') {
+        /* @var DrupalDateTime $value */
+        $value = $value->format('YmdHis');
       }
     }
     $values += $new_values;
