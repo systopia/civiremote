@@ -488,13 +488,25 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $value = NULL;
       }
 
-      // Display fields only when there is a submitted value or empty values are
-      // to be displayed. Fieldsets and "value" type elements will always be
-      // included in the form.
+      // Display fields only when either
+      // - there is a submitted value or empty values are to be displayed.
+      // - it is a "fieldset" or "value" type element
+      // - they are dependent on the "confirm" field and its value is 1
+      // - they are not dependent on the "confirm" field (i.e. there is none)
+      // The "confirm" field itself shall only be displayed when its value is 0.
       if (
         ($field_name == 'confirm' && $value == 0)
-        || ($field_name != 'confirm' && !empty($value))
-        || !empty($field['summary_show_empty'])
+        || (
+          $field_name != 'confirm'
+          && (
+            !empty($value)
+            || !empty($field['summary_show_empty'])
+          )
+          && (
+            !array_key_exists('confirm', $this->fields)
+            || $form_state->getValue('confirm') == 1
+          )
+        )
         || in_array($type, ['fieldset', 'value'])
       ) {
         $group[$field_name] = [
@@ -504,10 +516,6 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         if (!empty($field['label'])) {
           $group[$field_name]['#title'] = $field['label'];
         }
-        // Do not display the description in the confirmation step
-        //      if (!empty($field['description'])) {
-        //        $group[$field_name]['#description'] = $field['description'];
-        //      }
         if (!empty($field['weight'])) {
           $group[$field_name]['#weight'] = $field['weight'];
         }
@@ -542,16 +550,6 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
               break;
           }
-        }
-
-        if (
-          array_key_exists('confirm', $this->fields)
-          && $field_name != 'confirm'
-        ) {
-          $group[$field_name]['#states'] = [
-            'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-            'optional' => [[':input[name="confirm"]' => ['value' => 0]]],
-          ];
         }
 
         // Display prefix/suffix content.
