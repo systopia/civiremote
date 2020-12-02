@@ -803,12 +803,18 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             }
           }
 
-          // Advance to "Thank you" step.
-          $form_state->set(
-            'step',
-            array_search('thankyou', $form_state->get('steps'))
-          );
-          $form_state->setRebuild();
+          // Advance to "Thank you" step (when this is no invitation or it has
+          // been confirmed).
+          if (
+            !array_key_exists('confirm', $this->fields)
+            || !empty($values['confirm'])
+          ) {
+            $form_state->set(
+              'step',
+              array_search('thankyou', $form_state->get('steps'))
+            );
+            $form_state->setRebuild();
+          }
         }
         catch (Exception $exception) {
           $form_state->set('error', TRUE);
