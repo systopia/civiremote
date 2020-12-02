@@ -26,6 +26,7 @@ use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatch;
+use Drupal\Core\Url;
 use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -159,6 +160,13 @@ class RegistrationCancelForm extends ConfirmFormBase {
       );
       $form_state->setRebuild();
     }
+
+    // Redirect to target from configuration.
+    $config = Drupal::config('civiremote_event.settings');
+    /* @var Url $url */
+    $url = Drupal::service('path.validator')
+      ->getUrlIfValid($config->get('form_redirect_route'));
+    $form_state->setRedirect($url->getRouteName());
   }
 
   /**

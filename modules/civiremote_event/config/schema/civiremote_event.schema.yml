@@ -14,3 +14,6 @@ civiremote_event.settings:
           form_id:
             type: string
             label: 'Form ID'
+    form_redirect_route:
+      type: string
+      label: 'Form redirect route'

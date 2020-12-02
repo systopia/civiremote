@@ -16,6 +16,7 @@
 namespace Drupal\civiremote_event\Form;
 
 
+use Drupal;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultAllowed;
@@ -24,6 +25,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Routing\RouteMatch;
+use Drupal\Core\Url;
 use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -115,6 +117,13 @@ class RegistrationUpdateForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // TODO: Implement submitForm() method.
+
+    // Redirect to target from configuration.
+    $config = Drupal::config('civiremote_event.settings');
+    /* @var Url $url */
+    $url = Drupal::service('path.validator')
+      ->getUrlIfValid($config->get('form_redirect_route'));
+    $form_state->setRedirect($url->getRouteName());
   }
 
   /**

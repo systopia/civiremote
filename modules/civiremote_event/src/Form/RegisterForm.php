@@ -31,6 +31,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatch;
+use Drupal\Core\Url;
 use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -814,6 +815,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               array_search('thankyou', $form_state->get('steps'))
             );
             $form_state->setRebuild();
+          }
+          else {
+            // Redirect to target from configuration.
+            $config = Drupal::config('civiremote_event.settings');
+            /* @var Url $url */
+            $url = Drupal::service('path.validator')
+              ->getUrlIfValid($config->get('form_redirect_route'));
+            $form_state->setRedirect($url->getRouteName());
           }
         }
         catch (Exception $exception) {

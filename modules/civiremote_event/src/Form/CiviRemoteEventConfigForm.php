@@ -17,6 +17,7 @@ namespace Drupal\civiremote_event\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element\PathElement;
 
 class CiviRemoteEventConfigForm extends ConfigFormBase {
 
@@ -120,6 +121,14 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
       '#limit_validation_errors' => [],
     ];
 
+    $form['form_redirect_route'] = [
+      '#type' => 'path',
+      '#title' => $this->t('Form redirect route'),
+      '#description' => $this->t('Enter a Drupal route that should be used as a redirect target after processing event forms. This will be overridden by a <code>destination</code> parameter in the form URL.'),
+      '#default_value' => $config->get('form_redirect_route'),
+      '#convert_path' => PathElement::CONVERT_NONE,
+    ];
+
     return $form;
   }
 
@@ -130,6 +139,7 @@ class CiviRemoteEventConfigForm extends ConfigFormBase {
     $form_state->cleanValues();
     $config = $this->config('civiremote_event.settings');
     $config->set('profile_form_mapping', $form_state->getValue('profile_form_mapping_table'));
+    $config->set('form_redirect_route', $form_state->getValue('form_redirect_route'));
     $config->save();
     parent::submitForm($form, $form_state);
   }
