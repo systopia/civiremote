@@ -63,6 +63,27 @@ function civiremote_event_preprocess_form_element_label(&$variables) {
   }
 }
 
+function civiremote_event_preprocess_container(&$variables) {
+  $element = &$variables['element'];
+  $zebra_context = &drupal_static(__FUNCTION__);
+  if (!isset($zebra_context)) {
+    $zebra_context = [];
+  }
+  if (in_array('sessions', $element['#array_parents'])) {
+    $key_exists = FALSE;
+    $zebra = NestedArray::getValue(
+      $zebra_context,
+      array_slice($element['#array_parents'], 0, -1),
+      $key_exists
+    );
+    if (!$key_exists) {
+      $zebra = 1;
+    }
+    $variables['attributes']['class'][] = $zebra ? 'odd' : 'even';
+    NestedArray::setValue($zebra_context, array_slice($element['#array_parents'], 0, -1), (int)!$zebra);
+  }
+}
+
 function civiremote_event_preprocess_fieldset(&$variables) {
   $element = &$variables['element'];
   if (!empty($element['#label_attributes']['display_required'])) {

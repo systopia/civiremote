@@ -441,6 +441,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         }
         $group[$field_name]['#suffix'] .= '</div>';
       }
+      // Wrap elements with prefix or suffix in a separate container for better
+      // theming.
+      if (!empty($field['prefix']) || !empty($field['suffix'])) {
+        $group[] = [
+          '#type' => 'container',
+          $field_name => $group[$field_name]
+        ];
+        unset($group[$field_name]);
+      }
     }
 
     // Add event form footer text.
@@ -603,6 +612,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             $group[$field_name]['#suffix'] .= $field['suffix'];
           }
           $group[$field_name]['#suffix'] .= '</div>';
+        }
+        // Wrap elements with prefix or suffix in a separate container for
+        // better theming.
+        if (!empty($field['prefix']) || !empty($field['suffix'])) {
+          $group[] = [
+            '#type' => 'container',
+            $field_name => $group[$field_name]
+          ];
+          unset($group[$field_name]);
         }
       }
     }
