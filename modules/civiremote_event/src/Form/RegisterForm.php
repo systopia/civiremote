@@ -400,38 +400,46 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Display prefix/suffix content.
       if (!empty($field['prefix'])) {
-        $group[$field_name]['#prefix'] = $field['prefix'];
+        $group[$field_name]['#prefix'] = '<div class="form-element-prefix">';
         if ($field['prefix_display'] == 'dialog') {
           $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
-          $group[$field_name]['#prefix'] =
+          $group[$field_name]['#prefix'] .=
             '<div
             class="dialog-wrapper"
             data-dialog-id="' . $html_id . '"
             data-dialog-label="' . $field['prefix_dialog_label'] . '"
             >'
             . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-            . $group[$field_name]['#prefix']
+            . $field['prefix']
             . '</div>'
             . '</div>';
           $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
         }
+        else {
+          $group[$field_name]['#prefix'] .= $field['prefix'];
+        }
+        $group[$field_name]['#prefix'] .= '</div>';
       }
       if (!empty($field['suffix'])) {
-        $group[$field_name]['#suffix'] = $field['suffix'];
+        $group[$field_name]['#suffix'] = '<div class="form-element-suffix">';
         if ($field['suffix_display'] == 'dialog') {
           $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
-          $group[$field_name]['#suffix'] =
+          $group[$field_name]['#suffix'] .=
             '<div
             class="dialog-wrapper"
             data-dialog-id="' . $html_id . '"
             data-dialog-label="' . $field['suffix_dialog_label'] . '"
             >'
             . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-            . $group[$field_name]['#suffix']
+              . $field['suffix']
             . '</div>'
             . '</div>';
           $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
         }
+        else {
+          $group[$field_name]['#suffix'] .= $field['suffix'];
+        }
+        $group[$field_name]['#suffix'] .= '</div>';
       }
     }
 
@@ -555,38 +563,46 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
         // Display prefix/suffix content.
         if (!empty($field['prefix'])) {
-          $group[$field_name]['#prefix'] = $field['prefix'];
+          $group[$field_name]['#prefix'] = '<div class="form-element-prefix">';
           if ($field['prefix_display'] == 'dialog') {
             $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
-            $group[$field_name]['#prefix'] =
+            $group[$field_name]['#prefix'] .=
               '<div
             class="dialog-wrapper"
             data-dialog-id="' . $html_id . '"
             data-dialog-label="' . $field['prefix_dialog_label'] . '"
             >'
               . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $group[$field_name]['#prefix']
+              . $field['prefix']
               . '</div>'
               . '</div>';
             $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
           }
+          else {
+            $group[$field_name]['#prefix'] .= $field['prefix'];
+          }
+          $group[$field_name]['#prefix'] .= '</div>';
         }
         if (!empty($field['suffix'])) {
-          $group[$field_name]['#suffix'] = $field['suffix'];
+          $group[$field_name]['#suffix'] = '<div class="form-element-suffix">';
           if ($field['suffix_display'] == 'dialog') {
             $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
-            $group[$field_name]['#suffix'] =
+            $group[$field_name]['#suffix'] .=
               '<div
             class="dialog-wrapper"
             data-dialog-id="' . $html_id . '"
             data-dialog-label="' . $field['suffix_dialog_label'] . '"
             >'
               . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $group[$field_name]['#suffix']
+              . $field['suffix']
               . '</div>'
               . '</div>';
             $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
           }
+          else {
+            $group[$field_name]['#suffix'] .= $field['suffix'];
+          }
+          $group[$field_name]['#suffix'] .= '</div>';
         }
       }
     }
