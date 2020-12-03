@@ -40,7 +40,7 @@ function civiremote_event_preprocess_form_element(&$variables) {
   if (!isset($zebra_context)) {
     $zebra_context = [];
   }
-  if (in_array('sessions', $element['#array_parents'])) {
+  if (in_array('sessions', $element['#array_parents'], TRUE)) {
     $key_exists = FALSE;
     $zebra = NestedArray::getValue(
       $zebra_context,
@@ -69,7 +69,7 @@ function civiremote_event_preprocess_container(&$variables) {
   if (!isset($zebra_context)) {
     $zebra_context = [];
   }
-  if (in_array('sessions', $element['#array_parents'])) {
+  if (in_array('sessions', $element['#array_parents'], TRUE)) {
     $key_exists = FALSE;
     $zebra = NestedArray::getValue(
       $zebra_context,
