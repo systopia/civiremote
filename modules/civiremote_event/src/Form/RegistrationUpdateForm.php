@@ -136,7 +136,7 @@ class RegistrationUpdateForm extends RegisterForm {
         !isset($this->profile)
         || in_array(
           $this->profile,
-          explode(',', $this->event->enabled_profiles)
+          explode(',', $this->event->enabled_update_profiles)
         )
       )
     );

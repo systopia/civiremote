@@ -136,7 +136,23 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $this->fields['event_id']['value'],
       $this->remote_token
     );
-    $this->profile = $this->fields['profile']['value'] ?: $this->event->default_profile;
+    if (!empty($this->fields['profile']['value'])) {
+      $this->profile = $this->fields['profile']['value'];
+    }
+    else {
+      switch ($this->context) {
+        case 'create':
+          $this->profile = $this->event->default_profile;
+          break;
+        case 'update':
+          $this->profile = $this->event->default_update_profile;
+          break;
+        default:
+          throw new NotFoundHttpException(
+            $this->t('No profile found for CiviRemote event form.')
+          );
+      }
+    }
   }
 
   /**
