@@ -161,6 +161,11 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote event profile name.
    * @param string $remote_token
    *   The remote token.
+   * @param string $context
+   *   The context for which to validate the submission, one of
+   *   - create (Default)
+   *   - update
+   *   - cancel
    * @param array $params
    *   Additional parameters to send to the API.
    *
@@ -170,12 +175,13 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be validated.
    */
-  public function validateEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
+  public function validateEventRegistration($event_id, $profile, $remote_token = NULL, $context = 'create', $params = []) {
     self::addRemoteContactId($params);
     $params = array_merge($params, [
       'event_id' => $event_id,
       'profile' => $profile,
-      'token' => $remote_token
+      'token' => $remote_token,
+      'context' => $context,
     ]);
     self::addRemoteContactId($params);
     $call = $this->core->createCall(
@@ -228,6 +234,46 @@ class CiviMRF extends civiremote\CiviMRF {
     $this->core->executeCall($call);
     if ($call->getStatus() !== $call::STATUS_DONE) {
       throw new Exception(t('The event registration failed.'));
+    }
+    $reply = $call->getReply();
+    return $reply;
+  }
+
+  /**
+   * Submits a remote event registration update submission.
+   *
+   * @param int $event_id
+   *   The remote event ID.
+   * @param string $profile
+   *   The remote event profile name.
+   * @param string $remote_token
+   *   The remote token.
+   * @param array $params
+   *   Additional parameters to send to the API.
+   *
+   * @return array
+   *   The API response of the remote event registration.
+   *
+   * @throws Exception
+   *   When the remote event registration could not be submitted.
+   */
+  public function updateEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
+    $params = array_merge($params, [
+      'event_id' => $event_id,
+      'profile' => $profile,
+      'token' => $remote_token
+    ]);
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'RemoteParticipant',
+      'update',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('The event registration update failed.'));
     }
     $reply = $call->getReply();
     return $reply;

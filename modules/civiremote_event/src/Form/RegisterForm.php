@@ -35,6 +35,7 @@ use Drupal\Core\Url;
 use Exception;
 use stdClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Generic remote event registration form.
@@ -84,6 +85,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   protected $messages;
 
   /**
+   * @var string $context
+   *   The context which the form is being used for, one of
+   *   - create
+   *   - update
+   *   - cancel
+   */
+  protected $context;
+
+  /**
    * RegisterForm constructor.
    *
    * @param CiviMRF $cmrf
@@ -96,13 +106,27 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Extract form parameters and set them here so that implementations do not
     // have to care about that.
     $routeMatch = RouteMatch::createFromRequest($this->getRequest());
+    switch ($routeMatch->getRouteName()) {
+      case 'civiremote_event.register_form':
+        $this->context = 'create';
+        break;
+      case 'civiremote_event.registration_update_form':
+        $this->context = 'update';
+        break;
+    }
+    if (!isset($this->context)) {
+      throw new NotFoundHttpException(
+        $this->t('Invalid CiviRemote Event form context')
+      );
+    }
     $this->event = $routeMatch->getParameter('event');
     $this->profile = $routeMatch->getRawParameter('profile');
     $this->remote_token = $routeMatch->getRawParameter('remote_token');
     $form = $this->cmrf->getForm(
       (isset($this->event) ? $this->event->id : NULL),
       $this->profile,
-      $this->remote_token
+      $this->remote_token,
+      $this->context
     );
     $this->fields = $form['values'];
     $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
@@ -749,6 +773,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $this->event->id,
         $this->profile,
         $this->remote_token,
+        $this->context,
         $values
       );
 
