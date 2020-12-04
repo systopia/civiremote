@@ -175,12 +175,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Show messages returned by the API.
     if (!empty($this->messages)) {
-      foreach ($this->messages as $message) {
-        Drupal::messenger()->addMessage(
-          $message['message'],
-          Utils::messageSeverity($message['severity'])
-        );
-      }
+      Utils::setMessages($this->messages);
     }
 
     // TODO: Display information about the event registration.

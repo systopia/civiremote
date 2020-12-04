@@ -16,6 +16,7 @@
 namespace Drupal\civiremote;
 
 
+use Drupal;
 use Drupal\Core\Messenger\MessengerInterface;
 
 class Utils {
@@ -39,6 +40,21 @@ class Utils {
     ];
 
     return isset($mapping[$api_severity]) ? $mapping[$api_severity] : NULL;
+  }
+
+  /**
+   * Displays messages retrieved by the CiviRemote API as Drupal messages.
+   *
+   * @param $messages
+   *   An array of messages as retrieved by the CiviRemote API.
+   */
+  public static function setMessages($messages) {
+    foreach ($messages as $message) {
+      Drupal::messenger()->addMessage(
+        $message['message'],
+        Utils::messageSeverity($message['severity'])
+      );
+    }
   }
 
 }

@@ -215,12 +215,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     else {
       // Show messages returned by the API.
       if (!empty($this->messages)) {
-        foreach ($this->messages as $message) {
-          Drupal::messenger()->addMessage(
-            $message['message'],
-            Utils::messageSeverity($message['severity'])
-          );
-        }
+        Utils::setMessages($this->messages);
       }
       $form = $this->buildRegisterForm($form, $form_state);
       $submit_label = $this->t('Next');
@@ -770,17 +765,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             else {
               $form_state->set('error', TRUE);
               Drupal::messenger()->addMessage(
-                $message['reference'],
+                $message['message'],
                 MessengerInterface::TYPE_ERROR
               );
               $form_state->setRebuild();
             }
           }
           else {
-            Drupal::messenger()->addMessage(
-              $message['message'],
-              Utils::messageSeverity($message['severity'])
-            );
+            Utils::setMessages([$message]);
           }
         }
 
@@ -830,12 +822,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
           // Show messages returned by the API.
           if (!empty($result['status_messages'])) {
-            foreach ($result['status_messages'] as $message) {
-              Drupal::messenger()->addMessage(
-                $message['message'],
-                Utils::messageSeverity($message['severity'])
-              );
-            }
+            Utils::setMessages($result['status_messages']);
           }
 
           // Advance to "Thank you" step (when this is no invitation or it has
