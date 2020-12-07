@@ -108,7 +108,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $routeMatch = RouteMatch::createFromRequest($this->getRequest());
     switch ($routeMatch->getRouteName()) {
       case 'civiremote_event.register_form':
-      case 'civirremote_event.register_token_form':
+      case 'civiremote_event.register_token_form':
         $this->context = 'create';
         break;
       case 'civiremote_event.registration_update_form':
