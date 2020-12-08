@@ -369,6 +369,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             $default_value = key($field['options']);
           }
           break;
+        case 'radio':
+          if (!empty($field['value'])) {
+            $default_value = $field_name;
+          }
+          break;
         default:
           if (isset($field['value'])) {
             $default_value = $field['value'];
