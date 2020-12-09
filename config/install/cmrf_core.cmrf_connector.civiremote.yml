@@ -1,0 +1,7 @@
+langcode: de
+status: true
+dependencies: {  }
+id: civiremote
+label: CiviRemote
+type: civiremote
+profile: default
