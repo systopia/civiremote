@@ -9,5 +9,8 @@
             "email": "info@systopia.de"
         }
     ],
-    "homepage": "https://github.com/systopia/civiremote"
+    "homepage": "https://github.com/systopia/civiremote",
+    "require": {
+        "drupal/cmrf_core": "^1.0"
+    }
 }
