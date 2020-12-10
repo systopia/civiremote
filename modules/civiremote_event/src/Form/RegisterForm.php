@@ -590,13 +590,21 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    * @throws Exception
    */
   protected function buildConfirmForm(array $form, FormStateInterface $form_state) {
+    $is_invitation_rejected = array_key_exists('confirm', $this->fields)
+      && empty($form_state->getValue('confirm'));
     // Set confirmation page title.
-    if (!empty($this->event->confirm_title)) {
+    if (
+      !$is_invitation_rejected
+      && !empty($this->event->confirm_title)
+    ) {
       $form['#title'] = $this->event->confirm_title;
     }
 
     // Add confirmation text.
-    if (!empty($this->event->confirm_text)) {
+    if (
+    !$is_invitation_rejected
+    && !empty($this->event->confirm_text)
+    ) {
       $form[] = [
         '#markup' => $this->event->confirm_text,
       ];
@@ -705,7 +713,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
 
     // Add confirmation footer text.
-    if (!empty($this->event->confirm_footer_text)) {
+    if (
+      !$is_invitation_rejected
+      && !empty($this->event->confirm_footer_text)
+    ) {
       $form[] = [
         '#markup' => $this->event->confirm_footer_text,
         '#weight' => self::highestWeight($form) + 1,
