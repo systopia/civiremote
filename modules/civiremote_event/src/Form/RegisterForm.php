@@ -260,6 +260,18 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         ) {
           $default_value = $field['value'];
         }
+        // Select "empty" option for non-required fields or required fields that
+        // already have an "empty" option (0 or '').
+        // Non-required fields without an "empty" option will get that added
+        // later.
+        elseif (
+          !$field['required']
+          || array_key_exists('', $field['options'])
+          || array_key_exists(0, $field['options'])
+        ) {
+          $default_value = 0; // also evaluates to '' option.
+        }
+        // Select first option for required fields without an "empty" option.
         elseif ($field['required']) {
           reset($field['options']);
           $default_value = key($field['options']);
@@ -520,21 +532,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if ($type == 'select' || $type == 'radios') {
         $group[$field_name]['#options'] = $field['options'];
       }
+      // Add "empty" option for non-required radio button groups, if it doesn't
+      // already exist.
       if (
         $type == 'radios'
+        && !array_key_exists('', $group[$field_name]['#options'])
+        && !array_key_exists(0, $group[$field_name]['#options'])
         && empty($field['required'])
-      ) {
-        if (
-          !array_key_exists('', $group[$field_name]['#options'])
-          && !array_key_exists(0, $group[$field_name]['#options'])
-        )  {
-          $group[$field_name]['#options'] =
-            ['' => $this->t('- None -')] + $group[$field_name]['#options'];
-        }
-        // Explicitly select the "None" value when there is no default value.
-        if (!isset($default_value)) {
-          $group[$field_name]['#default_value'] = 0;
-        }
+      )  {
+        $group[$field_name]['#options'] =
+          ['' => $this->t('- None -')] + $group[$field_name]['#options'];
       }
       if ($type == 'select' && isset($field['empty_label'])) {
         $group[$field_name]['#empty_option'] = $field['empty_label'];
