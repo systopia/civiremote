@@ -216,6 +216,152 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return $parents;
   }
 
+  public function fieldType($field) {
+    $types = self::fieldTypes();
+    if (isset($field['validation']) && $field['validation'] == 'Email') {
+      $type = 'email';
+    }
+    // Use radio buttons for select fields with up to 10 options.
+    elseif (
+      $types[$field['type']] == 'select'
+      && count($field['options']) <= 10
+    ) {
+      $type = 'radios';
+    }
+    // Use default field types from mapping.
+    else {
+      $type = $types[$field['type']];
+    }
+
+    return $type;
+  }
+
+  public function defaultValue($field, $field_name, $type) {
+    $default_value = NULL;
+
+    switch ($type) {
+      case 'date':
+        if (!empty($field['value'])) {
+          $default_value = date_create_from_format('Ymd', $field['value'])
+            ->format('Y-m-d');
+        }
+        break;
+      case 'datetime':
+        if (!empty($field['value'])) {
+          $default_value = date_create_from_format('YmdHis', $field['value'])
+            ->format('Y-m-d H:i:s');
+          $default_value = new DrupalDateTime($default_value);
+        }
+        break;
+      case 'radios':
+        if (
+          isset($field['value'])
+          && array_key_exists($field['value'], $field['options'])
+        ) {
+          $default_value = $field['value'];
+        }
+        else {
+          reset($field['options']);
+          $default_value = key($field['options']);
+        }
+        break;
+      case 'radio':
+        if (!empty($field['value'])) {
+          $default_value = $field_name;
+        }
+        break;
+      default:
+        if (isset($field['value'])) {
+          $default_value = $field['value'];
+        }
+        break;
+    }
+
+    return $default_value;
+  }
+
+  public function addConfirmRequiredStates($field, $field_name, &$group) {
+    if (
+      array_key_exists('confirm', $this->fields)
+      && $field_name != 'confirm'
+    ) {
+      $group[$field_name]['#states'] = [
+        'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
+      ];
+
+      // Only add #required state when the field is actually required.
+      if (!empty($field['required'])) {
+        $group[$field_name]['#states']['required'] = [
+          [':input[name="confirm"]' => ['value' => 1]],
+        ];
+        $group[$field_name]['#label_attributes']['display_required'] = TRUE;
+      }
+    }
+    else {
+      $group[$field_name]['#required'] = !empty($field['required']);
+    }
+  }
+
+  public function addPrefixSuffix($field, $field_name, &$group) {
+    if (!empty($field['prefix'])) {
+      $group[$field_name]['#prefix'] = '<div class="form-element-prefix">';
+      if ($field['prefix_display'] == 'dialog') {
+        $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
+        $group[$field_name]['#prefix'] .=
+          '<div
+            class="dialog-wrapper"
+            data-dialog-id="' . $html_id . '"
+            data-dialog-label="' . $field['prefix_dialog_label'] . '"
+            >'
+          . '<div class="dialog-content js-hide" id="' . $html_id . '">'
+          . $field['prefix']
+          . '</div>'
+          . '</div>';
+        $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
+      }
+      else {
+        $group[$field_name]['#prefix'] .= $field['prefix'];
+      }
+      $group[$field_name]['#prefix'] .= '</div>';
+    }
+    if (!empty($field['suffix'])) {
+      $group[$field_name]['#suffix'] = '<div class="form-element-suffix">';
+      if ($field['suffix_display'] == 'dialog') {
+        $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
+        $group[$field_name]['#suffix'] .=
+          '<div
+            class="dialog-wrapper"
+            data-dialog-id="' . $html_id . '"
+            data-dialog-label="' . $field['suffix_dialog_label'] . '"
+            >'
+          . '<div class="dialog-content js-hide" id="' . $html_id . '">'
+          . $field['suffix']
+          . '</div>'
+          . '</div>';
+        $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
+      }
+      else {
+        $group[$field_name]['#suffix'] .= $field['suffix'];
+      }
+      $group[$field_name]['#suffix'] .= '</div>';
+    }
+    // Wrap elements with prefix or suffix in a separate container for better
+    // theming.
+    if (!empty($field['prefix']) || !empty($field['suffix'])) {
+      $container = [
+        '#type' => 'container',
+        '#weight' => (isset($group[$field_name]['#weight']) ? $group[$field_name]['#weight'] : NULL),
+      ];
+      if (!empty($group[$field_name]['#zebra_context'])) {
+        $container['#zebra_context'] = $group[$field_name]['#zebra_context'];
+        unset($group[$field_name]['#zebra_context']);
+      }
+      $container[$field_name] = $group[$field_name];
+      unset($group[$field_name]);
+      $group[] = $container;
+    }
+  }
+
   public function hasFields() {
     return !empty(array_filter($this->fields, function($field) {
       return in_array($field['type'], array_keys(self::fieldTypes()));
@@ -318,7 +464,6 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Fetch fields from RemoteEvent.get_form API when no specific
     // implementation is present.
     $form_state->set('fields', $this->fields);
-    $types = self::fieldTypes();
 
     foreach ($form_state->get('fields') as $field_name => $field) {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
@@ -326,61 +471,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $group = &NestedArray::getValue($form, $group_parents);
 
       // Set field type to "email" when its input is to be validated as such.
-      if (isset($field['validation']) && $field['validation'] == 'Email') {
-        $type = 'email';
-      }
-      // Use radio buttons for select fields with up to 10 options.
-      elseif (
-        $types[$field['type']] == 'select'
-        && count($field['options']) <= 10
-      ) {
-        $type = 'radios';
-      }
-      // Use default field types from mapping.
-      else {
-        $type = $types[$field['type']];
-      }
+      $type = $this->fieldType($field);
 
       // Prepare field default values.
-      $default_value = NULL;
-      switch ($type) {
-        case 'date':
-          if (!empty($field['value'])) {
-            $default_value = date_create_from_format('Ymd', $field['value'])
-              ->format('Y-m-d');
-          }
-          break;
-        case 'datetime':
-          if (!empty($field['value'])) {
-            $default_value = date_create_from_format('YmdHis', $field['value'])
-              ->format('Y-m-d H:i:s');
-            $default_value = new DrupalDateTime($default_value);
-          }
-          break;
-        case 'radios':
-          if (
-            isset($field['value'])
-            && array_key_exists($field['value'], $field['options'])
-          ) {
-            $default_value = $field['value'];
-          }
-          else {
-            reset($field['options']);
-            $default_value = key($field['options']);
-          }
-          break;
-        case 'radio':
-          if (!empty($field['value'])) {
-            $default_value = $field_name;
-          }
-          break;
-        default:
-          if (isset($field['value'])) {
-            $default_value = $field['value'];
-          }
-          break;
-      }
-      $default_value = $form_state->getValue($field['name'], $default_value);
+      $default_value = $form_state->getValue(
+        $field['name'],
+        $this->defaultValue($field, $field_name, $type)
+      );
 
       // Build the field (or fieldset).
       $group[$field_name] = [
@@ -420,78 +517,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Make the field's visibility and necessity depend on the "confirm" field
       // if it exists.
-      if (
-        array_key_exists('confirm', $this->fields)
-        && $field_name != 'confirm'
-      ) {
-        $group[$field_name]['#states'] = [
-          'visible' => [[':input[name="confirm"]' => ['value' => 1]]],
-        ];
-
-        // Only add #required state when the field is actually required.
-        if (!empty($field['required'])) {
-          $group[$field_name]['#states']['required'] = [
-            [':input[name="confirm"]' => ['value' => 1]],
-          ];
-          $group[$field_name]['#label_attributes']['display_required'] = TRUE;
-        }
-      }
-      else {
-        $group[$field_name]['#required'] = !empty($field['required']);
-      }
+      $this->addConfirmRequiredStates($field, $field_name, $group);
 
       // Display prefix/suffix content.
-      if (!empty($field['prefix'])) {
-        $group[$field_name]['#prefix'] = '<div class="form-element-prefix">';
-        if ($field['prefix_display'] == 'dialog') {
-          $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
-          $group[$field_name]['#prefix'] .=
-            '<div
-            class="dialog-wrapper"
-            data-dialog-id="' . $html_id . '"
-            data-dialog-label="' . $field['prefix_dialog_label'] . '"
-            >'
-            . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-            . $field['prefix']
-            . '</div>'
-            . '</div>';
-          $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
-        }
-        else {
-          $group[$field_name]['#prefix'] .= $field['prefix'];
-        }
-        $group[$field_name]['#prefix'] .= '</div>';
-      }
-      if (!empty($field['suffix'])) {
-        $group[$field_name]['#suffix'] = '<div class="form-element-suffix">';
-        if ($field['suffix_display'] == 'dialog') {
-          $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
-          $group[$field_name]['#suffix'] .=
-            '<div
-            class="dialog-wrapper"
-            data-dialog-id="' . $html_id . '"
-            data-dialog-label="' . $field['suffix_dialog_label'] . '"
-            >'
-            . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $field['suffix']
-            . '</div>'
-            . '</div>';
-          $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
-        }
-        else {
-          $group[$field_name]['#suffix'] .= $field['suffix'];
-        }
-        $group[$field_name]['#suffix'] .= '</div>';
-      }
-      // Wrap elements with prefix or suffix in a separate container for better
-      // theming.
-      if (!empty($field['prefix']) || !empty($field['suffix'])) {
-        $group[] = [
-          '#type' => 'container',
-          $field_name => $group[$field_name]
-        ];
-        unset($group[$field_name]);
-      }
+      $this->addPrefixSuffix($field, $field_name, $group);
     }
 
     // Add event form footer text.
@@ -541,7 +570,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Build the field.
       $value = $form_state->getValue($field['name']);
-      $type = self::fieldTypes()[$field['type']];
+      $type = $this->fieldType($field);
 
       // Unset $value when the value does not belong to the field.
       if ($field_name != $field['name'] && $value != $field_name) {
@@ -613,57 +642,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         }
 
         // Display prefix/suffix content.
-        if (!empty($field['prefix'])) {
-          $group[$field_name]['#prefix'] = '<div class="form-element-prefix">';
-          if ($field['prefix_display'] == 'dialog') {
-            $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
-            $group[$field_name]['#prefix'] .=
-              '<div
-            class="dialog-wrapper"
-            data-dialog-id="' . $html_id . '"
-            data-dialog-label="' . $field['prefix_dialog_label'] . '"
-            >'
-              . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $field['prefix']
-              . '</div>'
-              . '</div>';
-            $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
-          }
-          else {
-            $group[$field_name]['#prefix'] .= $field['prefix'];
-          }
-          $group[$field_name]['#prefix'] .= '</div>';
-        }
-        if (!empty($field['suffix'])) {
-          $group[$field_name]['#suffix'] = '<div class="form-element-suffix">';
-          if ($field['suffix_display'] == 'dialog') {
-            $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
-            $group[$field_name]['#suffix'] .=
-              '<div
-            class="dialog-wrapper"
-            data-dialog-id="' . $html_id . '"
-            data-dialog-label="' . $field['suffix_dialog_label'] . '"
-            >'
-              . '<div class="dialog-content js-hide" id="' . $html_id . '">'
-              . $field['suffix']
-              . '</div>'
-              . '</div>';
-            $group[$field_name]['#attached']['library'][] = 'civiremote/dialog';
-          }
-          else {
-            $group[$field_name]['#suffix'] .= $field['suffix'];
-          }
-          $group[$field_name]['#suffix'] .= '</div>';
-        }
-        // Wrap elements with prefix or suffix in a separate container for
-        // better theming.
-        if (!empty($field['prefix']) || !empty($field['suffix'])) {
-          $group[] = [
-            '#type' => 'container',
-            $field_name => $group[$field_name]
-          ];
-          unset($group[$field_name]);
-        }
+        $this->addPrefixSuffix($field, $field_name, $group);
       }
     }
 
