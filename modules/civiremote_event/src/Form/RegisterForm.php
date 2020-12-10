@@ -465,6 +465,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // implementation is present.
     $form_state->set('fields', $this->fields);
 
+    $unselect_radios = [];
+
     foreach ($form_state->get('fields') as $field_name => $field) {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
       $group_parents = $this->groupParents($field_name);
@@ -490,6 +492,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           '#return_value' => '',
           '#default_value' => '',
           '#disabled' => !empty($field['disabled']),
+          '#zebra_context' => $field['name'],
         ];
         $this->addConfirmRequiredStates($field, $field['name'] . '_unselect', $group);
       }
@@ -528,6 +531,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if ($type == 'radio' && $field_name != $field['name']) {
         $group[$field_name]['#return_value'] = $field_name;
         $group[$field_name]['#parents'][] = $field['name'];
+        $group[$field_name]['#zebra_context'] = $field['name'];
       }
 
       // Make the field's visibility and necessity depend on the "confirm" field
@@ -594,7 +598,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Display fields only when either
       // - there is a submitted value or empty values are to be displayed.
-      // - it is a "fieldset" or "value" type element
+      // - they are a "fieldset" or "value" type element
       // - they are dependent on the "confirm" field and its value is 1
       // - they are not dependent on the "confirm" field (i.e. there is none)
       // The "confirm" field itself shall only be displayed when its value is 0.

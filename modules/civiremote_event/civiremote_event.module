@@ -36,22 +36,14 @@ function civiremote_event_views_data_alter(array &$data) {
 
 function civiremote_event_preprocess_form_element(&$variables) {
   $element = &$variables['element'];
-  $zebra_context = &drupal_static(__FUNCTION__);
-  if (!isset($zebra_context)) {
-    $zebra_context = [];
-  }
-  if (in_array('sessions', $element['#array_parents'], TRUE)) {
-    $key_exists = FALSE;
-    $zebra = NestedArray::getValue(
-      $zebra_context,
-      array_slice($element['#array_parents'], 0, -1),
-      $key_exists
-    );
-    if (!$key_exists) {
-      $zebra = 1;
+  if (isset($element['#zebra_context'])) {
+    $zebra_context = &drupal_static('civiremote_event_preprocess_form_element__container');
+    if (!isset($zebra_context)) {
+      $zebra_context = [];
     }
+    $zebra = (isset($zebra_context[$element['#zebra_context']]) ? $zebra_context[$element['#zebra_context']] : 1);
     $variables['attributes']['class'][] = $zebra ? 'odd' : 'even';
-    NestedArray::setValue($zebra_context, array_slice($element['#array_parents'], 0, -1), (int)!$zebra);
+    $zebra_context[$element['#zebra_context']] = (int)!$zebra;
   }
 }
 
@@ -65,22 +57,14 @@ function civiremote_event_preprocess_form_element_label(&$variables) {
 
 function civiremote_event_preprocess_container(&$variables) {
   $element = &$variables['element'];
-  $zebra_context = &drupal_static(__FUNCTION__);
-  if (!isset($zebra_context)) {
-    $zebra_context = [];
-  }
   if (in_array('sessions', $element['#array_parents'], TRUE)) {
-    $key_exists = FALSE;
-    $zebra = NestedArray::getValue(
-      $zebra_context,
-      array_slice($element['#array_parents'], 0, -1),
-      $key_exists
-    );
-    if (!$key_exists) {
-      $zebra = 1;
+    $zebra_context = &drupal_static('civiremote_event_preprocess_form_element__container');
+    if (!isset($zebra_context)) {
+      $zebra_context = [];
     }
+    $zebra = (isset($zebra_context[$element['#zebra_context']]) ? $zebra_context[$element['#zebra_context']] : 1);
     $variables['attributes']['class'][] = $zebra ? 'odd' : 'even';
-    NestedArray::setValue($zebra_context, array_slice($element['#array_parents'], 0, -1), (int)!$zebra);
+    $zebra_context[$element['#zebra_context']] = (int)!$zebra;
   }
 }
 
