@@ -523,12 +523,17 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (
         $type == 'radios'
         && empty($field['required'])
-        && !array_key_exists('', $group[$field_name]['#options'])
       ) {
-        $group[$field_name]['#options'] =
-          ['' => $this->t('- None -')] + $group[$field_name]['#options'];
+        if (
+          !array_key_exists('', $group[$field_name]['#options'])
+          && !array_key_exists(0, $group[$field_name]['#options'])
+        )  {
+          $group[$field_name]['#options'] =
+            ['' => $this->t('- None -')] + $group[$field_name]['#options'];
+        }
+        // Explicitly select the "None" value when there is no default value.
         if (!isset($default_value)) {
-          $group[$field_name]['#default_value'] = '';
+          $group[$field_name]['#default_value'] = 0;
         }
       }
       if ($type == 'select' && isset($field['empty_label'])) {
