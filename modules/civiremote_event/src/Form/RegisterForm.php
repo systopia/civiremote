@@ -479,6 +479,21 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $this->defaultValue($field, $field_name, $type)
       );
 
+      // Add "None" radio button for de-selecting single radio buttons.
+      if ($type == 'radio' && !in_array($field['name'], $unselect_radios)) {
+        $unselect_radios[] = $field['name'];
+        $group[$field['name'] . '_unselect'] = [
+          '#type' => 'radio',
+          '#name' => $field['name'],
+          '#title' => $this->t('- None -'),
+          '#weight' => $field['weight'] - 0.1,
+          '#return_value' => '',
+          '#default_value' => '',
+          '#disabled' => !empty($field['disabled']),
+        ];
+        $this->addConfirmRequiredStates($field, $field['name'] . '_unselect', $group);
+      }
+
       // Build the field (or fieldset).
       $group[$field_name] = [
         '#type' => $type,
