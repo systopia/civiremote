@@ -260,7 +260,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         ) {
           $default_value = $field['value'];
         }
-        else {
+        elseif ($field['required']) {
           reset($field['options']);
           $default_value = key($field['options']);
         }
@@ -519,6 +519,17 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
       if ($type == 'select' || $type == 'radios') {
         $group[$field_name]['#options'] = $field['options'];
+      }
+      if (
+        $type == 'radios'
+        && empty($field['required'])
+        && !array_key_exists('', $group[$field_name]['#options'])
+      ) {
+        $group[$field_name]['#options'] =
+          ['' => $this->t('- None -')] + $group[$field_name]['#options'];
+        if (!isset($default_value)) {
+          $group[$field_name]['#default_value'] = '';
+        }
       }
       if ($type == 'select' && isset($field['empty_label'])) {
         $group[$field_name]['#empty_option'] = $field['empty_label'];
