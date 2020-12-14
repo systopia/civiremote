@@ -292,7 +292,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return $default_value;
   }
 
-  public function addConfirmRequiredStates($field, $field_name, &$group) {
+  public function addConfirmDependencies($field, $field_name, &$group) {
     if (
       array_key_exists('confirm', $this->fields)
       && $field_name != 'confirm'
@@ -506,7 +506,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           '#disabled' => !empty($field['disabled']),
           '#zebra_context' => $field['name'],
         ];
-        $this->addConfirmRequiredStates($field, $field['name'] . '_unselect', $group);
+        $this->addConfirmDependencies(
+          $field,
+          $field['name'] . '_unselect', $group
+        );
       }
 
       // Build the field (or fieldset).
@@ -559,7 +562,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Make the field's visibility and necessity depend on the "confirm" field
       // if it exists.
-      $this->addConfirmRequiredStates($field, $field_name, $group);
+      $this->addConfirmDependencies($field, $field_name, $group);
 
       // Display prefix/suffix content.
       $this->addPrefixSuffix($field, $field_name, $group);
@@ -567,10 +570,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // Add event form footer text.
     if (!empty($this->event->footer_text)) {
-      $form[] = [
-        '#markup' => $this->event->footer_text,
+      $form['footer_text'] = [
+        '#type' => 'container',
         '#weight' => self::highestWeight($form) + 1,
+        [
+          '#markup' => $this->event->footer_text,
+        ],
       ];
+      $this->addConfirmDependencies([], 'footer_text', $form);
     }
 
     return $form;
