@@ -188,7 +188,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Datetime' => 'datetime',
       'Timestamp' => 'date',
       'Value' => 'value',
-      'fieldset' => 'fieldset',
+      'fieldset' => 'details',
     ];
   }
 
@@ -568,6 +568,22 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $this->addPrefixSuffix($field, $field_name, $group);
     }
 
+    // Collapse fieldsets with more than 10 children.
+    foreach ($form_state->get('fields') as $field_name => $field) {
+      // Build hierarchy and retrieve the parent fieldset (or the form itself).
+      $group_parents = $this->groupParents($field_name);
+      $group = &NestedArray::getValue($form, $group_parents);
+      $type = self::fieldTypes()[$field['type']];
+      if (
+        array_key_exists($field_name, $group)
+        && $type == 'details'
+      ) {
+        $group[$field_name]['#open'] = count(
+            Element::getVisibleChildren($group[$field_name])
+          ) < 10;
+      }
+    }
+
     // Add event form footer text.
     if (!empty($this->event->footer_text)) {
       $form['footer_text'] = [
@@ -653,10 +669,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             || $form_state->getValue('confirm') == 1
           )
         )
-        || in_array($type, ['fieldset', 'value'])
+        || in_array($type, ['details', 'value'])
       ) {
         $group[$field_name] = [
-          '#type' => (in_array($type, ['fieldset', 'value']) ? $type : 'item'),
+          '#type' => (in_array($type, ['details', 'value']) ? $type : 'item'),
           '#name' => $field['name'],
         ];
         if (!empty($field['label'])) {
@@ -712,10 +728,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $type = self::fieldTypes()[$field['type']];
       if (
         array_key_exists($field_name, $group)
-        && $type == 'fieldset'
-        && empty(Element::getVisibleChildren($group[$field_name]))
+        && $type == 'details'
       ) {
-        unset($group[$field_name]);
+        if (empty(Element::getVisibleChildren($group[$field_name]))) {
+          unset($group[$field_name]);
+        }
+        else {
+          $group[$field_name]['#open'] = count(
+              Element::getVisibleChildren($group[$field_name])
+            ) < 10;
+        }
       }
     }
 
