@@ -188,7 +188,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       'Datetime' => 'datetime',
       'Timestamp' => 'date',
       'Value' => 'value',
-      'fieldset' => 'details',
+      'fieldset' => 'fieldset',
     ];
   }
 
@@ -216,7 +216,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return $parents;
   }
 
-  public function fieldType($field) {
+  public function fieldType($field, $step = 'form') {
     $types = self::fieldTypes();
     if (isset($field['validation']) && $field['validation'] == 'Email') {
       $type = 'email';
@@ -227,6 +227,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       && count($field['options']) <= 10
     ) {
       $type = 'radios';
+    }
+    // Use details element for session fieldsets.
+    elseif (
+      $types[$field['type']] == 'fieldset'
+      && $field['parent'] == 'sessions'
+      && $step == 'form'
+    ) {
+      $type = 'details';
     }
     // Use default field types from mapping.
     else {
@@ -485,7 +493,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $group = &NestedArray::getValue($form, $group_parents);
 
       // Set field type to "email" when its input is to be validated as such.
-      $type = $this->fieldType($field);
+      $type = $this->fieldType($field, 'form');
 
       // Prepare field default values.
       $default_value = $form_state->getValue(
@@ -576,7 +584,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $type = self::fieldTypes()[$field['type']];
       if (
         array_key_exists($field_name, $group)
-        && $type == 'details'
+        && in_array($type, ['details', 'fieldset'])
       ) {
         $group[$field_name]['#open'] = count(
             Element::getVisibleChildren($group[$field_name])
@@ -643,7 +651,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Build the field.
       $value = $form_state->getValue($field['name']);
-      $type = $this->fieldType($field);
+      $type = $this->fieldType($field, 'confirm');
 
       // Unset $value when the value does not belong to the field.
       if ($field_name != $field['name'] && $value != $field_name) {
@@ -669,10 +677,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             || $form_state->getValue('confirm') == 1
           )
         )
-        || in_array($type, ['details', 'value'])
+        || in_array($type, ['details', 'fieldset', 'value'])
       ) {
         $group[$field_name] = [
-          '#type' => (in_array($type, ['details', 'value']) ? $type : 'item'),
+          '#type' => (in_array($type, ['details', 'fieldset', 'value']) ? $type : 'item'),
           '#name' => $field['name'],
         ];
         if (!empty($field['label'])) {
@@ -728,7 +736,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $type = self::fieldTypes()[$field['type']];
       if (
         array_key_exists($field_name, $group)
-        && $type == 'details'
+        && in_array($type, ['details', 'fieldset'])
       ) {
         if (empty(Element::getVisibleChildren($group[$field_name]))) {
           unset($group[$field_name]);
