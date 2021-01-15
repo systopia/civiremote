@@ -24,7 +24,9 @@ class RegisterFormController extends ControllerBase {
 
   public function form(stdClass $event = NULL, $profile = NULL) {
     // Use default profile if not given.
-    $profile = (isset($profile) ? $profile : $event->default_profile);
+    if (!isset($profile) && isset($event)) {
+      $profile = $event->default_profile;
+    }
 
     // Try to find our own implementation.
     $form_id = $this->getFormId($profile);

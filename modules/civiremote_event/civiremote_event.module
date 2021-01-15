@@ -59,6 +59,7 @@ function civiremote_event_preprocess_container(&$variables) {
   $element = &$variables['element'];
   if (
     isset($element['#zebra_context'])
+    && isset($element['#array_parents'])
     && in_array('sessions', $element['#array_parents'], TRUE)
   ) {
     $zebra_context = &drupal_static('civiremote_event_preprocess_form_element__container');
