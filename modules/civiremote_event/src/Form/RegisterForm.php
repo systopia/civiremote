@@ -25,6 +25,8 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultNeutral;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -389,6 +391,79 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   }
 
   /**
+   * Applies dependencies on fields, i.e. restricts fields' options or sets
+   * values depending on other fields' values.
+   *
+   * @param array $field
+   *   The dependee field, i.e. the field other fields are dependent on.
+   * @param array $form
+   *   The form array.
+   * @param FormStateInterface $form_state
+   *   The form state object.
+   *
+   * @return array
+   *   An array of references to fields dependent on the dependee field after
+   *   they have been processed dependency-wise.
+   */
+  public function applyDependencies(array &$field, array &$form, FormStateInterface $form_state) {
+    $field_name = $field['#name'];
+    $field_value = $form_state->getValue($field_name);
+    $fields = $form_state->get('fields');
+    $dependent_fields = [];
+    if (isset($fields[$field_name])) {
+      if (!empty($dependencies = $fields[$field_name]['dependencies'])) {
+        foreach ($dependencies as $dependency) {
+          // Retrieve the parent fieldset/form of the dependent field.
+          $dependent_field_name = $dependency['dependent_field'];
+          $dependent_group_parents = $this->groupParents($dependent_field_name);
+          $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
+          $dependent_field = &$dependent_group[$dependent_field_name];
+          $dependent_fields[$dependent_field_name] = &$dependent_field;
+          $dependent_field_options = $form_state->get('fields')[$dependent_field_name]['options'];
+
+          // Restrict the dependent field's values according to the regex.
+          if ($dependency['command'] == 'restrict') {
+            $regex = str_replace(
+              '{current_value}',
+              $field_value,
+              $dependency['regex']
+            );
+            $matches = preg_grep(
+              "/$regex/",
+              array_keys($dependent_field_options)
+            );
+            $dependent_field['#options'] = array_intersect_key(
+              $dependent_field_options,
+              array_flip($matches)
+            );
+
+            // Hide dependent fields with no options if requested.
+            if (
+              (
+                $dependency['hide_restricted_empty']
+                && empty($dependent_field['#options'])
+              )
+              || (
+                $dependency['hide_unrestricted']
+                && empty($field_value)
+              )
+            ) {
+              $dependent_field['#wrapper_attributes']['class'][] = 'visually-hidden';
+            }
+          }
+
+          // TODO: Set the dependent field's value according to the regex.
+          elseif ($dependency['command'] == 'set') {
+
+          }
+        }
+      }
+    }
+
+    return $dependent_fields;
+  }
+
+  /**
    * @inheritDoc
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
@@ -557,8 +632,17 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if ($type == 'select' && isset($field['empty_label'])) {
         $group[$field_name]['#empty_option'] = $field['empty_label'];
       }
+
+      // Disable field if requested.
       if (!empty($field['disabled'])) {
         $group[$field_name]['#disabled'] = TRUE;
+      }
+
+      // Extract dependencies for later processing via #states.
+      if (!empty($field['dependencies'])) {
+        foreach ($field['dependencies'] as $dependency) {
+          $dependencies[$field['name']][$dependency['dependent_field']] = $dependency;
+        }
       }
 
       // Set #return_value for single Radios for later processing.
@@ -590,6 +674,37 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             Element::getVisibleChildren($group[$field_name])
           ) < 10;
       }
+    }
+
+    // Apply dependencies via #ajax.
+    foreach ($dependencies as $field_name => $field_dependencies) {
+      // Register an Ajax callback for the onChange event on the field.
+      $field_group_parents = $this->groupParents($field_name);
+      $field_group = &NestedArray::getValue($form, $field_group_parents);
+      $field_group[$field_name]['#ajax'] = [
+        'callback' => '::dependencyAjaxCallback',
+        'event' => 'change',
+      ];
+
+      // Process dependent fields.
+      foreach ($field_dependencies as $dependent_field_name => $dependency) {
+        // Wrap dependent fields with a wrapper element.
+        $dependent_group_parents = $this->groupParents($field_name);
+        $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
+        if (empty($dependent_group[$dependent_field_name]['#prefix'])) {
+          $dependent_group[$dependent_field_name]['#prefix'] = '';
+        }
+        $dependent_group[$dependent_field_name]['#prefix'] =
+          '<div id="dependency-wrapper-' . $dependent_field_name . '">'
+          . $dependent_group[$dependent_field_name]['#prefix'];
+        if (empty($dependent_group[$dependent_field_name]['#suffix'])) {
+          $dependent_group[$dependent_field_name]['#suffix'] = '';
+        }
+        $dependent_group[$dependent_field_name]['#suffix'] .= '</div>';
+      }
+
+      // Initially apply dependencies on dependent fields.
+      $this->applyDependencies($field_group[$field_name], $form, $form_state);
     }
 
     // Add event form footer text.
@@ -981,6 +1096,39 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $form_state->setRebuild();
       }
     }
+  }
+
+  /**
+   * Ajax callback for applying field dependencies.
+   *
+   * @param array $form
+   * @param FormStateInterface $form_state
+   *
+   * @return AjaxResponse | NULL
+   *   An Ajax response object, or NULL if the callback does not apply.
+   */
+  public function dependencyAjaxCallback(array &$form, FormStateInterface $form_state) {
+    // Build an Ajax response object.
+    $response = new AjaxResponse();
+
+    // Build Ajax Commands for applying dependencies.
+    $trigger = $form_state->getTriggeringElement();
+    $dependent_fields = $this->applyDependencies($trigger, $form, $form_state);
+    foreach ($dependent_fields as $dependent_field_name => $dependent_field) {
+      // Render the dependent field and build an Ajax command for
+      // replacing it.
+      $renderer = Drupal::service('renderer');
+      $renderedField = $renderer->render($dependent_field);
+
+      // Add the command for replacing the dependent field with the
+      // updated markup to the Ajax response object.
+      $response->addCommand(new ReplaceCommand(
+        '#dependency-wrapper-' . $dependent_field_name,
+        $renderedField
+      ));
+    }
+
+    return $response;
   }
 
   /**
