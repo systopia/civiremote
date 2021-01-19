@@ -1,7 +1,7 @@
 (function ($) {
   Drupal.behaviors.civiremote_dialog = {
     attach: function (context, settings) {
-      $('.dialog-wrapper').each(function () {
+      $('.dialog-wrapper', context).each(function () {
         $('<button>')
             .addClass('dialog-toggle js-show btn btn-info')
             .attr('form', '')
