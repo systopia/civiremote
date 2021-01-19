@@ -392,6 +392,39 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   }
 
   /**
+   * Retrieves fields dependent on the given field from the current form.
+   *
+   * @param array $field
+   *   The dependee field, i.e. the field other fields are dependent on.
+   * @param array $form
+   *   The form array.
+   * @param FormStateInterface $form_state
+   *   The form state object.
+   *
+   * @return array
+   *   An array of references to fields dependent on the dependee field after
+   *   they have been processed dependency-wise.
+   */
+  public function getDependencies(array &$field, array &$form, FormStateInterface $form_state) {
+    $field_name = $field['#name'];
+    $fields = $form_state->get('fields');
+    $dependent_fields = [];
+    if (isset($fields[$field_name])) {
+      if (!empty($dependencies = $fields[$field_name]['dependencies'])) {
+        foreach ($dependencies as $dependency) {
+          // Retrieve the parent fieldset/form of the dependent field.
+          $dependent_field_name = $dependency['dependent_field'];
+          $dependent_group_parents = $this->groupParents($dependent_field_name);
+          $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
+          $dependent_field = &$dependent_group[$dependent_field_name];
+          $dependent_fields[$dependent_field_name] = &$dependent_field;
+        }
+      }
+    }
+    return $dependent_fields;
+  }
+
+  /**
    * Applies dependencies on fields, i.e. restricts fields' options or sets
    * values depending on other fields' values.
    *
@@ -408,7 +441,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    */
   public function applyDependencies(array &$field, array &$form, FormStateInterface $form_state) {
     $field_name = $field['#name'];
-    $field_value = $form_state->getValue($field_name);
+    $field_value = $field['#default_value'];
     $fields = $form_state->get('fields');
     $dependent_fields = [];
     if (isset($fields[$field_name])) {
@@ -1117,7 +1150,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // Build Ajax Commands for applying dependencies.
     $trigger = $form_state->getTriggeringElement();
-    $dependent_fields = $this->applyDependencies($trigger, $form, $form_state);
+    $dependent_fields = $this->getDependencies($trigger, $form, $form_state);
     foreach ($dependent_fields as $dependent_field_name => $dependent_field) {
       // Render the dependent field and build an Ajax command for
       // replacing it.
