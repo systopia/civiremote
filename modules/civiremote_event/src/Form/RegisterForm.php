@@ -441,7 +441,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    */
   public function applyDependencies(array &$field, array &$form, FormStateInterface $form_state) {
     $field_name = $field['#name'];
-    $field_value = $field['#default_value'];
+    $field_value = $form_state->getValue($field_name) ?: $field['#default_value'];
     $fields = $form_state->get('fields');
     $dependent_fields = [];
     if (isset($fields[$field_name])) {
@@ -459,7 +459,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           if ($dependency['command'] == 'restrict') {
             $regex = str_replace(
               '{current_value}',
-              $field_value,
+              $field_value, // TODO: This is dependent on $dependency['regex_subject'].
               $dependency['regex']
             );
             $matches = preg_grep(
