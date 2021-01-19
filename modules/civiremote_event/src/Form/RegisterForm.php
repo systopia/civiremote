@@ -233,6 +233,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Use details element for session fieldsets.
     elseif (
       $types[$field['type']] == 'fieldset'
+      && isset($field['parent'])
       && $field['parent'] == 'sessions'
       && $step == 'form'
     ) {
@@ -437,7 +438,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               array_flip($matches)
             );
 
-            // Hide dependent fields with no options if requested.
+            // Hide dependent fields with no options if requested and prevent
+            // submitting a value.
             if (
               (
                 $dependency['hide_restricted_empty']
@@ -449,6 +451,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               )
             ) {
               $dependent_field['#wrapper_attributes']['class'][] = 'visually-hidden';
+              $dependent_field['#disabled'] = TRUE;
+              $dependent_field['#value'] = NULL;
             }
           }
 
@@ -685,6 +689,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         'callback' => '::dependencyAjaxCallback',
         'event' => 'change',
       ];
+      $field_group[$field_name]['#limit_validation_errors'] = [];
+      $field_group[$field_name]['#submit'] = [[$this, 'submitForm']];
 
       // Process dependent fields.
       foreach ($field_dependencies as $dependent_field_name => $dependency) {
@@ -961,65 +967,63 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     // Do not validate backward navigation.
     if (
-      isset($form['actions']['back'])
-      && $form_state->getTriggeringElement()['#value'] == $form['actions']['back']['#value']
+      isset($form['actions']['submit'])
+      && $form_state->getTriggeringElement()['#value'] == $form['actions']['submit']['#value']
     ) {
-      return;
-    }
+      if ($form_state->get('step') == array_search('confirm', $form_state->get('steps'))) {
+        $values = $form_state->get('values');
+      }
+      else {
+        $form_state->cleanValues();
+        $values = $form_state->getValues();
+      }
+      $this->preprocessValues($values);
+      try {
+        $result = $this->cmrf->validateEventRegistration(
+          $this->event->id,
+          $this->profile,
+          $this->remote_token,
+          $this->context,
+          $values
+        );
 
-    if ($form_state->get('step') == array_search('confirm', $form_state->get('steps'))) {
-      $values = $form_state->get('values');
-    }
-    else {
-      $form_state->cleanValues();
-      $values = $form_state->getValues();
-    }
-    $this->preprocessValues($values);
-    try {
-      $result = $this->cmrf->validateEventRegistration(
-        $this->event->id,
-        $this->profile,
-        $this->remote_token,
-        $this->context,
-        $values
-      );
-
-      // Show messages returned by the API.
-      if (!empty($result['status_messages'])) {
-        foreach ($result['status_messages'] as $message) {
-          if ($message['severity'] == 'error') {
-            if (!empty($message['reference'])) {
-              $form_state->setErrorByName(
-                $message['reference'],
-                $this->fields[$message['reference']]['label'] . ': ' . $message['message']
-              );
+        // Show messages returned by the API.
+        if (!empty($result['status_messages'])) {
+          foreach ($result['status_messages'] as $message) {
+            if ($message['severity'] == 'error') {
+              if (!empty($message['reference'])) {
+                $form_state->setErrorByName(
+                  $message['reference'],
+                  $this->fields[$message['reference']]['label'] . ': ' . $message['message']
+                );
+              }
+              else {
+                $form_state->set('error', TRUE);
+                Drupal::messenger()->addMessage(
+                  $message['message'],
+                  MessengerInterface::TYPE_ERROR
+                );
+                $form_state->setRebuild();
+              }
             }
             else {
-              $form_state->set('error', TRUE);
-              Drupal::messenger()->addMessage(
-                $message['message'],
-                MessengerInterface::TYPE_ERROR
-              );
-              $form_state->setRebuild();
+              Utils::setMessages([$message]);
             }
           }
-          else {
-            Utils::setMessages([$message]);
+
+          if (!empty($form_state->getErrors())) {
+            $form_state->set('step', array_search('form', $form_state->get('steps')));
           }
         }
-
-        if (!empty($form_state->getErrors())) {
-          $form_state->set('step', array_search('form', $form_state->get('steps')));
-        }
       }
-    }
-    catch (Exception $exception) {
-      $form_state->set('error', TRUE);
-      Drupal::messenger()->addMessage(
-        t('Registration validation failed, please try again later.'),
-        MessengerInterface::TYPE_ERROR
-      );
-      $form_state->setRebuild();
+      catch (Exception $exception) {
+        $form_state->set('error', TRUE);
+        Drupal::messenger()->addMessage(
+          t('Registration validation failed, please try again later.'),
+          MessengerInterface::TYPE_ERROR
+        );
+        $form_state->setRebuild();
+      }
     }
   }
 
