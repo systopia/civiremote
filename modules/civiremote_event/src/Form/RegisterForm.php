@@ -666,8 +666,16 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $group[$field_name]['#options'] =
           ['' => $this->t('- None -')] + $group[$field_name]['#options'];
       }
-      if ($type == 'select' && isset($field['empty_label'])) {
-        $group[$field_name]['#empty_option'] = $field['empty_label'];
+      if ($type == 'select') {
+        if (isset($field['empty_label'])) {
+          $group[$field_name]['#empty_option'] = $field['empty_label'];
+        }
+        elseif (!empty($field['required'])) {
+          $group[$field_name]['#empty_option'] = $this->t('- Select -');
+        }
+        else {
+          $group[$field_name]['#empty_option'] = $this->t('- None -');
+        }
       }
 
       // Disable field if requested.
@@ -718,6 +726,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Register an Ajax callback for the onChange event on the field.
       $field_group_parents = $this->groupParents($field_name);
       $field_group = &NestedArray::getValue($form, $field_group_parents);
+      $field_group[$field_name]['#civiremote_event_dependencies'] = $field_dependencies;
       $field_group[$field_name]['#ajax'] = [
         'callback' => '::dependencyAjaxCallback',
         'event' => 'change',
@@ -1000,10 +1009,12 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    * {@inheritDoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $triggering_element = &$form_state->getTriggeringElement();
+
     // Do not validate backward navigation.
     if (
       isset($form['actions']['submit'])
-      && $form_state->getTriggeringElement()['#value'] == $form['actions']['submit']['#value']
+      && $triggering_element['#value'] == $form['actions']['submit']['#value']
     ) {
       if ($form_state->get('step') == array_search('confirm', $form_state->get('steps'))) {
         $values = $form_state->get('values');
@@ -1059,6 +1070,25 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         );
         $form_state->setRebuild();
       }
+    }
+
+    // Clear errors for dependency triggers.
+    // This is necessary, because:
+    // - dependee fields have validation errors set to themselves only
+    // - when the dependee field is required and it is set back to the "none"
+    //   value, Drupal fails validation and would rebuild the cached form,
+    //   including the dependent field with its current selection
+    // - the user would be presented the dependee field without a selection, and
+    //   the dependent field with values belonging to the previously selected
+    //   dependee field value
+    // Clearing errors is harmless in this case, because the form is not being
+    // submitted with falsy values during the Ajax call.
+    elseif (
+      !empty($triggering_element['#civiremote_event_dependencies'])
+      && !empty($triggering_element['#limit_validation_errors'])
+      && !empty($errors = $form_state->getErrors())
+    ) {
+      $form_state->clearErrors();
     }
   }
 
