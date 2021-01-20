@@ -730,6 +730,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $field_group[$field_name]['#ajax'] = [
         'callback' => '::dependencyAjaxCallback',
         'event' => 'change',
+        'effect' => 'fade',
       ];
       $field_group[$field_name]['#limit_validation_errors'] = [
         [$field_name]
