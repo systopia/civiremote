@@ -16,7 +16,7 @@
                   {
                     width: '90%',
                     buttons: [{
-                      text: 'Close',
+                      text: Drupal.t('Close'),
                       click: function () {
                         $(this).dialog('close');
                       }
