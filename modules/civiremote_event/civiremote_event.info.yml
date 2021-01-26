@@ -6,3 +6,6 @@ core: 8.x
 configure: civiremote_event.config_form
 dependencies:
   - civiremote
+
+project: civiremote
+version: 1.0-beta1

@@ -6,3 +6,6 @@ core: 8.x
 configure: civiremote.config_form
 dependencies:
   - cmrf_core
+
+project: civiremote
+version: 1.0-beta1
