@@ -95,3 +95,11 @@ function civiremote_event_preprocess_textarea(&$variables) {
     unset($element['#label_attributes']['display_required']);
   }
 }
+
+function civiremote_event_theme($existing, $type, $theme, $path) {
+  return [
+    'cmrf_views_field_json_item__cmrf_views_civiremote_event_events__speakers' => [
+      'base hook' => 'cmrf_views_field_json_item',
+    ],
+  ];
+}

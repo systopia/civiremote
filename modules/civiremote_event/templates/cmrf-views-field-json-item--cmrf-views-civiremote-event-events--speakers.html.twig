@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Theme implementation for the CiviMRF Views JSON field item for the "speakers"
+ * field for the "cmrf_views_civiremote_event_events" CiviMRF Dataset, which
+ * contains a list of speakers for an event.
+ *
+ * Available variables:
+ * - item: The array structure of the current item.
+ * - count: The (zero-based) number of the current item.
+ * - field: The Drupal\cmrf_views\Plugin\views\field\JSON instance of the field
+ *   the current item belongs to.
+ * - item_list: A rendered item list of the array structure of the current item.
+ *
+ * The structure of each item is:
+ * - name: The CiviCRM display name of the speaker.
+ * - contact_id: The CiviCRM contact ID of the speaker.
+ * - first_name: The first name of the speaker.
+ * - last_name: The last name of the speaker.
+ * - roles: A comma-separated list of roles the speaker is assigned.
+ *
+ * As a default, only the display name is being displayed. For different values,
+ * override this template in your theme or module.
+ *
+ * @see template_preprocess_cmrf_views_field_json_item()
+ *
+ * @ingroup themeable
+ */
+#}
+{{ item.name }}
