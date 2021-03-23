@@ -15,25 +15,6 @@
 
 use Drupal\Component\Utility\NestedArray;
 
-/**
- * Implements hook_views_data_alter().
- */
-function civiremote_event_views_data_alter(array &$data) {
-  foreach ($data as $group => $fields) {
-    if (strpos($group, 'cmrf_views_') === 0) {
-      foreach ($fields as $field_name => $field_definition) {
-        if (
-          $field_definition['type'] == 2
-          && !empty($field_definition['format'])
-          && $field_definition['format'] == 'json'
-        ) {
-          // TODO: Implement as relationship or render as single field.
-        }
-      }
-    }
-  }
-}
-
 function civiremote_event_preprocess_form_element(&$variables) {
   $element = &$variables['element'];
   if (isset($element['#zebra_context'])) {
