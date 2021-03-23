@@ -166,7 +166,11 @@ class RegistrationCancelForm extends ConfirmFormBase {
     /* @var Url $url */
     $url = Drupal::service('path.validator')
       ->getUrlIfValid($config->get('form_redirect_route'));
-    $form_state->setRedirect($url->getRouteName());
+    $form_state->setRedirect(
+      $url->getRouteName(),
+      $url->getRouteParameters(),
+      $url->getOptions()
+    );
   }
 
   /**
