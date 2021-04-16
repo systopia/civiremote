@@ -11,6 +11,6 @@
     ],
     "homepage": "https://github.com/systopia/civiremote",
     "require": {
-        "drupal/cmrf_core": "^1.0"
+        "drupal/cmrf_core": "^1.0@beta | ^2.0@beta"
     }
 }
