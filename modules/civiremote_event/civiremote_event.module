@@ -82,5 +82,8 @@ function civiremote_event_theme($existing, $type, $theme, $path) {
     'cmrf_views_field_json_item__cmrf_views_civiremote_event_events__speakers' => [
       'base hook' => 'cmrf_views_field_json_item',
     ],
+    'cmrf_views_field_json_item__cmrf_views_civiremote_event_events__sessions' => [
+      'base hook' => 'cmrf_views_field_json_item',
+    ],
   ];
 }
