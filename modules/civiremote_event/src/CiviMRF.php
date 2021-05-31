@@ -17,6 +17,7 @@ namespace Drupal\civiremote_event;
 
 use Drupal;
 use Drupal\civiremote;
+use Drupal\civiremote\Utils;
 use Drupal\user\Entity\User;
 use Exception;
 use stdClass;
@@ -210,6 +211,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote token.
    * @param array $params
    *   Additional parameters to send to the API.
+   * @param bool $show_messages
+   *   Whether to show status/error messages returned by the API.
    *
    * @return array
    *   The API response of the remote event registration.
@@ -217,7 +220,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be submitted.
    */
-  public function createEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
+  public function createEventRegistration($event_id, $profile, $remote_token = NULL, $params = [], $show_messages = FALSE) {
     $params = array_merge($params, [
       'event_id' => $event_id,
       'profile' => $profile,
@@ -232,10 +235,13 @@ class CiviMRF extends civiremote\CiviMRF {
       []
     );
     $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if ($show_messages && !empty($reply['status_messages'])) {
+      Utils::setMessages($reply['status_messages']);
+    }
     if ($call->getStatus() !== $call::STATUS_DONE) {
       throw new Exception(t('The event registration failed.'));
     }
-    $reply = $call->getReply();
     return $reply;
   }
 
@@ -250,6 +256,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote token.
    * @param array $params
    *   Additional parameters to send to the API.
+   * @param bool $show_messages
+   *   Whether to show status/error messages returned by the API.
    *
    * @return array
    *   The API response of the remote event registration.
@@ -257,7 +265,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be submitted.
    */
-  public function updateEventRegistration($event_id, $profile, $remote_token = NULL, $params = []) {
+  public function updateEventRegistration($event_id, $profile, $remote_token = NULL, $params = [], $show_messages = FALSE) {
     $params = array_merge($params, [
       'event_id' => $event_id,
       'profile' => $profile,
@@ -272,10 +280,13 @@ class CiviMRF extends civiremote\CiviMRF {
       []
     );
     $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if ($show_messages && !empty($reply['status_messages'])) {
+      Utils::setMessages($reply['status_messages']);
+    }
     if ($call->getStatus() !== $call::STATUS_DONE) {
       throw new Exception(t('The event registration update failed.'));
     }
-    $reply = $call->getReply();
     return $reply;
   }
 
@@ -286,6 +297,8 @@ class CiviMRF extends civiremote\CiviMRF {
    *   The remote event ID.
    * @param string $remote_token
    *   The remote event token.
+   * @param bool $show_messages
+   *   Whether to show status/error messages returned by the API.
    *
    * @return array
    *   The API response of the remote event registration cancellation.
@@ -293,7 +306,7 @@ class CiviMRF extends civiremote\CiviMRF {
    * @throws Exception
    *   When the remote event registration could not be cancelled.
    */
-  public function cancelEventRegistration($event_id, $remote_token = NULL) {
+  public function cancelEventRegistration($event_id, $remote_token = NULL, $show_messages = FALSE) {
     $params = [
       'event_id' => $event_id,
       'token' => $remote_token
@@ -307,10 +320,13 @@ class CiviMRF extends civiremote\CiviMRF {
       []
     );
     $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if ($show_messages && !empty($reply['status_messages'])) {
+      Utils::setMessages($reply['status_messages']);
+    }
     if ($call->getStatus() !== $call::STATUS_DONE) {
       throw new Exception(t('The event registration cancellation failed.'));
     }
-    $reply = $call->getReply();
     return $reply['values'];
   }
 

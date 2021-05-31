@@ -1121,13 +1121,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             $this->event->id,
             $this->profile,
             $this->remote_token,
-            $values
+            $values,
+            TRUE
           );
-
-          // Show messages returned by the API.
-          if (!empty($result['status_messages'])) {
-            Utils::setMessages($result['status_messages']);
-          }
 
           // Advance to "Thank you" step (when this is no invitation or it has
           // been confirmed).
@@ -1156,10 +1152,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         }
         catch (Exception $exception) {
           $form_state->set('error', TRUE);
-          Drupal::messenger()->addMessage(
-            t('Registration failed, please try again later.'),
-            MessengerInterface::TYPE_ERROR
-          );
+          $form_state->setValues($values);
           $form_state->setRebuild();
         }
       }

@@ -62,13 +62,9 @@ class RegistrationUpdateForm extends RegisterForm {
             $this->event->id,
             $this->profile,
             $this->remote_token,
-            $values
+            $values,
+            TRUE
           );
-
-          // Show messages returned by the API.
-          if (!empty($result['status_messages'])) {
-            Utils::setMessages($result['status_messages']);
-          }
 
           // Advance to "Thank you" step (when this is no invitation or it has
           // been confirmed).
@@ -97,10 +93,6 @@ class RegistrationUpdateForm extends RegisterForm {
         }
         catch (Exception $exception) {
           $form_state->set('error', TRUE);
-          Drupal::messenger()->addMessage(
-            t('Registration failed, please try again later.'),
-            MessengerInterface::TYPE_ERROR
-          );
           $form_state->setRebuild();
         }
       }

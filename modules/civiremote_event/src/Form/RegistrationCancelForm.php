@@ -149,15 +149,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
     try {
       $result = $this->cmrf->cancelEventRegistration(
         $this->event->id,
-        $this->remote_token
+        $this->remote_token,
+        TRUE
       );
     }
     catch (Exception $exception) {
       $form_state->set('error', TRUE);
-      Drupal::messenger()->addMessage(
-        t('Registration failed, please try again later.'),
-        MessengerInterface::TYPE_ERROR
-      );
       $form_state->setRebuild();
     }
 
