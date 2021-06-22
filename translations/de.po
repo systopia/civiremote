@@ -25,7 +25,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.0\n"
+"Project-Id-Version: CiviRemote 1.0\n"
 "POT-Creation-Date: 2021-06-22 11:49+0200\n"
 "PO-Revision-Date: 2021-06-22 12:05+0200\n"
 "Language-Team: info@systopia.de\n"
