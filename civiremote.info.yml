@@ -8,7 +8,7 @@ dependencies:
   - cmrf_core
 
 'interface translation project': civiremote
-'interface translation server pattern': https://github.com/systopia/civiremote/raw/1.x/translations/%language.po
+'interface translation server pattern': https://systopia.github.io/civiremote/translations/%language.po
 
 project: civiremote
 version: 1.x-dev
