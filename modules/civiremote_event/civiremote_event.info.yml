@@ -3,6 +3,7 @@ type: module
 description: 'CiviRemote Events'
 package: CiviCRM
 core: 8.x
+core_version_requirement: ^8 || ^9
 configure: civiremote_event.config_form
 dependencies:
   - civiremote
