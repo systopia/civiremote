@@ -7,8 +7,13 @@ services:
     arguments: ['@civiremote_event.cmrf']
     tags:
       - { name: paramconverter }
-  civiremote_event.remote_token_converter:
-    class: Drupal\civiremote_event\Routing\RemoteTokenConverter
+  civiremote_event.event_token_converter:
+    class: Drupal\civiremote_event\Routing\EventTokenConverter
     arguments: ['@civiremote_event.cmrf']
+    tags:
+      - { name: paramconverter }
+  civiremote_event.checkin_token_converter:
+    class: Drupal\civiremote_event\Routing\CheckinTokenConverter
+    arguments: [ '@civiremote_event.cmrf' ]
     tags:
       - { name: paramconverter }

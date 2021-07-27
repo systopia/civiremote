@@ -22,7 +22,7 @@ use Exception;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Route;
 
-class RemoteTokenConverter implements ParamConverterInterface {
+class EventTokenConverter implements ParamConverterInterface {
 
   /**
    * @var CiviMRF $cmrf
@@ -31,7 +31,7 @@ class RemoteTokenConverter implements ParamConverterInterface {
   protected $cmrf;
 
   /**
-   * CiviRemoteEventConverter constructor.
+   * EventTokenConverter constructor.
    *
    * @param CiviMRF $cmrf
    *   The CiviMRF service.
@@ -58,7 +58,7 @@ class RemoteTokenConverter implements ParamConverterInterface {
    * @inheritDoc
    */
   public function applies($definition, $name, Route $route) {
-    return !empty($definition['type']) && $definition['type'] == 'civiremote_remote_token';
+    return !empty($definition['type']) && $definition['type'] == 'civiremote_event_token';
   }
 
 }

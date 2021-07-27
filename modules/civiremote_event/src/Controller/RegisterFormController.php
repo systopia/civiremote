@@ -37,7 +37,7 @@ class RegisterFormController extends ControllerBase {
 
   public function title(stdClass $event = NULL, $remote_token = NULL) {
     // If the form is being requested with a token, the event will have been
-    // resolved in $remote_token by the RemoteTokenConverter.
+    // resolved in $remote_token by the EventTokenConverter.
     if ($remote_token) {
       $event = $remote_token;
     }

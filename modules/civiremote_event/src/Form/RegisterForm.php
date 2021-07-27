@@ -18,6 +18,7 @@ namespace Drupal\civiremote_event\Form;
 
 use Drupal;
 use Drupal\civiremote\Utils;
+use Drupal\civiremote_event\Utils as EventUtils;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
 use Drupal\Component\Utility\Html;
@@ -178,22 +179,6 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return 'civiremote_event_register_form';
   }
 
-  public static function fieldTypes() {
-    return [
-      'Text' => 'textfield',
-      'Textarea' => 'textarea',
-      'Select' => 'select', // Can be replaced with 'radios' in buildForm().
-      'Multi-Select' => 'select',
-      'Checkbox' => 'checkbox',
-      'Radio' => 'radio',
-      'Date' => 'date',
-      'Datetime' => 'datetime',
-      'Timestamp' => 'date',
-      'Value' => 'value',
-      'fieldset' => 'fieldset',
-    ];
-  }
-
   public static function highestWeight($context) {
     $weight = 0;
     foreach (Element::getVisibleChildren($context) as $element) {
@@ -218,36 +203,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     return $parents;
   }
 
-  public function fieldType($field, $step = 'form') {
-    $types = self::fieldTypes();
-    if (isset($field['validation']) && $field['validation'] == 'Email') {
-      $type = 'email';
-    }
-    // Use radio buttons for select fields with up to 10 options.
-    elseif (
-      $types[$field['type']] == 'select'
-      && count($field['options']) <= 10
-    ) {
-      $type = 'radios';
-    }
-    // Use details element for session fieldsets.
-    elseif (
-      $types[$field['type']] == 'fieldset'
-      && isset($field['parent'])
-      && $field['parent'] == 'sessions'
-      && $step == 'form'
-    ) {
-      $type = 'details';
-    }
-    // Use default field types from mapping.
-    else {
-      $type = $types[$field['type']];
-    }
-
-    return $type;
-  }
-
-  public function defaultValue($field, $field_name, $type) {
+  public static function defaultValue($field, $field_name, $type) {
     $default_value = NULL;
 
     switch ($type) {
@@ -387,7 +343,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
   public function hasFields() {
     return !empty(array_filter($this->fields, function($field) {
-      return in_array($field['type'], array_keys(self::fieldTypes()));
+      return in_array($field['type'], array_keys(EventUtils::fieldTypes()));
     }));
   }
 
@@ -605,7 +561,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $group = &NestedArray::getValue($form, $group_parents);
 
       // Set field type to "email" when its input is to be validated as such.
-      $type = $this->fieldType($field, 'form');
+      $type = EventUtils::fieldType($field, 'form');
 
       // Prepare field default values.
       $default_value = $form_state->getValue(
@@ -710,7 +666,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
       $group_parents = $this->groupParents($field_name);
       $group = &NestedArray::getValue($form, $group_parents);
-      $type = self::fieldTypes()[$field['type']];
+      $type = EventUtils::fieldTypes()[$field['type']];
       if (
         array_key_exists($field_name, $group)
         && in_array($type, ['details', 'fieldset'])
@@ -819,7 +775,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Build the field.
       $value = $form_state->getValue($field['name']);
-      $type = $this->fieldType($field, 'confirm');
+      $type = EventUtils::fieldType($field, 'confirm');
 
       // Unset $value when the value does not belong to the field.
       if ($field_name != $field['name'] && $value != $field_name) {
@@ -901,7 +857,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
       $group_parents = $this->groupParents($field_name);
       $group = &NestedArray::getValue($form, $group_parents);
-      $type = self::fieldTypes()[$field['type']];
+      $type = EventUtils::fieldTypes()[$field['type']];
       if (
         array_key_exists($field_name, $group)
         && in_array($type, ['details', 'fieldset'])
@@ -978,7 +934,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   public function preprocessValues(array &$values) {
     $new_values = [];
     $radio_fields = array_filter($this->fields, function($field) {
-      return self::fieldTypes()[$field['type']] == 'radio';
+      return EventUtils::fieldTypes()[$field['type']] == 'radio';
     });
     $radio_field_names = array_map(function($field) {
       return $field['name'];
@@ -996,11 +952,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
 
       // Use CiviCRM date format for date fields.
-      if (!empty($value) && self::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
+      if (!empty($value) && EventUtils::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
         $value = date_create($value)->format('Ymd');
       }
       // Use CiviCRM date format for datetime fields.
-      if (!empty($value) && self::fieldTypes()[$this->fields[$field_name]['type']] == 'datetime') {
+      if (!empty($value) && EventUtils::fieldTypes()[$this->fields[$field_name]['type']] == 'datetime') {
         /* @var DrupalDateTime $value */
         $value = $value->format('YmdHis');
       }

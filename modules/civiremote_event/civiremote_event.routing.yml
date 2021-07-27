@@ -23,7 +23,7 @@ civiremote_event.register_form:
       profile:
         type: string
 civiremote_event.register_token_form:
-  path: '/civiremote/event/register/{remote_token}'
+  path: '/civiremote/event/register/{event_token}'
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
@@ -32,8 +32,8 @@ civiremote_event.register_token_form:
   options:
     no_cache: TRUE
     parameters:
-      remote_token:
-        type: civiremote_remote_token
+      event_token:
+        type: civiremote_event_token
 
 civiremote_event.registration_cancel_form:
   path: '/civiremote/event/{event}/cancel'
@@ -47,7 +47,7 @@ civiremote_event.registration_cancel_form:
       event:
         type: civiremote_event
 civiremote_event.registration_cancel_token_form:
-  path: '/civiremote/event/cancel/{remote_token}'
+  path: '/civiremote/event/cancel/{event_token}'
   defaults:
     _form: '\Drupal\civiremote_event\Form\RegistrationCancelForm'
   requirements:
@@ -55,8 +55,8 @@ civiremote_event.registration_cancel_token_form:
   options:
     no_cache: TRUE
     parameters:
-      remote_token:
-        type: civiremote_remote_token
+      event_token:
+        type: civiremote_event_token
 
 civiremote_event.registration_update_form:
   path: '/civiremote/event/{event}/update'
@@ -70,7 +70,7 @@ civiremote_event.registration_update_form:
       event:
         type: civiremote_event
 civiremote_event.registration_update_token_form:
-  path: '/civiremote/event/update/{remote_token}'
+  path: '/civiremote/event/update/{event_token}'
   defaults:
     _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
   requirements:
@@ -78,5 +78,17 @@ civiremote_event.registration_update_token_form:
   options:
     no_cache: TRUE
     parameters:
-      remote_token:
-        type: civiremote_remote_token
+      event_token:
+        type: civiremote_event_token
+
+civiremote_event.checkin_form:
+  path: '/civiremote/event/checkin/{checkin_token}'
+  defaults:
+    _form: '\Drupal\civiremote_event\Form\CheckinForm'
+  requirements:
+    _permission: 'civiremote_event: check in participants'
+  options:
+    no_cache: TRUE
+    parameters:
+      checkin_token:
+        type: civiremote_checkin_token

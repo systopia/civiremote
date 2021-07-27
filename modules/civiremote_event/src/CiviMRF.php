@@ -331,6 +331,41 @@ class CiviMRF extends civiremote\CiviMRF {
   }
 
   /**
+   * Retrieves information about a participant for checking them in.
+   *
+   * @param $remote_token
+   *   The remote event checkin token.
+   *
+   * @param bool $show_messages
+   *   Whether to show status/error messages returned by the API.
+   *
+   * @return array
+   *   The API response of the remote event checkin verification.
+   *
+   * @throws Exception
+   *   When the remote event checkin could not be verified.
+   */
+  public function getCheckinInfo($remote_token) {
+    $params = [
+      'token' => $remote_token
+    ];
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'EventCheckin',
+      'verify',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('The event checkin verification failed.'));
+    }
+    return ['fields' => $reply['values'], 'checkin_options' => $reply['checkin_options']];
+  }
+
+  /**
    * Adds the currently logged-in user's CiviRemote ID to the given parameters
    * array.
    *
