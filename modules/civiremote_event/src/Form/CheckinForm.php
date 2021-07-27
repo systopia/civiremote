@@ -132,12 +132,6 @@ class CheckinForm extends FormBase {
           '#civiremote_event_checkin_status' => $checkin_status_id,
         ];
       }
-      $form['actions']['checkin_foobar'] = [
-        '#type' => 'submit',
-        '#name' => 'checkin_0',
-        '#value' => $this->t('Check-In as %status', ['%status' => 'Foobar']),
-        '#civiremote_event_checkin_status' => 0,
-      ];
     }
 
     return $form;
