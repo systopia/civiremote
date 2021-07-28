@@ -17,10 +17,12 @@ namespace Drupal\civiremote_event\Form;
 
 
 use Drupal;
+use Drupal\civiremote\Utils;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Utils as EventUtils;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatch;
 use Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -87,6 +89,46 @@ class CheckinForm extends FormBase {
    * @inheritDoc
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // Prepare form steps.
+    if (empty($form_state->get('steps'))) {
+      $steps = [];
+      // Confirmation step, right before final submission.
+      $steps[] = 'checkin';
+      // Thank you step, right after final submission.
+      $steps[] = 'success';
+
+      $form_state->set('steps', $steps);
+      // Initialize with first step.
+      $form_state->set('step', 0);
+    }
+    $step = $form_state->get('step');
+    $steps = $form_state->get('steps');
+
+    // Display messages and submit buttons only for first step.
+    if ($step == array_search('checkin', $steps)) {
+      // Display status messages.
+      // TODO: This does not do anything because messages are being returned as
+      //   error messages, causing a 403 instead of them being displayed.
+      if (!empty($this->checkin_info['status_messages'])) {
+        Utils::setMessages($this->checkin_info['status_messages']);
+      }
+
+      // Add submit buttons for all checkin options.
+      if (!empty($this->checkin_info['checkin_options'])) {
+        $form['actions'] = [
+          '#type' => 'actions',
+        ];
+        foreach ($this->checkin_info['checkin_options'] as $checkin_status_id => $checkin_status_label) {
+          $form['actions']['checkin_' . $checkin_status_id] = [
+            '#type' => 'submit',
+            '#name' => 'checkin_' . $checkin_status_id,
+            '#value' => $this->t('Check-In as %status', ['%status' => $checkin_status_label]),
+            '#civiremote_event_checkin_status' => $checkin_status_id,
+          ];
+        }
+      }
+    }
+
     // Display fields.
     foreach ($this->checkin_info['fields'] as $field) {
       $form[$field['path']] = [
@@ -119,21 +161,6 @@ class CheckinForm extends FormBase {
       }
     }
 
-    // Add submit buttons for all checkin options.
-    if (!empty($this->checkin_info['checkin_options'])) {
-      $form['actions'] = [
-        '#type' => 'actions',
-      ];
-      foreach ($this->checkin_info['checkin_options'] as $checkin_status_id => $checkin_status_label) {
-        $form['actions']['checkin_' . $checkin_status_id] = [
-          '#type' => 'submit',
-          '#name' => 'checkin_' . $checkin_status_id,
-          '#value' => $this->t('Check-In as %status', ['%status' => $checkin_status_label]),
-          '#civiremote_event_checkin_status' => $checkin_status_id,
-        ];
-      }
-    }
-
     return $form;
   }
 
@@ -162,13 +189,34 @@ class CheckinForm extends FormBase {
     }
     $form_state->setTriggeringElement($triggering_element);
 
-    // TODO: Check-in via API.
-    Drupal::messenger()
-      ->addStatus($this->t('Check-in with status ID %status_id requested',
-        [
-          '%status_id' => $form_state->getTriggeringElement()['#civiremote_event_checkin_status'],
-        ]
-      ));
+    // Check-in via API.
+    try {
+      $this->cmrf->checkinParticipant(
+        $this->checkin_token,
+        $form_state->getTriggeringElement()['#civiremote_event_checkin_status'],
+        TRUE
+      );
+      Drupal::messenger()->addMessage(
+        t('Successfully checked-in the participant.'),
+        MessengerInterface::TYPE_STATUS
+      );
+
+      // Rebuild the form with "success" step.
+      $form_state->set(
+        'step',
+        array_search('success', $form_state->get('steps'))
+      );
+      $form_state->setRebuild();
+    }
+    catch (Exception $exception) {
+      // Display an error message and rebuild the form with the current step.
+      $form_state->set('error', TRUE);
+      Drupal::messenger()->addMessage(
+        t('Check-in failed, please try again later.'),
+        MessengerInterface::TYPE_ERROR
+      );
+      $form_state->setRebuild();
+    }
   }
 
 }
