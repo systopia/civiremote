@@ -331,6 +331,86 @@ class CiviMRF extends civiremote\CiviMRF {
   }
 
   /**
+   * Retrieves information about a participant for checking them in.
+   *
+   * @param $remote_token
+   *   The remote event checkin token.
+   *
+   * @param bool $show_messages
+   *   Whether to show status/error messages returned by the API.
+   *
+   * @return array
+   *   The API response of the remote event checkin verification.
+   *
+   * @throws Exception
+   *   When the remote event checkin could not be verified.
+   */
+  public function getCheckinInfo($remote_token, $show_messages = FALSE) {
+    $params = [
+      'token' => $remote_token
+    ];
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'EventCheckin',
+      'verify',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if ($show_messages && !empty($reply['status_messages'])) {
+      Utils::setMessages($reply['status_messages']);
+    }
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('The event checkin verification failed.'));
+    }
+    return ['fields' => $reply['values'], 'checkin_options' => $reply['checkin_options']];
+  }
+
+  /**
+   * Checks a participant in to the event.
+   *
+   * @param $remote_token
+   *   The remote event checkin token.
+   *
+   * @param int $status_id
+   *   The participant status ID to use for checking the participant in.
+   *
+   * @param bool $show_messages
+   *   Whether to show status/error messages returned by the API.
+   *
+   * @return bool
+   *   Whether the check-in was successful.
+   *
+   * @throws Exception
+   *   When the participant could not be checked-in.
+   */
+  public function checkinParticipant($remote_token, $status_id, $show_messages = FALSE) {
+    $params = [
+      'token' => $remote_token,
+      'status_id' => $status_id,
+    ];
+    self::addRemoteContactId($params);
+    $call = $this->core->createCall(
+      $this->connector(),
+      'EventCheckin',
+      'confirm',
+      $params,
+      []
+    );
+    $this->core->executeCall($call);
+    $reply = $call->getReply();
+    if ($show_messages && !empty($reply['status_messages'])) {
+      Utils::setMessages($reply['status_messages']);
+    }
+    if ($call->getStatus() !== $call::STATUS_DONE) {
+      throw new Exception(t('The event checkin failed.'));
+    }
+    return TRUE;
+  }
+
+  /**
    * Adds the currently logged-in user's CiviRemote ID to the given parameters
    * array.
    *
