@@ -1,4 +1,4 @@
 'civiremote_event: check in participants':
-  title: 'Bypass views access control'
-  description: 'Bypass access control when accessing views.'
+  title: 'Check-in CiviCRM Event Participants'
+  description: 'Grants access to the check-in form for checking in CiviCRM event participants via CiviRemote.'
   restrict access: TRUE
