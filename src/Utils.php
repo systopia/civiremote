@@ -52,7 +52,7 @@ class Utils {
     foreach ($messages as $message) {
       Drupal::messenger()->addMessage(
         $message['message'],
-        Utils::messageSeverity($message['severity'])
+        Utils::messageSeverity($message['severity'] ?? 'status')
       );
     }
   }

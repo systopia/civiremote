@@ -16,7 +16,10 @@
 namespace Drupal\civiremote_event\Routing;
 
 
+use Drupal\civiremote\Utils;
 use Drupal\civiremote_event\CiviMRF;
+use Drupal\Core\Messenger\Messenger;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -45,12 +48,11 @@ class CheckinTokenConverter implements ParamConverterInterface {
    */
   public function convert($value, $definition, $name, array $defaults) {
     try {
-      return $this->cmrf->getCheckinInfo($value);
+      return $this->cmrf->getCheckinInfo($value, TRUE);
     }
     catch (Exception $exception) {
-      // We don't care for the error and assume the user does not have access to
-      // the event.
-      throw new AccessDeniedHttpException();
+      Utils::setMessages([['message' => $exception->getMessage(), 'severity' => 'error']]);
+      throw new AccessDeniedHttpException($exception->getMessage());
     }
   }
 

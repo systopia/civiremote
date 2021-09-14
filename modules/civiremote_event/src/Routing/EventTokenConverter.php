@@ -16,6 +16,7 @@
 namespace Drupal\civiremote_event\Routing;
 
 
+use Drupal\civiremote\Utils;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Exception;
@@ -48,9 +49,8 @@ class EventTokenConverter implements ParamConverterInterface {
       return $this->cmrf->getEvent(NULL, $value);
     }
     catch (Exception $exception) {
-      // We don't care for the error and assume the user does not have access to
-      // the event.
-      throw new AccessDeniedHttpException();
+      Utils::setMessages([['message' => $exception->getMessage(), 'severity' => 'error']]);
+      throw new AccessDeniedHttpException($exception->getMessage());
     }
   }
 
