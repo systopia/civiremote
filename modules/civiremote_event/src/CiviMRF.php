@@ -44,27 +44,33 @@ class CiviMRF extends civiremote\CiviMRF {
    *   When the event could not be retrieved.
    */
   public function getEvent($event_id, $remote_token = NULL) {
-    $params = [
-      'id' => $event_id,
-      'token' => $remote_token,
-    ];
-    self::addRemoteContactId($params);
+    // Since we want all exceptions be safely displayable, catch all unexpected
+    // exceptions inside this method.
+    try {
+      $params = [
+        'id' => $event_id,
+        'token' => $remote_token,
+      ];
+      self::addRemoteContactId($params);
 
-    $reply = &drupal_static(__FUNCTION__ . '_' . implode('_', $params));
-    if (!isset($reply)) {
-      $call = $this->core->createCall(
-        $this->connector(),
-        'RemoteEvent',
-        'getsingle',
-        $params,
-        []
-      );
-      $this->core->executeCall($call);
-      $reply = $call->getReply();
+      $reply = &drupal_static(__FUNCTION__ . '_' . implode('_', $params));
+      if (!isset($reply)) {
+        $call = $this->core->createCall(
+          $this->connector(),
+          'RemoteEvent',
+          'getsingle',
+          $params,
+          []
+        );
+        $this->core->executeCall($call);
+        $reply = $call->getReply();
+      }
+      if (!isset($reply['id'])) {
+        throw new Exception();
+      }
     }
-
-    if (!isset($reply['id'])) {
-      throw new Exception(t('Could not retrieve remote event.'));
+    catch (Exception $exception) {
+      throw new Exception($reply['error_message'] ?? t('Could not retrieve remote event.'));
     }
 
     return (object) $reply;
@@ -346,25 +352,33 @@ class CiviMRF extends civiremote\CiviMRF {
    *   When the remote event checkin could not be verified.
    */
   public function getCheckinInfo($remote_token, $show_messages = FALSE) {
-    $params = [
-      'token' => $remote_token
-    ];
-    self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
-      'EventCheckin',
-      'verify',
-      $params,
-      []
-    );
-    $this->core->executeCall($call);
-    $reply = $call->getReply();
-    if ($show_messages && !empty($reply['status_messages'])) {
-      Utils::setMessages($reply['status_messages']);
+    // Since we want all exceptions be safely displayable, catch all unexpected
+    // exceptions inside this method.
+    try {
+      $params = [
+        'token' => $remote_token
+      ];
+      self::addRemoteContactId($params);
+      $call = $this->core->createCall(
+        $this->connector(),
+        'EventCheckin',
+        'verify',
+        $params,
+        []
+      );
+      $this->core->executeCall($call);
+      $reply = $call->getReply();
+      if ($show_messages && !empty($reply['status_messages'])) {
+        Utils::setMessages($reply['status_messages']);
+      }
+      if ($call->getStatus() !== $call::STATUS_DONE) {
+        throw new Exception();
+      }
     }
-    if ($call->getStatus() !== $call::STATUS_DONE) {
-      throw new Exception(t('The event checkin verification failed.'));
+    catch (Exception $exception) {
+      throw new Exception($reply['error_message'] ?? t('The event checkin verification failed.'));
     }
+
     return ['fields' => $reply['values'], 'checkin_options' => $reply['checkin_options']];
   }
 
