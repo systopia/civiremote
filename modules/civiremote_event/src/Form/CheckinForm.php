@@ -33,7 +33,7 @@ class CheckinForm extends FormBase {
    * @var CiviMRF $cmrf
    *   The CiviMRF core service.
    */
-  protected CiviMRF $cmrf;
+  protected $cmrf;
 
   /**
    * @var string $checkin_token
