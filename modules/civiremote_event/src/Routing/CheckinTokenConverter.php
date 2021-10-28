@@ -31,7 +31,7 @@ class CheckinTokenConverter implements ParamConverterInterface {
    * @var CiviMRF $cmrf
    *   The CiviMRF service.
    */
-  protected CiviMRF $cmrf;
+  protected $cmrf;
 
   /**
    * CheckinTokenConverter constructor.
