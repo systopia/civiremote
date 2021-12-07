@@ -59,8 +59,8 @@ class CiviMRF {
   /**
    * @param $params
    *
-   * @return array
-   *   The CiviRemote roles.
+   * @return array | bool
+   *   The CiviRemote roles, or FALSE when synchronising roles failed.
    */
   public function getRoles($params) {
     $call = $this->core->createCall(
@@ -72,7 +72,8 @@ class CiviMRF {
     );
     $this->core->executeCall($call);
     $reply = $call->getReply();
-    return $reply['values'];
+    // TODO: Throw an exception when the call failed?
+    return $reply['values'] ?? FALSE;
   }
 
 }
