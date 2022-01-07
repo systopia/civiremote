@@ -126,7 +126,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
     $this->event = $routeMatch->getParameter('event');
     $this->profile = $routeMatch->getRawParameter('profile');
-    $this->remote_token = $routeMatch->getRawParameter('remote_token');
+    $this->remote_token = $routeMatch->getRawParameter('event_token');
     $form = $this->cmrf->getForm(
       (isset($this->event) ? $this->event->id : NULL),
       $this->profile,
