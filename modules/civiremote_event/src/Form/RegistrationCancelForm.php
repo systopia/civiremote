@@ -77,7 +77,7 @@ class RegistrationCancelForm extends ConfirmFormBase {
     // have to care about that.
     $routeMatch = RouteMatch::createFromRequest($this->getRequest());
     $this->event = $routeMatch->getParameter('event');
-    $this->remote_token = $routeMatch->getRawParameter('remote_token');
+    $this->remote_token = $routeMatch->getRawParameter('event_token');
     // Retrieve event using the remote token, overwriting the event object.
     if (!empty($this->remote_token)) {
       $form = $this->cmrf->getForm(
