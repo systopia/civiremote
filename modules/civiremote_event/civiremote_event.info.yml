@@ -9,4 +9,4 @@ dependencies:
   - civiremote
 
 project: civiremote
-version: 1.0-beta12
+version: 1.x-dev
