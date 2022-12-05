@@ -220,6 +220,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $default_value = new DrupalDateTime($default_value);
         }
         break;
+      case 'checkboxes':
+        if (
+          isset($field['value'])
+          && array_key_exists($field['value'], $field['options'])
+        ) {
+          $default_value = $field['value'];
+        }
+        break;
       case 'radios':
         if (
           isset($field['value'])
@@ -602,13 +610,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (!empty($field['weight'])) {
         $group[$field_name]['#weight'] = $field['weight'];
       }
-      if ($field['type'] == 'Multi-Select') {
-        $group[$field_name]['#multiple'] = TRUE;
-      }
       if (isset($default_value)) {
         $group[$field_name]['#default_value'] = $default_value;
       }
-      if ($type == 'select' || $type == 'radios') {
+      if ($type == 'select' || $type == 'radios' || $type == 'checkboxes') {
         $group[$field_name]['#options'] = $field['options'];
       }
       // Add "empty" option for non-required radio button groups, if it doesn't
@@ -623,6 +628,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           ['' => $this->t('- None -')] + $group[$field_name]['#options'];
       }
       if ($type == 'select') {
+        if ($field['type'] == 'Multi-Select') {
+          $group[$field_name]['#multiple'] = TRUE;
+        }
         if (isset($field['empty_label'])) {
           $group[$field_name]['#empty_option'] = $field['empty_label'];
         }
