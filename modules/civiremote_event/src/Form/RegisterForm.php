@@ -959,6 +959,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         unset($values[$field_name]);
       }
 
+      // Filter checkboxes field type values (exclude unselected values).
+      if (EventUtils::fieldType($this->fields[$field_name]) == 'checkboxes') {
+        $value = array_filter($value);
+      }
+
       // Use CiviCRM date format for date fields.
       if (!empty($value) && EventUtils::fieldTypes()[$this->fields[$field_name]['type']] == 'date') {
         $value = date_create($value)->format('Ymd');

@@ -46,6 +46,8 @@ class Utils {
     elseif (
       $types[$field['type']] == 'select'
       && count($field['options']) <= 10
+      // Checkboxes #options may not have a 0 key.
+      && !isset($field['options'][0])
     ) {
       $type = $field['type'] == 'Multi-Select' ? 'checkboxes' : 'radios';
     }
