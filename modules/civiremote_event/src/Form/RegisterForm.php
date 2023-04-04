@@ -849,7 +849,22 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             case 'value':
               break;
             default:
-              $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
+              if (!empty($field['options'])) {
+                if (is_array($value)) {
+                  // Display multiple field values as item lists.
+                  unset($group[$field_name]['#value']);
+                  $group[$field_name]['items'] = [
+                    '#theme' => 'item_list',
+                    '#items' => array_intersect_key($field['options'], $value),
+                  ];
+                }
+                else {
+                  $group[$field_name]['#markup'] = $field['options'][$value];
+                }
+              }
+              else {
+                $group[$field_name]['#markup'] = $value;
+              }
               break;
           }
         }
