@@ -855,7 +855,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
                   unset($group[$field_name]['#value']);
                   $group[$field_name]['items'] = [
                     '#theme' => 'item_list',
-                    '#items' => array_intersect_key($field['options'], $value),
+                    '#items' => array_intersect_key($field['options'], array_flip($value)),
                   ];
                 }
                 else {
