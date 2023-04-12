@@ -220,6 +220,14 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $default_value = new DrupalDateTime($default_value);
         }
         break;
+      case 'checkboxes':
+        if (
+          isset($field['value'])
+          && array_key_exists($field['value'], $field['options'])
+        ) {
+          $default_value = $field['value'];
+        }
+        break;
       case 'radios':
         if (
           isset($field['value'])
@@ -602,13 +610,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (!empty($field['weight'])) {
         $group[$field_name]['#weight'] = $field['weight'];
       }
-      if ($field['type'] == 'Multi-Select') {
-        $group[$field_name]['#multiple'] = TRUE;
-      }
       if (isset($default_value)) {
         $group[$field_name]['#default_value'] = $default_value;
       }
-      if ($type == 'select' || $type == 'radios') {
+      if ($type == 'select' || $type == 'radios' || $type == 'checkboxes') {
         $group[$field_name]['#options'] = $field['options'];
       }
       // Add "empty" option for non-required radio button groups, if it doesn't
@@ -623,6 +628,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           ['' => $this->t('- None -')] + $group[$field_name]['#options'];
       }
       if ($type == 'select') {
+        if ($field['type'] == 'Multi-Select') {
+          $group[$field_name]['#multiple'] = TRUE;
+        }
         if (isset($field['empty_label'])) {
           $group[$field_name]['#empty_option'] = $field['empty_label'];
         }
@@ -841,7 +849,22 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             case 'value':
               break;
             default:
-              $group[$field_name]['#markup'] = (!empty($field['options']) ? $field['options'][$value] : $value);
+              if (!empty($field['options'])) {
+                if (is_array($value)) {
+                  // Display multiple field values as item lists.
+                  unset($group[$field_name]['#value']);
+                  $group[$field_name]['items'] = [
+                    '#theme' => 'item_list',
+                    '#items' => array_intersect_key($field['options'], array_flip($value)),
+                  ];
+                }
+                else {
+                  $group[$field_name]['#markup'] = $field['options'][$value];
+                }
+              }
+              else {
+                $group[$field_name]['#markup'] = $value;
+              }
               break;
           }
         }
@@ -949,6 +972,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $new_values[$value] = (int) !empty($value);
         }
         unset($values[$field_name]);
+      }
+
+      // Filter checkboxes field type values (exclude unselected values).
+      if (EventUtils::fieldType($this->fields[$field_name]) == 'checkboxes') {
+        $value = array_filter($value);
       }
 
       // Use CiviCRM date format for date fields.

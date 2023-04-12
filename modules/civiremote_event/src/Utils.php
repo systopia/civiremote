@@ -26,7 +26,7 @@ class Utils {
       'Text' => 'textfield',
       'Textarea' => 'textarea',
       'Select' => 'select', // Can be replaced with 'radios' in buildForm().
-      'Multi-Select' => 'select',
+      'Multi-Select' => 'select', // Can be replaced with 'checkboxes' in buildForm().
       'Checkbox' => 'checkbox',
       'Radio' => 'radio',
       'Date' => 'date',
@@ -46,8 +46,10 @@ class Utils {
     elseif (
       $types[$field['type']] == 'select'
       && count($field['options']) <= 10
+      // Checkboxes #options may not have a 0 key.
+      && !isset($field['options'][0])
     ) {
-      $type = 'radios';
+      $type = $field['type'] == 'Multi-Select' ? 'checkboxes' : 'radios';
     }
     // Use details element for session fieldsets.
     elseif (
