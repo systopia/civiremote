@@ -80,18 +80,26 @@ class RegistrationCancelForm extends ConfirmFormBase {
     $this->remote_token = $routeMatch->getRawParameter('event_token');
     // Retrieve event using the remote token, overwriting the event object.
     if (!empty($this->remote_token)) {
-      $form = $this->cmrf->getForm(
-        (isset($this->event) ? $this->event->id : NULL),
-        NULL,
-        $this->remote_token,
-        'cancel'
-      );
-      $this->fields = $form['values'];
-      $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
-      $this->event = $this->cmrf->getEvent(
-        $this->fields['event_id']['value'],
-        $this->remote_token
-      );
+      try {
+        $form = $this->cmrf->getForm(
+          (isset($this->event) ? $this->event->id : NULL),
+          NULL,
+          $this->remote_token,
+          'cancel'
+        );
+        $this->fields = $form['values'];
+        $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
+        $this->event = $this->cmrf->getEvent(
+          $this->fields['event_id']['value'],
+          $this->remote_token
+        );
+      }
+      catch (Exception $exception) {
+        Drupal::messenger()->addMessage(
+          $exception->getMessage(),
+          MessengerInterface::TYPE_ERROR
+        );
+      }
     }
   }
 

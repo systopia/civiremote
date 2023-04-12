@@ -127,34 +127,42 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $this->event = $routeMatch->getParameter('event');
     $this->profile = $routeMatch->getRawParameter('profile');
     $this->remote_token = $routeMatch->getRawParameter('event_token');
-    $form = $this->cmrf->getForm(
-      (isset($this->event) ? $this->event->id : NULL),
-      $this->profile,
-      $this->remote_token,
-      $this->context
-    );
-    $this->fields = $form['values'];
-    $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
-    $this->event = $this->cmrf->getEvent(
-      $this->fields['event_id']['value'],
-      $this->remote_token
-    );
-    if (!empty($this->fields['profile']['value'])) {
-      $this->profile = $this->fields['profile']['value'];
-    }
-    else {
-      switch ($this->context) {
-        case 'create':
-          $this->profile = $this->event->default_profile;
-          break;
-        case 'update':
-          $this->profile = $this->event->default_update_profile;
-          break;
-        default:
-          throw new NotFoundHttpException(
-            $this->t('No profile found for CiviRemote event form.')
-          );
+    try {
+      $form = $this->cmrf->getForm(
+        (isset($this->event) ? $this->event->id : NULL),
+        $this->profile,
+        $this->remote_token,
+        $this->context
+      );
+      $this->fields = $form['values'];
+      $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
+      $this->event = $this->cmrf->getEvent(
+        $this->fields['event_id']['value'],
+        $this->remote_token
+      );
+      if (!empty($this->fields['profile']['value'])) {
+        $this->profile = $this->fields['profile']['value'];
       }
+      else {
+        switch ($this->context) {
+          case 'create':
+            $this->profile = $this->event->default_profile;
+            break;
+          case 'update':
+            $this->profile = $this->event->default_update_profile;
+            break;
+          default:
+            throw new NotFoundHttpException(
+              $this->t('No profile found for CiviRemote event form.')
+            );
+        }
+      }
+    }
+    catch (Exception $exception) {
+      Drupal::messenger()->addMessage(
+        $exception->getMessage(),
+        MessengerInterface::TYPE_ERROR
+      );
     }
   }
 
