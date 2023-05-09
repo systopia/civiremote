@@ -77,42 +77,6 @@ class CiviMRF extends civiremote\CiviMRF {
   }
 
   /**
-   * Retrieves a remote event by a given token.
-   *
-   * @param $registration_token
-   *   The registration token to retrieve the remote event for.
-   *
-   * @return int
-   *   The event ID.
-   *
-   * @throws Exception
-   *   When the event could not be retrieved.
-   *
-   * @deprecated Use self::getEvent() instead.
-   */
-  public function getEventFromToken($registration_token) {
-    $params = [
-      'remote_registration_token' => $registration_token,
-      'probe' => 1,
-    ];
-    self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
-      'RemoteParticipant',
-      'cancel',
-      $params,
-      []
-    );
-    $this->core->executeCall($call);
-    $reply = $call->getReply();
-    if (!isset($reply['event_id'])) {
-      throw new Exception(t('Could not retrieve remote event.'));
-    }
-
-    return (int) $reply['event_id'];
-  }
-
-  /**
    * Retrieves the registration form definition of a remote event with a given
    * event ID for a specific profile, or with a remote event token.
    *
