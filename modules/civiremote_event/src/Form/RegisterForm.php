@@ -679,7 +679,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (($field['confirm_required'] ?? FALSE) === TRUE) {
         $group[$field_name] = [
           '#type' => 'confirm',
-          '#field' => $group[$field_name],
+          '#element' => $group[$field_name],
         ];
       }
     }
