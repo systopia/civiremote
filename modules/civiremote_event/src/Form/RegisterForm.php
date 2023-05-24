@@ -675,6 +675,13 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
       // Display prefix/suffix content.
       $this->addPrefixSuffix($field, $field_name, $group);
+
+      if (($field['confirm_required'] ?? FALSE) === TRUE) {
+        $group[$field_name] = [
+          '#type' => 'confirm',
+          '#element' => $group[$field_name],
+        ];
+      }
     }
 
     // Collapse fieldsets with more than 10 children.
