@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CiviRemote 1.0\n"
 "POT-Creation-Date: 2023-05-19 15:55+0200\n"
-"PO-Revision-Date: 2023-05-19 15:58+0200\n"
+"PO-Revision-Date: 2023-05-26 11:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: info@systopia.de\n"
 "Language: de_DE\n"
@@ -174,7 +174,7 @@ msgstr "@fieldTitle (Bestätigung)"
 
 #: modules/civiremote_event/src/Element/Confirm.php:132
 msgid "The confirmation does not match."
-msgstr "Die Bestätigung stimmt nicht überein."
+msgstr "Die Angaben stimmen nicht überein."
 
 #: modules/civiremote_event/src/Form/CheckinForm.php:125
 msgid "Check-In as %status"
