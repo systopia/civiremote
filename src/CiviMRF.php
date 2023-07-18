@@ -48,14 +48,42 @@ class CiviMRF {
   }
 
   /**
+   * @param $entity
+   * @param $action
+   * @param $params
+   * @param $options
+   * @param $callback
+   * @param $api_version
+   *
+   * @return \CMRF\Core\Call
+   */
+  protected function createCall($entity, $action, $params = [], $options = [], $callback = NULL, $api_version = '3') {
+    return $this->core->createCall(
+      $this->connector([
+        'entity' => $entity,
+        'action' => $action,
+        'params' => $params,
+        'options' => $options,
+        'callback' => $callback,
+        'api_version' => $api_version,
+      ]),
+      $entity,
+      $action,
+      $params,
+      $options,
+      $callback,
+      $api_version
+    );
+  }
+
+  /**
    * @param $params
    *
    * @return string | false
    *   The CiviRemote ID, or FALSE when no contact could be matched.
    */
   public function matchContact($params) {
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteContact',
       'match',
       $params,
@@ -73,8 +101,7 @@ class CiviMRF {
    *   The CiviRemote roles, or FALSE when synchronising roles failed.
    */
   public function getRoles($params) {
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteContact',
       'get_roles',
       $params,
