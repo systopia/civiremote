@@ -15,9 +15,10 @@
 
 namespace Drupal\civiremote;
 
-
 use Drupal;
 use Drupal\cmrf_core\Core;
+use Drupal\civiremote\Event\ConnectorEvent;
+use \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 
 /**
  * Class CiviMRF
@@ -26,15 +27,24 @@ use Drupal\cmrf_core\Core;
  */
 class CiviMRF {
 
-  /** @var Core */
+  /**
+   * @var Core
+   */
   public $core;
 
   public function __construct(Core $core) {
     $this->core = $core;
   }
 
-  protected function connector() {
-    return Drupal::config('civiremote.settings')->get('cmrf_connector');
+  protected function connector(array $context = []) {
+    $event = new ConnectorEvent(
+      Drupal::config('civiremote.settings')->get('cmrf_connector'),
+      $context
+    );
+    /* @var ContainerAwareEventDispatcher $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $event_dispatcher->dispatch($event, ConnectorEvent::EVENT_NAME);
+    return $event->getConnectorId();
   }
 
   /**
