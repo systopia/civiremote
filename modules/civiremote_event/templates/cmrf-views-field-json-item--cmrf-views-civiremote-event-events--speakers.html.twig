@@ -27,10 +27,10 @@
  * @ingroup themeable
  */
 #}
-{% spaceless %}
+{% apply spaceless %}
     {% for field in item %}
         {% if field.name == 'name' %}
             {{ field.value }}
         {% endif %}
     {% endfor %}
-{% endspaceless %}
+{% endapply %}
