@@ -56,7 +56,7 @@ function civiremote_entity_base_field_info(EntityTypeInterface $entity_type) {
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('form', [
-        'type' => 'textfield',
+        'type' => 'string_textfield',
         'settings' => [
           'display_label' => TRUE,
         ],
