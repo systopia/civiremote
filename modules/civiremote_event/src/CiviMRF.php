@@ -55,8 +55,7 @@ class CiviMRF extends civiremote\CiviMRF {
 
       $reply = &drupal_static(__FUNCTION__ . '_' . implode('_', $params));
       if (!isset($reply)) {
-        $call = $this->core->createCall(
-          $this->connector(),
+        $call = $this->createCall(
           'RemoteEvent',
           'getsingle',
           $params,
@@ -106,8 +105,7 @@ class CiviMRF extends civiremote\CiviMRF {
 
     $reply = &drupal_static(__FUNCTION__ . '_' . implode('_', $params));
     if (!isset($reply)) {
-      $call = $this->core->createCall(
-        $this->connector(),
+      $call = $this->createCall(
         'RemoteParticipant',
         'get_form',
         $params,
@@ -155,8 +153,7 @@ class CiviMRF extends civiremote\CiviMRF {
       'context' => $context,
     ]);
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteParticipant',
       'validate',
       $params,
@@ -197,8 +194,7 @@ class CiviMRF extends civiremote\CiviMRF {
       'token' => $remote_token
     ]);
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteParticipant',
       'create',
       $params,
@@ -242,8 +238,7 @@ class CiviMRF extends civiremote\CiviMRF {
       'token' => $remote_token
     ]);
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteParticipant',
       'update',
       $params,
@@ -282,8 +277,7 @@ class CiviMRF extends civiremote\CiviMRF {
       'token' => $remote_token
     ];
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteParticipant',
       'cancel',
       $params,
@@ -323,8 +317,7 @@ class CiviMRF extends civiremote\CiviMRF {
         'token' => $remote_token
       ];
       self::addRemoteContactId($params);
-      $call = $this->core->createCall(
-        $this->connector(),
+      $call = $this->createCall(
         'EventCheckin',
         'verify',
         $params,
@@ -370,8 +363,7 @@ class CiviMRF extends civiremote\CiviMRF {
       'status_id' => $status_id,
     ];
     self::addRemoteContactId($params);
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'EventCheckin',
       'confirm',
       $params,

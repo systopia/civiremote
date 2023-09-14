@@ -15,9 +15,10 @@
 
 namespace Drupal\civiremote;
 
-
 use Drupal;
 use Drupal\cmrf_core\Core;
+use Drupal\civiremote\Event\ConnectorEvent;
+use \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 
 /**
  * Class CiviMRF
@@ -26,15 +27,53 @@ use Drupal\cmrf_core\Core;
  */
 class CiviMRF {
 
-  /** @var Core */
+  /**
+   * @var Core
+   */
   public $core;
 
   public function __construct(Core $core) {
     $this->core = $core;
   }
 
-  protected function connector() {
-    return Drupal::config('civiremote.settings')->get('cmrf_connector');
+  protected function connector(array $context = []) {
+    $event = new ConnectorEvent(
+      Drupal::config('civiremote.settings')->get('cmrf_connector'),
+      $context
+    );
+    /* @var ContainerAwareEventDispatcher $event_dispatcher */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $event_dispatcher->dispatch($event, ConnectorEvent::EVENT_NAME);
+    return $event->getConnectorId();
+  }
+
+  /**
+   * @param $entity
+   * @param $action
+   * @param $params
+   * @param $options
+   * @param $callback
+   * @param $api_version
+   *
+   * @return \CMRF\Core\Call
+   */
+  protected function createCall($entity, $action, $params = [], $options = [], $callback = NULL, $api_version = '3') {
+    return $this->core->createCall(
+      $this->connector([
+        'entity' => $entity,
+        'action' => $action,
+        'params' => $params,
+        'options' => $options,
+        'callback' => $callback,
+        'api_version' => $api_version,
+      ]),
+      $entity,
+      $action,
+      $params,
+      $options,
+      $callback,
+      $api_version
+    );
   }
 
   /**
@@ -44,8 +83,7 @@ class CiviMRF {
    *   The CiviRemote ID, or FALSE when no contact could be matched.
    */
   public function matchContact($params) {
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteContact',
       'match',
       $params,
@@ -63,8 +101,7 @@ class CiviMRF {
    *   The CiviRemote roles, or FALSE when synchronising roles failed.
    */
   public function getRoles($params) {
-    $call = $this->core->createCall(
-      $this->connector(),
+    $call = $this->createCall(
       'RemoteContact',
       'get_roles',
       $params,
