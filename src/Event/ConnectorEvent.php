@@ -34,4 +34,13 @@ class ConnectorEvent extends Event {
     return $this->connector_id;
   }
 
+  /**
+   * @param string $connector_id
+   *
+   * @return void
+   */
+  public function setConnectorId(string $connector_id): void {
+    $this->connector_id = $connector_id;
+  }
+
 }
