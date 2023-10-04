@@ -127,6 +127,7 @@ class User {
       }
 
       // Create CiviRemote roles unknown to Drupal.
+      // TODO: Make creating roles configurable.
       foreach (array_diff_key($remote_roles, $civiremote_roles) as $id => $label) {
         $role = Role::create(['id' => $id, 'label' => $label]);
         $role->save();
@@ -139,6 +140,7 @@ class User {
       }
 
       // Assign new roles to user.
+      // TODO: Filter out roles not created (due to configuration).
       foreach (array_keys(array_diff($remote_roles, $user_civiremote_roles)) as $new_role) {
         $user->addRole($new_role);
         $user->save();
