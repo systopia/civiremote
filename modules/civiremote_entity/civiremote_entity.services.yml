@@ -1,0 +1,31 @@
+parameters:
+  civiremote.cmrf_connector_config_key: cmrf_connector
+
+services:
+  _defaults:
+    autowire: true
+    public: false # Controller classes and services directly fetched from container need to be public
+
+  civiremote.civiremote.settings:
+    class: Drupal\Core\Config\ImmutableConfig
+    factory: [ 'Drupal', 'config' ]
+    arguments: [ 'civiremote.settings' ]
+
+  Drupal\civiremote_entity\Api\CiviCRMApiClientInterface:
+    class: Drupal\civiremote_entity\Api\CiviCRMApiClient
+    factory: [ 'Drupal\civiremote_entity\Api\CiviCRMApiClient', 'create' ]
+    arguments:
+      $cmrfCore: '@cmrf_core.core'
+      $config: '@civiremote.civiremote.settings'
+      $connectorConfigKey: '%civiremote.cmrf_connector_config_key%'
+
+  Drupal\civiremote_entity\Access\RemoteContactIdProviderInterface:
+    class: Drupal\civiremote_entity\Access\RemoteContactIdProvider
+    arguments:
+      - '@current_user'
+
+  Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerInterface:
+    class: Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerMessage
+    arguments:
+      $messenger: '@messenger'
+    public: true
