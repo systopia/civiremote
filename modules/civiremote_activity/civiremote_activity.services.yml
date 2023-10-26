@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    autowire: true
+    public: false # Controller classes and services directly fetched from container need to be public
+
+  Drupal\civiremote_activity\Api\ActivityApi:
+    class: Drupal\civiremote_activity\Api\ActivityApi
+
+  Drupal\civiremote_activity\Controller\ActivityCreateController:
+    class: Drupal\civiremote_activity\Controller\ActivityUpdateController
+    public: true
+
+  Drupal\civiremote_activity\Controller\ActivityUpdateController:
+    class: Drupal\civiremote_activity\Controller\ActivityUpdateController
+    public: true
+
+  Drupal\civiremote_activity\Form\RequestHandler\ActivityCreateFormRequestHandler:
+    class: Drupal\civiremote_activity\Form\RequestHandler\ActivityCreateFormRequestHandler
+    public: true
+
+  Drupal\civiremote_activity\Form\RequestHandler\ActivityUpdateFormRequestHandler:
+    class: Drupal\civiremote_activity\Form\RequestHandler\ActivityUpdateFormRequestHandler
+    public: true
