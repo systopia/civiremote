@@ -30,10 +30,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class EntityUpdateFormRequestHandler implements FormRequestHandlerInterface {
 
-  protected AbstractEntityApi $activityApi;
+  protected AbstractEntityApi $entityApi;
 
-  public function __construct(AbstractEntityApi $activityApi) {
-    $this->activityApi = $activityApi;
+  public function __construct(AbstractEntityApi $entityApi) {
+    $this->entityApi = $entityApi;
   }
 
   public function getForm(Request $request): EntityForm {
@@ -44,7 +44,7 @@ class EntityUpdateFormRequestHandler implements FormRequestHandlerInterface {
     Assertion::integerish($id);
     $id = (int) $id;
 
-    return $this->activityApi->getUpdateForm($profile, $id);
+    return $this->entityApi->getUpdateForm($profile, $id);
   }
 
   public function validateForm(Request $request, array $data): FormValidationResponse {
@@ -55,7 +55,7 @@ class EntityUpdateFormRequestHandler implements FormRequestHandlerInterface {
     Assertion::integerish($id);
     $id = (int) $id;
 
-    return $this->activityApi->validateUpdateForm($profile, $id, $data);
+    return $this->entityApi->validateUpdateForm($profile, $id, $data);
   }
 
   public function submitForm(Request $request, array $data): FormSubmitResponse {
@@ -66,7 +66,7 @@ class EntityUpdateFormRequestHandler implements FormRequestHandlerInterface {
     Assertion::integerish($id);
     $id = (int) $id;
 
-    return $this->activityApi->submitUpdateForm($profile, $id, $data);
+    return $this->entityApi->submitUpdateForm($profile, $id, $data);
   }
 
 }
