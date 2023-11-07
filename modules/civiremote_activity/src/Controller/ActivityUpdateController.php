@@ -30,7 +30,7 @@ final class ActivityUpdateController extends ControllerBase {
    */
   public function form(string $profile, int $id): array {
     $form = $this->formBuilder()->getForm(ActivityUpdateForm::class);
-    $form['#title'] ??= $this->t('CiviRemote Activity Update');
+    $form['#title'] ??= $this->t('Update CiviCRM Activity');
 
     return $form;
   }

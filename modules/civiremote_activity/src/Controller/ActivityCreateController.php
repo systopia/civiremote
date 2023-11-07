@@ -30,7 +30,7 @@ final class ActivityCreateController extends ControllerBase {
    */
   public function form(string $profile): array {
     $form = $this->formBuilder()->getForm(ActivityCreateForm::class);
-    $form['#title'] ??= $this->t('CiviRemote Activity Create');
+    $form['#title'] ??= $this->t('Add CiviCRM Activity');
 
     return $form;
   }
