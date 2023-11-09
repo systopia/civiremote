@@ -1,0 +1,25 @@
+civiremote_activity.create_form:
+  path: '/civiremote/activity/add/{profile}'
+  defaults:
+    _controller: 'Drupal\civiremote_activity\Controller\ActivityCreateController::form'
+  options:
+    no_cache: TRUE
+    parameters:
+      profile:
+        type: string
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+civiremote_activity.update_form:
+  path: '/civiremote/activity/{id}/update/{profile}'
+  defaults:
+    _controller: 'Drupal\civiremote_activity\Controller\ActivityUpdateController::form'
+  options:
+    no_cache: TRUE
+    parameters:
+      id:
+        type: int
+      profile:
+        type: string
+  requirements:
+    _user_is_logged_in: 'TRUE'

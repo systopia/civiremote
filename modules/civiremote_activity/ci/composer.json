@@ -1,0 +1,29 @@
+{
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/systopia/drupal-json_forms.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/systopia/opis-json-schema-ext.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/systopia/expression-language-ext.git"
+        },
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "drupal/core": "^9.5 || ^10",
+        "drupal/json_forms": "~0.1"
+    }
+}

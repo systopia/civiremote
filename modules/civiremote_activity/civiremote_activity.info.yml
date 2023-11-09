@@ -1,0 +1,10 @@
+name: CiviRemote Activity
+type: module
+description: 'CiviRemote Activity'
+package: CiviCRM
+core_version_requirement: ^9.5 || ^10
+dependencies:
+  - civiremote_entity
+
+project: civiremote
+version: 0.1-dev

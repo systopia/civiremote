@@ -1,0 +1,28 @@
+parameters:
+	paths:
+		- src
+		#- tests
+		#- civiremote_activity.module
+	bootstrapFiles:
+		- vendor/autoload.php
+	scanDirectories:
+		- ../civiremote_entity/src
+	level: 9
+	checkTooWideReturnTypesInProtectedAndPublicMethods: true
+	checkUninitializedProperties: true
+	checkMissingCallableSignature: true
+	treatPhpDocTypesAsCertain: false
+	exceptions:
+		check:
+			missingCheckedExceptionInThrows: true
+			tooWideThrowType: true
+		checkedExceptionClasses:
+			- \Assert\AssertionFailedException
+		implicitThrows: false
+	ignoreErrors:
+		# Note paths are prefixed with ""*/" to work with inspections in PHPStorm because of:
+		# https://youtrack.jetbrains.com/issue/WI-63891/PHPStan-ignoreErrors-configuration-isnt-working-with-inspections
+		# Happens in classes implementing ContainerInjectionInterface::create()
+		- '/ constructor expects [^\s]+, object(\|null)? given.$/'
+
+	tmpDir: .phpstan
