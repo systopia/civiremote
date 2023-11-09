@@ -1,0 +1,17 @@
+{
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "drupal/cmrf_core": "^2.0",
+        "drupal/core": "^9.5 || ^10"
+    }
+}

@@ -1,0 +1,43 @@
+name: PHP_CodeSniffer - civiremote_entity
+
+on:
+  push: ~
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    name: PHP_CodeSniffer
+    defaults:
+      run:
+        working-directory: modules/civiremote_entity
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+        coverage: none
+        tools: cs2pr
+      env:
+        fail-fast: true
+
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('modules/civiremote_entity/tools/phpcs/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Install dependencies
+      run: composer update --no-progress --prefer-dist
+
+    - name: Run PHP_CodeSniffer
+      run: composer phpcs -- -q --report=checkstyle | cs2pr

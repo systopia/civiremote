@@ -1,0 +1,82 @@
+{
+    "name": "custom/civiremote_entity",
+    "description": "Base module to access CiviCRM Remote Entities.",
+    "type": "drupal-custom-module",
+    "license": "AGPL-3.0-only",
+    "authors": [
+        {
+            "name": "SYSTOPIA GmbH",
+            "email": "info@systopia.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Drupal\\civiremote_entity\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Drupal\\Tests\\civiremote_entity\\": "tests/src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/systopia/drupal-json_forms.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/systopia/opis-json-schema-ext.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/systopia/expression-language-ext.git"
+        },
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8",
+        "beberlei/assert": "*",
+        "drupal/json_forms": "~0.1"
+    },
+    "require-dev": {
+        "drupal/core-dev": "^9.5 || ^10"
+    },
+    "scripts": {
+        "composer-phpstan": [
+            "@composer --working-dir=tools/phpstan"
+        ],
+        "composer-tools": [
+            "@composer-phpstan"
+        ],
+        "phpcs": [
+            "@php vendor/bin/phpcs"
+        ],
+        "phpcbf": [
+            "@php vendor/bin/phpcbf"
+        ],
+        "phpstan": [
+            "@php tools/phpstan/vendor/bin/phpstan"
+        ],
+        "phpunit": [
+            "@php vendor/bin/phpunit --coverage-text"
+        ],
+        "test": [
+            "@phpcs",
+            "@phpstan",
+            "@phpunit"
+        ]
+    }
+}

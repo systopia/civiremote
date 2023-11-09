@@ -1,0 +1,11 @@
+name: CiviRemote Entity
+type: module
+description: 'CiviRemote Entity'
+package: CiviCRM
+core_version_requirement: ^9.5 || ^10
+dependencies:
+  - civiremote
+  - json_forms
+
+project: civiremote
+version: 0.1-dev

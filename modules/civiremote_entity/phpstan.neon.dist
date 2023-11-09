@@ -1,0 +1,30 @@
+parameters:
+	paths:
+		- src
+		#- tests
+		#- civiremote_entity.module
+	bootstrapFiles:
+		- vendor/autoload.php
+	scanDirectories:
+		- ../../src
+	level: 9
+	checkTooWideReturnTypesInProtectedAndPublicMethods: true
+	checkUninitializedProperties: true
+	checkMissingCallableSignature: true
+	treatPhpDocTypesAsCertain: false
+	exceptions:
+		check:
+			missingCheckedExceptionInThrows: true
+			tooWideThrowType: true
+		checkedExceptionClasses:
+			- \Assert\AssertionFailedException
+		implicitThrows: false
+	ignoreErrors:
+		# Note paths are prefixed with ""*/" to work with inspections in PHPStorm because of:
+		# https://youtrack.jetbrains.com/issue/WI-63891/PHPStan-ignoreErrors-configuration-isnt-working-with-inspections
+		- '/^Parameter #1 \$form \(array<int\|string, mixed>\) of method [^\s]+::(build|validate|submit)Form\(\) should be contravariant with parameter \$form \(array\) of method Drupal\\Core\\Form\\(FormInterface|FormBase)::(build|validate|submit)Form\(\)$/'
+		-
+			message: '/^Parameter #1 \$value of static method Drupal\\civiremote_entity\\Api\\[^:]+::fromApiResultValue\(\) expects array\{.+\}, array<int\|string, mixed> given.$/'
+			path: */Api/AbstractEntityApi.php
+
+	tmpDir: .phpstan
