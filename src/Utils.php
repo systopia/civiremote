@@ -18,6 +18,7 @@ namespace Drupal\civiremote;
 
 use Drupal;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Render\Markup;
 
 class Utils {
 
@@ -51,7 +52,7 @@ class Utils {
   public static function setMessages($messages) {
     foreach ($messages as $message) {
       Drupal::messenger()->addMessage(
-        $message['message'],
+        Markup::create($message['message']),
         Utils::messageSeverity($message['severity'] ?? 'status')
       );
     }
