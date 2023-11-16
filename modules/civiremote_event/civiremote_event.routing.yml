@@ -14,7 +14,7 @@ civiremote_event.register_form:
     # The profile is optional.
     profile: null
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
@@ -28,7 +28,7 @@ civiremote_event.register_token_form:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
@@ -63,7 +63,7 @@ civiremote_event.registration_update_form:
   defaults:
     _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::accessUpdate'
   options:
     no_cache: TRUE
     parameters:
@@ -74,7 +74,7 @@ civiremote_event.registration_update_token_form:
   defaults:
     _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::accessUpdate'
   options:
     no_cache: TRUE
     parameters:

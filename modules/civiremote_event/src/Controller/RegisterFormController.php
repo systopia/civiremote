@@ -17,6 +17,7 @@ namespace Drupal\civiremote_event\Controller;
 
 use Drupal;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use stdClass;
 
@@ -72,6 +73,60 @@ class RegisterFormController extends ControllerBase {
     }
 
     return $form_id;
+  }
+
+  /**
+   * Custom access callback for registration form routes.
+   *
+   * @param stdClass $event
+   *   The remote event retrieved by the RemoteEvent.get API.
+   * @param string $profile
+   *   The remote event profile to use for displaying the form.
+   * @param string $remote_token
+   *   The remote token to use for retrieving the form.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   */
+  public function access(stdClass $event = NULL, $profile = NULL, $remote_token = NULL) {
+    // Grant access depending on flags on the remote event.
+    return AccessResult::allowedIf(
+      !empty($event)
+      && $event->can_register
+      && (
+        !isset($profile)
+        || in_array(
+          $profile,
+          explode(',', $event->enabled_profiles)
+        )
+      )
+    );
+  }
+
+  /**
+   * Custom access callback for the update form routes.
+   *
+   * @param stdClass $event
+   *   The remote event retrieved by the RemoteEvent.get API.
+   * @param string $profile
+   *   The remote event profile to use for displaying the form.
+   * @param string $remote_token
+   *   The remote token to use for retrieving the form.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   */
+  public function accessUpdate(stdClass $event = NULL, $profile = NULL, $remote_token = NULL) {
+    // Grant access depending on flags on the remote event.
+    return AccessResult::allowedIf(
+      !empty($event)
+      && $event->can_edit_registration
+      && (
+        !isset($profile)
+        || in_array(
+          $profile,
+          explode(',', $event->enabled_update_profiles)
+        )
+      )
+    );
   }
 
 }
