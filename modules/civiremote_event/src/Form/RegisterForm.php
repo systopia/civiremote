@@ -413,7 +413,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    */
   public function applyDependencies(array &$field, array &$form, FormStateInterface $form_state) {
     $field_name = $field['#name'];
-    $field_value = $form_state->getValue($field_name) ?: $field['#default_value'];
+    $field_value = $form_state->getValue($field_name) ?: $field['#default_value'] ?? '';
     $fields = $form_state->get('fields');
     $dependent_fields = [];
     if (isset($fields[$field_name])) {
@@ -585,6 +585,25 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $this->defaultValue($field, $field_name, $type)
       );
 
+      // Do not render fields for additional participants when not applicable.
+      $matches = [];
+      if (preg_match('#^additional_([0-9]+)(_|$)#', $field_name, $matches)) {
+        $participant_no = $matches[1];
+        $participant_count = $form_state->get('additional_participants_count') ?? 0;
+        if (
+          empty($this->event->is_multiple_registrations)
+          || $participant_count < $participant_no
+        ) {
+          continue;
+        }
+      }
+      if (
+        empty($this->event->is_multiple_registrations)
+        && $field_name == 'additional_participants'
+      ) {
+        continue;
+      }
+
       // Add "None" radio button for de-selecting single radio buttons.
       if ($type == 'radio' && !in_array($field['name'], $unselect_radios)) {
         $unselect_radios[] = $field['name'];
@@ -682,21 +701,62 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           '#element' => $group[$field_name],
         ];
       }
+
+      // Add "Add more" wrapper for additional participants.
+      if (
+        $this->event->is_multiple_registrations
+        && $field_name == 'additional_participants'
+      ) {
+        $group[$field_name]['#prefix'] = '<div id="additional-participants-wrapper">'
+        . ($group[$field_name]['#prefix'] ?? '');
+        $group[$field_name]['#suffix'] = ($group[$field_name]['#suffix'] ?? '')
+        . '</div>';
+        $group[$field_name]['actions'] = [
+          '#type' => 'actions',
+        ];
+        if (($form_state->get('additional_participants_count') ?? 0) < $this->event->max_additional_participants) {
+          $group[$field_name]['actions']['add_participant'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Add participant'),
+            '#submit' => [[$this, 'additionalParticipantAdd']],
+            '#ajax' => [
+              'callback' => [$this, 'additionalParticipantsCallback'],
+              'wrapper' => 'additional-participants-wrapper',
+            ],
+            '#limit_validation_errors' => [],
+          ];
+        }
+        if (($form_state->get('additional_participants_count') ?? 0) > 0) {
+          $group[$field_name]['actions']['remove_participant'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Remove participant'),
+            '#submit' => [[$this, 'additionalParticipantRemove']],
+            '#ajax' => [
+              'callback' => [$this, 'additionalParticipantsCallback'],
+              'wrapper' => 'additional-participants-wrapper',
+            ],
+            '#limit_validation_errors' => [],
+          ];
+        }
+      }
     }
 
     // Collapse fieldsets with more than 10 children.
     foreach ($form_state->get('fields') as $field_name => $field) {
       // Build hierarchy and retrieve the parent fieldset (or the form itself).
       $group_parents = $this->groupParents($field_name);
-      $group = &NestedArray::getValue($form, $group_parents);
-      $type = EventUtils::fieldTypes()[$field['type']];
-      if (
-        array_key_exists($field_name, $group)
-        && in_array($type, ['details', 'fieldset'])
-      ) {
-        $group[$field_name]['#open'] = count(
-            Element::getVisibleChildren($group[$field_name])
-          ) < 10;
+      $field_exists = NULL;
+      $group = &NestedArray::getValue($form, $group_parents, $field_exists);
+      if ($field_exists) {
+        $type = EventUtils::fieldTypes()[$field['type']];
+        if (
+          array_key_exists($field_name, $group)
+          && in_array($type, ['details', 'fieldset'])
+        ) {
+          $group[$field_name]['#open'] = count(
+              Element::getVisibleChildren($group[$field_name])
+            ) < 10;
+        }
       }
     }
 
@@ -705,37 +765,40 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       foreach ($dependencies as $field_name => $field_dependencies) {
         // Register an Ajax callback for the onChange event on the field.
         $field_group_parents = $this->groupParents($field_name);
-        $field_group = &NestedArray::getValue($form, $field_group_parents);
-        $field_group[$field_name]['#civiremote_event_dependencies'] = $field_dependencies;
-        $field_group[$field_name]['#ajax'] = [
-          'callback' => '::dependencyAjaxCallback',
-          'event' => 'change',
-          'effect' => 'fade',
-        ];
-        $field_group[$field_name]['#limit_validation_errors'] = [
-          [$field_name]
-        ];
-        $field_group[$field_name]['#submit'] = [[$this, 'submitForm']];
+        $field_exists = NULL;
+        $field_group = &NestedArray::getValue($form, $field_group_parents, $field_exists);
+        if ($field_exists) {
+          $field_group[$field_name]['#civiremote_event_dependencies'] = $field_dependencies;
+          $field_group[$field_name]['#ajax'] = [
+            'callback' => '::dependencyAjaxCallback',
+            'event' => 'change',
+            'effect' => 'fade',
+          ];
+          $field_group[$field_name]['#limit_validation_errors'] = [
+            [$field_name]
+          ];
+          $field_group[$field_name]['#submit'] = [[$this, 'submitForm']];
 
-        // Process dependent fields.
-        foreach ($field_dependencies as $dependent_field_name => $dependency) {
-          // Wrap dependent fields with a wrapper element.
-          $dependent_group_parents = $this->groupParents($field_name);
-          $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
-          if (empty($dependent_group[$dependent_field_name]['#prefix'])) {
-            $dependent_group[$dependent_field_name]['#prefix'] = '';
+          // Process dependent fields.
+          foreach ($field_dependencies as $dependent_field_name => $dependency) {
+            // Wrap dependent fields with a wrapper element.
+            $dependent_group_parents = $this->groupParents($field_name);
+            $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
+            if (empty($dependent_group[$dependent_field_name]['#prefix'])) {
+              $dependent_group[$dependent_field_name]['#prefix'] = '';
+            }
+            $dependent_group[$dependent_field_name]['#prefix'] =
+              '<div id="dependency-wrapper-' . $dependent_field_name . '">'
+              . $dependent_group[$dependent_field_name]['#prefix'];
+            if (empty($dependent_group[$dependent_field_name]['#suffix'])) {
+              $dependent_group[$dependent_field_name]['#suffix'] = '';
+            }
+            $dependent_group[$dependent_field_name]['#suffix'] .= '</div>';
           }
-          $dependent_group[$dependent_field_name]['#prefix'] =
-            '<div id="dependency-wrapper-' . $dependent_field_name . '">'
-            . $dependent_group[$dependent_field_name]['#prefix'];
-          if (empty($dependent_group[$dependent_field_name]['#suffix'])) {
-            $dependent_group[$dependent_field_name]['#suffix'] = '';
-          }
-          $dependent_group[$dependent_field_name]['#suffix'] .= '</div>';
+
+          // Initially apply dependencies on dependent fields.
+          $this->applyDependencies($field_group[$field_name], $form, $form_state);
         }
-
-        // Initially apply dependencies on dependent fields.
-        $this->applyDependencies($field_group[$field_name], $form, $form_state);
       }
     }
 
@@ -961,6 +1024,56 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
 
     return $form;
+  }
+
+  /**
+   * Callback for both ajax-enabled buttons (remove, add) for additional
+   * participants.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   A render array.
+   */
+  public function additionalParticipantsCallback(array &$form, FormStateInterface $form_state) {
+    $group_parents = $this->groupParents('additional_participants');
+    $group = &NestedArray::getValue($form, $group_parents);
+    return $group['additional_participants'];
+  }
+
+  /**
+   * Submit handler for the "Add Participant" button.
+   *
+   * Increases the additional participant count and initiates a form rebuild.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function additionalParticipantAdd(array &$form, FormStateInterface $form_state) {
+    $form_state->set('additional_participants_count', ($form_state->get('additional_participants_count') ?? 0) + 1);
+
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Submit handler for the "Remove Participant" button.
+   *
+   * Decreases the additional participant count and initiates a form rebuild.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function additionalParticipantRemove(array &$form, FormStateInterface $form_state) {
+    $form_state->set('additional_participants_count', $form_state->get('additional_participants_count') - 1);
+
+    $form_state->setRebuild();
   }
 
   /**
