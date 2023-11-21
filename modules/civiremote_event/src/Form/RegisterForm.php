@@ -431,7 +431,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           if ($dependency['command'] == 'restrict') {
             $regex = str_replace(
               '{current_value}',
-              $field_value, // TODO: This is dependent on $dependency['regex_subject'].
+              // @todo $field_value depends on $dependency['regex_subject'].
+              ($field_value ?? ''),
               $dependency['regex']
             );
             $matches = preg_grep(
