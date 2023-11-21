@@ -95,10 +95,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
       }
     }
     catch (Exception $exception) {
-      Drupal::messenger()->addMessage(
-        $exception->getMessage(),
-        MessengerInterface::TYPE_ERROR
-      );
+      if (isset($this->event)) {
+        Drupal::messenger()->addMessage(
+          $exception->getMessage(),
+          MessengerInterface::TYPE_ERROR
+        );
+      }
     }
   }
 
