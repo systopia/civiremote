@@ -618,9 +618,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (!empty($field['weight'])) {
         $group[$field_name]['#weight'] = $field['weight'];
       }
-      if (isset($default_value)) {
-        $group[$field_name]['#default_value'] = $default_value;
-      }
+      $group[$field_name]['#default_value'] = $default_value;
       if ($type == 'select' || $type == 'radios' || $type == 'checkboxes') {
         $group[$field_name]['#options'] = $field['options'];
       }
