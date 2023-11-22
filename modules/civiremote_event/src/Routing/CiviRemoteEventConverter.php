@@ -49,7 +49,6 @@ class CiviRemoteEventConverter implements ParamConverterInterface {
       return $this->cmrf->getEvent($value);
     }
     catch (Exception $exception) {
-      Utils::setMessages([['message' => $exception->getMessage(), 'severity' => 'error']]);
       throw new AccessDeniedHttpException($exception->getMessage());
     }
   }

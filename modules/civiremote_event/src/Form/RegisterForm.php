@@ -159,12 +159,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       }
     }
     catch (Exception $exception) {
-      if ($this->context) {
-        Drupal::messenger()->addMessage(
-          $exception->getMessage(),
-          MessengerInterface::TYPE_ERROR
-        );
-      }
+      throw $exception;
     }
   }
 
