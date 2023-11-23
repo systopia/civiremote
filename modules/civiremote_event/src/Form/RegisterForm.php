@@ -425,7 +425,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
           $dependent_field = &$dependent_group[$dependent_field_name];
           $dependent_fields[$dependent_field_name] = &$dependent_field;
-          $dependent_field_options = $form_state->get('fields')[$dependent_field_name]['options'];
+          if (!$dependent_field_options = $form_state->get('fields')[$dependent_field_name]['options']) {
+            throw new Exception("Dependent field {$dependent_field_name} not found in form definition.");
+          }
 
           // Restrict the dependent field's values according to the regex.
           if ($dependency['command'] == 'restrict') {
