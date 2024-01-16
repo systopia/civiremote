@@ -53,12 +53,6 @@ class RegistrationCancelForm extends ConfirmFormBase {
   protected $remote_token;
 
   /**
-   * @var array $fields
-   *   The remote event form fields.
-   */
-  protected $fields;
-
-  /**
    * @var array $messages
    *   Status messages to be displayed on the remote event form.
    */
@@ -72,34 +66,6 @@ class RegistrationCancelForm extends ConfirmFormBase {
    */
   public function __construct(CiviMRF $cmrf) {
     $this->cmrf = $cmrf;
-
-    // Extract form parameters and set them here so that implementations do not
-    // have to care about that.
-    $routeMatch = RouteMatch::createFromRequest($this->getRequest());
-    $this->event = $routeMatch->getParameter('event');
-    $this->remote_token = $routeMatch->getRawParameter('event_token');
-    try {
-      $form = $this->cmrf->getForm(
-        (isset($this->event) ? $this->event->id : NULL),
-        NULL,
-        $this->remote_token,
-        'cancel'
-      );
-      $this->fields = $form['values'];
-      $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
-      if (!$this->event) {
-        $this->event = $this->cmrf->getEvent(
-          $this->fields['event_id']['value'],
-          $this->remote_token
-        );
-      }
-    }
-    catch (Exception $exception) {
-      Drupal::messenger()->addMessage(
-        $exception->getMessage(),
-        MessengerInterface::TYPE_ERROR
-      );
-    }
   }
 
   /**
@@ -180,7 +146,21 @@ class RegistrationCancelForm extends ConfirmFormBase {
   /**
    * @inheritDoc
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(
+    array $form,
+    FormStateInterface $form_state,
+    stdClass $event = NULL,
+    string $profile = NULL,
+    string $context = NULL,
+    string $raw_event_token = NULL,
+    array $fields = NULL,
+    array $messages = NULL
+  ) {
+    // Initialize.
+    $this->event = $event;
+    $this->remote_token = $raw_event_token;
+    $this->messages = $messages;
+
     // Show messages returned by the API.
     if (!empty($this->messages)) {
       Utils::setMessages($this->messages);
@@ -189,26 +169,5 @@ class RegistrationCancelForm extends ConfirmFormBase {
     // TODO: Display information about the event registration.
 
     return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * Custom access callback for this form's route.
-   *
-   * @param stdClass $event
-   *   The remote event retrieved by the RemoteEvent.get API.
-   *
-   * @param string $remote_token
-   *   The remote token.
-   *
-   * @return AccessResult|AccessResultAllowed|AccessResultNeutral
-   */
-  public function access(stdClass $event = NULL, $remote_token = NULL) {
-    // Grant access depending on flags on the remote event, which will have been
-    // retrieved using a given remote token in the constructor already.
-    return AccessResult::allowedIf(
-      !empty($this->event)
-      && $this->event->can_cancel_registration
-      && $this->event->is_registered
-    );
   }
 }

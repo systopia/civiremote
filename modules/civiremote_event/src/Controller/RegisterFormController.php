@@ -16,32 +16,114 @@
 namespace Drupal\civiremote_event\Controller;
 
 use Drupal;
+use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultAllowed;
+use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\RouteMatch;
 use stdClass;
+use \Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RegisterFormController extends ControllerBase {
 
-  public function form(stdClass $event = NULL, $profile = NULL) {
-    // Use default profile if not given.
-    if (!isset($profile) && isset($event)) {
-      $profile = $event->default_profile;
+  /**
+   * @var CiviMRF $cmrf
+   *   The CiviMRF service.
+   */
+  protected $cmrf;
+
+  /**
+   * @param CiviMRF $cmrf
+   *   The CiviMRF service.
+   */
+  public function __construct(CiviMRF $cmrf) {
+    $this->cmrf = $cmrf;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The Drupal service container.
+   *
+   * @return static
+   */
+  public static function create(ContainerInterface $container) {
+    /**
+     * Inject dependencies.
+     * @var CiviMRF $cmrf
+     */
+    $cmrf = $container->get('civiremote_event.cmrf');
+    return new static(
+      $cmrf
+    );
+  }
+
+  public function form(RouteMatch $route_match, string $context, stdClass $event = NULL, string $profile = NULL, stdClass $event_token = NULL) {
+    $event ??= $event_token;
+    $raw_event_token = $route_match->getRawParameter('event_token');
+
+    // Retrieve the form definition.
+    try {
+      $form = $this->cmrf->getForm(
+        (isset($event) ? $event->id : NULL),
+        $profile,
+        $raw_event_token,
+        $context
+      );
+      $fields = $form['values'];
+      $messages = $form['status_messages'] ?? [];
+      if (!empty($fields['profile']['value'])) {
+        $profile = $fields['profile']['value'];
+      }
+      else {
+        switch ($context) {
+          case 'create':
+            $profile = $event->default_profile;
+            break;
+          case 'update':
+            $profile = $event->default_update_profile;
+            break;
+          case 'cancel':
+            $profile = NULL;
+            break;
+          default:
+            throw new NotFoundHttpException(
+              $this->t('No profile found for CiviRemote event form.')
+            );
+        }
+      }
+    }
+    catch (Exception $exception) {
+      Drupal::messenger()->addMessage(
+        $exception->getMessage(),
+        MessengerInterface::TYPE_ERROR
+      );
     }
 
-    // Try to find our own implementation.
+    // Retrieve implementation for building the form.
     $form_id = $this->getFormId($profile);
 
     // Build the form.
-    return $this->formBuilder()->getForm($form_id);
+    return $this->formBuilder()->getForm(
+      $form_id,
+      $event,
+      $profile,
+      $context,
+      $raw_event_token,
+      $fields,
+      $messages
+    );
   }
 
-  public function title(stdClass $event = NULL, $remote_token = NULL) {
+  public function title(stdClass $event = NULL, stdClass $event_token = NULL) {
     // If the form is being requested with a token, the event will have been
-    // resolved in $remote_token by the EventTokenConverter.
-    if ($remote_token) {
-      $event = $remote_token;
-    }
-    return $event->event_title;
+    // resolved in $event_token by the EventTokenConverter.
+    return ($event ?? $event_token)->event_title;
   }
 
   private function getFormId($profile = NULL) {
@@ -72,6 +154,38 @@ class RegisterFormController extends ControllerBase {
     }
 
     return $form_id;
+  }
+
+  /**
+   * Custom access callback for this form's route.
+   *
+   * @param stdClass $event
+   *   The remote event retrieved by the RemoteEvent.get API.
+   * @param string $profile
+   *   The remote event profile to use for displaying the form.
+   * @param stdClass $remote_token
+   *   The remote token to use for retrieving the form.
+   *
+   * @return AccessResult|AccessResultAllowed|AccessResultNeutral
+   */
+  public function access(string $context, stdClass $event = NULL, string $profile = NULL, stdClass $event_token = NULL) {
+    $event ??= $event_token;
+    // Grant access depending on flags on the remote event.
+    return AccessResult::allowedIf(
+      isset($event)
+      && (
+        $context == 'create' && $event->can_register
+        || $context == 'update' && $event->can_edit_registration
+        || $context == 'cancel' && $this->event->is_registered && $this->event->can_cancel_registration
+      )
+      && (
+        !isset($profile)
+        || in_array(
+          $profile,
+          explode(',', $event->enabled_profiles)
+        )
+      )
+    );
   }
 
 }

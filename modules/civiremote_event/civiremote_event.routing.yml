@@ -13,8 +13,9 @@ civiremote_event.register_form:
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
     # The profile is optional.
     profile: null
+    context: 'create'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
@@ -22,64 +23,82 @@ civiremote_event.register_form:
         type: civiremote_event
       profile:
         type: string
+      context:
+        type: string
 civiremote_event.register_token_form:
   path: '/civiremote/event/register/{event_token}'
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
+    context: create
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegisterForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
       event_token:
         type: civiremote_event_token
+      context:
+        type: string
 
 civiremote_event.registration_cancel_form:
   path: '/civiremote/event/{event}/cancel'
   defaults:
-    _form: '\Drupal\civiremote_event\Form\RegistrationCancelForm'
+    _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
+    context: 'cancel'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationCancelForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
       event:
         type: civiremote_event
+      context:
+        type: string
 civiremote_event.registration_cancel_token_form:
   path: '/civiremote/event/cancel/{event_token}'
   defaults:
-    _form: '\Drupal\civiremote_event\Form\RegistrationCancelForm'
+    _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
+    context: 'cancel'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationCancelForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
       event_token:
         type: civiremote_event_token
+      context: string
 
 civiremote_event.registration_update_form:
   path: '/civiremote/event/{event}/update'
   defaults:
-    _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
+    _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
+    _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
+    context: 'update'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
       event:
         type: civiremote_event
+      context:
+        type: string
 civiremote_event.registration_update_token_form:
   path: '/civiremote/event/update/{event_token}'
   defaults:
-    _form: '\Drupal\civiremote_event\Form\RegistrationUpdateForm'
+    _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
+    _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
+    context: 'update'
   requirements:
-    _custom_access: '\Drupal\civiremote_event\Form\RegistrationUpdateForm::access'
+    _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
   options:
     no_cache: TRUE
     parameters:
       event_token:
         type: civiremote_event_token
+      context:
+        type: string
 
 civiremote_event.checkin_form:
   path: '/civiremote/event/checkin/{checkin_token}'
