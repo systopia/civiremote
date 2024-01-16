@@ -431,7 +431,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           if ($dependency['command'] == 'restrict') {
             $regex = str_replace(
               '{current_value}',
-              $field_value, // TODO: This is dependent on $dependency['regex_subject'].
+              // @todo $field_value depends on $dependency['regex_subject'].
+              ($field_value ?? ''),
               $dependency['regex']
             );
             $matches = preg_grep(
@@ -637,9 +638,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if (!empty($field['weight'])) {
         $group[$field_name]['#weight'] = $field['weight'];
       }
-      if (isset($default_value)) {
-        $group[$field_name]['#default_value'] = $default_value;
-      }
+      $group[$field_name]['#default_value'] = $default_value;
       if ($type == 'select' || $type == 'radios' || $type == 'checkboxes') {
         $group[$field_name]['#options'] = $field['options'];
       }
