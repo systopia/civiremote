@@ -30,11 +30,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RegisterFormController extends ControllerBase {
 
-  const CONTEXT_CREATE = 'create';
+  public const CONTEXT_CREATE = 'create';
 
-  const CONTEXT_UPDATE = 'update';
+  public const CONTEXT_UPDATE = 'update';
 
-  const CONTEXT_CANCEL = 'cancel';
+  public const CONTEXT_CANCEL = 'cancel';
 
   /**
    * @var CiviMRF $cmrf
@@ -64,9 +64,7 @@ class RegisterFormController extends ControllerBase {
      * @var CiviMRF $cmrf
      */
     $cmrf = $container->get('civiremote_event.cmrf');
-    return new static(
-      $cmrf
-    );
+    return new static($cmrf);
   }
 
   /**
