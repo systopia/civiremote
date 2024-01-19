@@ -25,10 +25,16 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatch;
 use stdClass;
-use \Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RegisterFormController extends ControllerBase {
+
+  const CONTEXT_CREATE = 'create';
+
+  const CONTEXT_UPDATE = 'update';
+
+  const CONTEXT_CANCEL = 'cancel';
 
   /**
    * @var CiviMRF $cmrf
@@ -63,10 +69,26 @@ class RegisterFormController extends ControllerBase {
     );
   }
 
-  public function form(RouteMatch $route_match, string $context, stdClass $event = NULL, string $profile = NULL, stdClass $event_token = NULL) {
-    $event ??= $event_token;
-    $raw_event_token = $route_match->getRawParameter('event_token');
+  /**
+   * @param \Drupal\Core\Routing\RouteMatch $route_match
+   * @param string $context
+   * @param \stdClass $event_token
+   *   A CiviCRM CiviRemote Event token converted into a CiviCRM Event.
+   *
+   * @return array
+   *
+   * @see \Drupal\civiremote_event\Routing\EventTokenConverter
+   */
+  public function formWithToken(RouteMatch $route_match, string $context, stdClass $event_token) {
+    return self::form(
+      $route_match,
+      $context,
+      $event_token,
+      $route_match->getRawParameter('event_token')
+    );
+  }
 
+  public function form(RouteMatch $route_match, string $context, stdClass $event, string $raw_event_token = NULL, string $profile = NULL) {
     // Retrieve the form definition.
     try {
       $form = $this->cmrf->getForm(
@@ -82,19 +104,17 @@ class RegisterFormController extends ControllerBase {
       }
       else {
         switch ($context) {
-          case 'create':
+          case self::CONTEXT_CREATE:
             $profile = $event->default_profile;
             break;
-          case 'update':
+          case self::CONTEXT_UPDATE:
             $profile = $event->default_update_profile;
             break;
-          case 'cancel':
+          case self::CONTEXT_CANCEL:
             $profile = NULL;
             break;
           default:
-            throw new NotFoundHttpException(
-              $this->t('No profile found for CiviRemote event form.')
-            );
+            throw new NotFoundHttpException('No profile found for CiviRemote event form.');
         }
       }
     }
@@ -120,10 +140,20 @@ class RegisterFormController extends ControllerBase {
     );
   }
 
-  public function title(stdClass $event = NULL, stdClass $event_token = NULL) {
-    // If the form is being requested with a token, the event will have been
-    // resolved in $event_token by the EventTokenConverter.
-    return ($event ?? $event_token)->event_title;
+  /**
+   * @param \stdClass $event_token
+   *    A CiviCRM CiviRemote Event token converted into a CiviCRM Event.
+   *
+   * @return mixed
+   *
+   * @see \Drupal\civiremote_event\Routing\EventTokenConverter
+   */
+  public function titleWithToken(stdClass $event_token) {
+    return self::title($event_token);
+  }
+
+  public function title(stdClass $event) {
+    return $event->event_title;
   }
 
   private function getFormId($profile = NULL) {
@@ -157,6 +187,19 @@ class RegisterFormController extends ControllerBase {
   }
 
   /**
+   * @param string $context
+   * @param \stdClass $event_token
+   *    A CiviCRM CiviRemote Event token converted into a CiviCRM Event.
+   *
+   * @return \Drupal\Core\Access\AccessResult|\Drupal\Core\Access\AccessResultAllowed|\Drupal\Core\Access\AccessResultNeutral
+   *
+   * @see \Drupal\civiremote_event\Routing\EventTokenConverter
+   */
+  public function accessWithToken(string $context, stdClass $event_token) {
+    return self::access($context, $event_token);
+  }
+
+  /**
    * Custom access callback for this form's route.
    *
    * @param stdClass $event
@@ -168,15 +211,15 @@ class RegisterFormController extends ControllerBase {
    *
    * @return AccessResult|AccessResultAllowed|AccessResultNeutral
    */
-  public function access(string $context, stdClass $event = NULL, string $profile = NULL, stdClass $event_token = NULL) {
+  public function access(string $context, stdClass $event, string $profile = NULL) {
     $event ??= $event_token;
     // Grant access depending on flags on the remote event.
     return AccessResult::allowedIf(
       isset($event)
       && (
-        $context == 'create' && $event->can_register
-        || $context == 'update' && $event->can_edit_registration
-        || $context == 'cancel' && $this->event->is_registered && $this->event->can_cancel_registration
+        $context == self::CONTEXT_CREATE && $event->can_register
+        || $context == self::CONTEXT_UPDATE && $event->can_edit_registration
+        || $context == self::CONTEXT_CANCEL && $this->event->is_registered && $this->event->can_cancel_registration
       )
       && (
         !isset($profile)
