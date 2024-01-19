@@ -107,35 +107,4 @@ class RegistrationUpdateForm extends RegisterForm {
     }
   }
 
-  /**
-   * Custom access callback for this form's route.
-   *
-   * Note: The parameters passed in here are not being used, since they have
-   * been processed in the constructor already. Instead, class members are being
-   * used for deciding about access.
-   *
-   * @param stdClass $event
-   *   The remote event retrieved by the RemoteEvent.get API.
-   * @param string $profile
-   *   The remote event profile to use for displaying the form.
-   * @param string $remote_token
-   *   The remote token to use for retrieving the form.
-   *
-   * @return AccessResult|AccessResultAllowed|AccessResultNeutral
-   */
-  public function access(stdClass $event = NULL, $profile = NULL, $remote_token = NULL) {
-    // Grant access depending on flags on the remote event.
-    return AccessResult::allowedIf(
-      !empty($this->event)
-      && $this->event->can_edit_registration
-      && (
-        !isset($this->profile)
-        || in_array(
-          $this->profile,
-          explode(',', $this->event->enabled_update_profiles)
-        )
-      )
-    );
-  }
-
 }

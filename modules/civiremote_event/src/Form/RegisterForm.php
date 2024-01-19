@@ -90,9 +90,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   /**
    * @var string $context
    *   The context which the form is being used for, one of
-   *   - create
-   *   - update
-   *   - cancel
+   *   - "create"
+   *   - "update"
+   *   - "cancel"
    */
   protected $context;
 
@@ -103,67 +103,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
    *   The CiviMRF service.
    */
   public function __construct(CiviMRF $cmrf) {
-    // Store dependency references to passed-in services.
     $this->cmrf = $cmrf;
-
-    // Extract form parameters and set them here so that implementations do not
-    // have to care about that.
-    $routeMatch = RouteMatch::createFromRequest($this->getRequest());
-    switch ($routeMatch->getRouteName()) {
-      case 'civiremote_event.register_form':
-      case 'civiremote_event.register_token_form':
-        $this->context = 'create';
-        break;
-      case 'civiremote_event.registration_update_form':
-      case 'civiremote_event.registration_update_token_form':
-        $this->context = 'update';
-        break;
-    }
-    if (!isset($this->context)) {
-      throw new NotFoundHttpException(
-        $this->t('Invalid CiviRemote Event form context')
-      );
-    }
-    $this->event = $routeMatch->getParameter('event');
-    $this->profile = $routeMatch->getRawParameter('profile');
-    $this->remote_token = $routeMatch->getRawParameter('event_token');
-    try {
-      $form = $this->cmrf->getForm(
-        (isset($this->event) ? $this->event->id : NULL),
-        $this->profile,
-        $this->remote_token,
-        $this->context
-      );
-      $this->fields = $form['values'];
-      $this->messages = isset($form['status_messages']) ? $form['status_messages'] : [];
-      $this->event = $this->cmrf->getEvent(
-        $this->fields['event_id']['value'],
-        $this->remote_token
-      );
-      if (!empty($this->fields['profile']['value'])) {
-        $this->profile = $this->fields['profile']['value'];
-      }
-      else {
-        switch ($this->context) {
-          case 'create':
-            $this->profile = $this->event->default_profile;
-            break;
-          case 'update':
-            $this->profile = $this->event->default_update_profile;
-            break;
-          default:
-            throw new NotFoundHttpException(
-              $this->t('No profile found for CiviRemote event form.')
-            );
-        }
-      }
-    }
-    catch (Exception $exception) {
-      Drupal::messenger()->addMessage(
-        $exception->getMessage(),
-        MessengerInterface::TYPE_ERROR
-      );
-    }
   }
 
   /**
@@ -476,7 +416,24 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   /**
    * @inheritDoc
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(
+    array $form,
+    FormStateInterface $form_state,
+    stdClass $event = NULL,
+    string $profile = NULL,
+    string $context = NULL,
+    string $raw_event_token = NULL,
+    array $fields = NULL,
+    array $messages = NULL
+  ) {
+    // Initialize.
+    $this->event = $event;
+    $this->profile = $profile;
+    $this->context = $context;
+    $this->remote_token = $raw_event_token;
+    $this->fields = $fields;
+    $this->messages = $messages;
+
     // Prepare form steps.
     if (empty($form_state->get('steps'))) {
       $steps = [];
@@ -1309,36 +1266,5 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
 
     return $response;
-  }
-
-  /**
-   * Custom access callback for this form's route.
-   *
-   * Note: The parameters passed in here are not being used, since they have
-   * been processed in the constructor already. Instead, class members are being
-   * used for deciding about access.
-   *
-   * @param stdClass $event
-   *   The remote event retrieved by the RemoteEvent.get API.
-   * @param string $profile
-   *   The remote event profile to use for displaying the form.
-   * @param string $remote_token
-   *   The remote token to use for retrieving the form.
-   *
-   * @return AccessResult|AccessResultAllowed|AccessResultNeutral
-   */
-  public function access(stdClass $event = NULL, $profile = NULL, $remote_token = NULL) {
-    // Grant access depending on flags on the remote event.
-    return AccessResult::allowedIf(
-      !empty($this->event)
-      && $this->event->can_register
-      && (
-        !isset($this->profile)
-        || in_array(
-          $this->profile,
-          explode(',', $this->event->enabled_profiles)
-        )
-      )
-    );
   }
 }
