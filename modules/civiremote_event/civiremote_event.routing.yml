@@ -26,11 +26,13 @@ civiremote_event.register_form:
       context:
         type: string
 civiremote_event.register_token_form:
-  path: '/civiremote/event/register/{event_token}'
+  path: '/civiremote/event/register/{event_token}/{profile}'
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::formWithToken'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::titleWithToken'
-    context: create
+    # The profile is optional.
+    profile: null
+    context: 'create'
   requirements:
     _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::accessWithToken'
   options:
@@ -38,6 +40,8 @@ civiremote_event.register_token_form:
     parameters:
       event_token:
         type: civiremote_event_token
+      profile:
+        type: string
       context:
         type: string
 
@@ -70,10 +74,12 @@ civiremote_event.registration_cancel_token_form:
       context: string
 
 civiremote_event.registration_update_form:
-  path: '/civiremote/event/{event}/update'
+  path: '/civiremote/event/{event}/update/{profile}'
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::form'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::title'
+    # The profile is optional.
+    profile: null
     context: 'update'
   requirements:
     _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::access'
@@ -82,13 +88,17 @@ civiremote_event.registration_update_form:
     parameters:
       event:
         type: civiremote_event
+      profile:
+        type: string
       context:
         type: string
 civiremote_event.registration_update_token_form:
-  path: '/civiremote/event/update/{event_token}'
+  path: '/civiremote/event/update/{event_token}/{profile}'
   defaults:
     _controller: '\Drupal\civiremote_event\Controller\RegisterFormController::formWithToken'
     _title_callback: '\Drupal\civiremote_event\Controller\RegisterFormController::titleWithToken'
+    # The profile is optional.
+    profile: null
     context: 'update'
   requirements:
     _custom_access: '\Drupal\civiremote_event\Controller\RegisterFormController::accessWithToken'
@@ -97,6 +107,8 @@ civiremote_event.registration_update_token_form:
     parameters:
       event_token:
         type: civiremote_event_token
+      profile:
+        type: string
       context:
         type: string
 

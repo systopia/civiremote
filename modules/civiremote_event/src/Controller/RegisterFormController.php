@@ -77,12 +77,13 @@ class RegisterFormController extends ControllerBase {
    *
    * @see \Drupal\civiremote_event\Routing\EventTokenConverter
    */
-  public function formWithToken(RouteMatch $route_match, string $context, stdClass $event_token) {
+  public function formWithToken(RouteMatch $route_match, string $context, stdClass $event_token, string $profile = NULL) {
     return self::form(
       $route_match,
       $context,
       $event_token,
-      $route_match->getRawParameter('event_token')
+      $route_match->getRawParameter('event_token'),
+      $profile
     );
   }
 
@@ -90,7 +91,7 @@ class RegisterFormController extends ControllerBase {
     // Retrieve the form definition.
     try {
       $form = $this->cmrf->getForm(
-        (isset($event) ? $event->id : NULL),
+        $event->id,
         $profile,
         $raw_event_token,
         $context
@@ -116,11 +117,12 @@ class RegisterFormController extends ControllerBase {
         }
       }
     }
-    catch (Exception $exception) {
+    catch (\Exception $exception) {
       Drupal::messenger()->addMessage(
         $exception->getMessage(),
         MessengerInterface::TYPE_ERROR
       );
+      return [];
     }
 
     // Retrieve implementation for building the form.
