@@ -42,14 +42,23 @@ class Utils {
     if (isset($field['validation']) && $field['validation'] == 'Email') {
       $type = 'email';
     }
-    // Use radio buttons for select fields with up to 10 options.
+    // Use checkboxes for multi-select fields with up to 10 options.
     elseif (
       $types[$field['type']] == 'select'
       && count($field['options']) <= 10
       // Checkboxes #options may not have a 0 key.
       && !isset($field['options'][0])
+      && $field['type'] == 'Multi-Select'
     ) {
-      $type = $field['type'] == 'Multi-Select' ? 'checkboxes' : 'radios';
+      $type = 'checkboxes';
+    }
+    // Use radio buttons for single-select fields with up to 10 options.
+    elseif (
+      $types[$field['type']] == 'select'
+      && count($field['options']) <= 10
+      && $field['type'] != 'Multi-Select'
+    ) {
+      $type = 'radios';
     }
     // Use details element for session fieldsets.
     elseif (
