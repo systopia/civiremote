@@ -11,7 +11,10 @@
         }
     ],
     "require": {
-        "drupal/cmrf_core": "^2.0",
+        "drupal/cmrf_core": "^2.1",
         "drupal/core": "^9.5 || ^10"
+    },
+    "conflict": {
+        "drupal/cmrf_core": "2.1.0-beta5"
     }
 }
