@@ -231,9 +231,8 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       case 'checkboxes':
         if (
           isset($field['value'])
-          && array_key_exists($field['value'], $field['options'])
         ) {
-          $default_value = $field['value'];
+          $default_value = (array) $field['value'];
         }
         break;
       case 'radios':
