@@ -126,7 +126,7 @@ class RegisterFormController extends ControllerBase {
     }
 
     // Retrieve implementation for building the form.
-    $form_id = $this->getFormId($profile);
+    $form_id = $this->getFormId($profile, $context);
 
     // Build the form.
     return $this->formBuilder()->getForm(
@@ -156,9 +156,20 @@ class RegisterFormController extends ControllerBase {
     return $event->event_title;
   }
 
-  private function getFormId($profile = NULL) {
+  private function getFormId($profile = NULL, string $context = 'create') {
     // Use generic form ID.
-    $form_id = '\Drupal\civiremote_event\Form\RegisterForm';
+    switch ($context) {
+      case 'create':
+        $form_id = '\Drupal\civiremote_event\Form\RegisterForm';
+        break;
+      case 'update':
+        $form_id = '\Drupal\civiremote_event\Form\RegistrationUpdateForm';
+        break;
+      case 'cancel':
+        $form_id = '\Drupal\civiremote_event\Form\RegistrationCancelForm';
+        break;
+    }
+
 
     // Try to find a profile-specific implementation.
     if ($profile) {
