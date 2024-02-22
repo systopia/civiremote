@@ -159,13 +159,13 @@ class RegisterFormController extends ControllerBase {
   private function getFormId($profile = NULL, string $context = 'create') {
     // Use generic form ID.
     switch ($context) {
-      case 'create':
+      case self::CONTEXT_CREATE:
         $form_id = '\Drupal\civiremote_event\Form\RegisterForm';
         break;
-      case 'update':
+      case self::CONTEXT_UPDATE:
         $form_id = '\Drupal\civiremote_event\Form\RegistrationUpdateForm';
         break;
-      case 'cancel':
+      case self::CONTEXT_CANCEL:
         $form_id = '\Drupal\civiremote_event\Form\RegistrationCancelForm';
         break;
     }
@@ -230,7 +230,7 @@ class RegisterFormController extends ControllerBase {
       && (
         $context == self::CONTEXT_CREATE && $event->can_register
         || $context == self::CONTEXT_UPDATE && $event->can_edit_registration
-        || $context == self::CONTEXT_CANCEL && $this->event->is_registered && $this->event->can_cancel_registration
+        || $context == self::CONTEXT_CANCEL && $event->is_registered && $event->can_cancel_registration
       )
       && (
         !isset($profile)
