@@ -239,7 +239,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   public function addPrefixSuffix($field, $field_name, &$group) {
     if (!empty($field['prefix'])) {
       $group[$field_name]['#prefix'] = '<div class="form-element-prefix">';
-      if ($field['prefix_display'] == 'dialog') {
+      if (isset($field['prefix_display']) && $field['prefix_display'] == 'dialog') {
         $html_id = Html::getUniqueId('dialog-' . $field_name . '-prefix');
         $group[$field_name]['#prefix'] .=
           '<div
@@ -260,7 +260,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
     if (!empty($field['suffix'])) {
       $group[$field_name]['#suffix'] = '<div class="form-element-suffix">';
-      if ($field['suffix_display'] == 'dialog') {
+      if (isset($field['suffix_display']) && $field['suffix_display'] == 'dialog') {
         $html_id = Html::getUniqueId('dialog-' . $field_name . '-suffix');
         $group[$field_name]['#suffix'] .=
           '<div
