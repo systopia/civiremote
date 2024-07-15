@@ -817,11 +817,12 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $group = &NestedArray::getValue($form, $group_parents);
 
       // Build the field.
-      $value = $form_state->getValue($field['name']);
+      $value = $form_state->getValue($field_name);
       $type = EventUtils::fieldType($field, 'confirm');
 
-      // Unset $value when the value does not belong to the field.
-      if ($field_name != $field['name'] && $value != $field_name) {
+      // Unset $value when the value does not belong to the field. This will
+      // hide unselected radio buttons.
+      if ($field['type'] === 'radio' && $field_name != $field['name'] && $value != $field_name) {
         $value = NULL;
       }
 
