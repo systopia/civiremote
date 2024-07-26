@@ -4,5 +4,3 @@ includes:
 parameters:
 	bootstrapFiles:
 		- ci/vendor/autoload.php
-	scanFiles:
-		- ci/vendor/drupal/core/tests/Drupal/Tests/UnitTestCase.php
