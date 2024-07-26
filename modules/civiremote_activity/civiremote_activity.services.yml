@@ -7,7 +7,7 @@ services:
     class: Drupal\civiremote_activity\Api\ActivityApi
 
   Drupal\civiremote_activity\Controller\ActivityCreateController:
-    class: Drupal\civiremote_activity\Controller\ActivityUpdateController
+    class: Drupal\civiremote_activity\Controller\ActivityCreateController
     public: true
 
   Drupal\civiremote_activity\Controller\ActivityUpdateController:
