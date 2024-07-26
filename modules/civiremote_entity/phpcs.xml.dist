@@ -3,8 +3,6 @@
          xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
 
   <file>src</file>
-  <!--<file>tests</file>-->
-  <!--<file>civiremote_entity.module</file>-->
 
   <arg name="extensions" value="php"/>
   <arg name="cache" value=".phpcs.cache"/>
@@ -15,6 +13,9 @@
   <config name="ignore_warnings_on_exit" value="true"/>
 
   <rule ref="vendor/drupal/coder/coder_sniffer/Drupal">
+    <!-- Keep PHP 7.4 compatibility -->
+    <exclude name="Drupal.Functions.MultiLineFunctionDeclaration.MissingTrailingComma"/>
+
     <!-- Don't enforce phpdoc type hint because it (might) only duplicate a PHP type hint -->
     <exclude name="Drupal.Commenting.FunctionComment.MissingParamComment"/>
     <exclude name="Drupal.Commenting.FunctionComment.ParamMissingDefinition"/>

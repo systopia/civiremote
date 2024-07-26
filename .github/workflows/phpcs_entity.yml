@@ -1,9 +1,11 @@
 name: PHP_CodeSniffer - civiremote_entity
 
 on:
-  push: ~
   pull_request:
-    branches: [ main ]
+    paths:
+      - 'modules/civiremote_entity/src/**.php'
+      - modules/civiremote_entity/composer.json
+      - modules/civiremote_entity/phpcs.xml.dist
 
 jobs:
   phpcs:
@@ -19,7 +21,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.2
+        php-version: 8.3
         coverage: none
         tools: cs2pr
       env:

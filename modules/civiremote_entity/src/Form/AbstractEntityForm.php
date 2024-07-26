@@ -39,7 +39,8 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
 
   protected FormResponseHandlerInterface $formResponseHandler;
 
-  public function __construct(FormArrayFactoryInterface $formArrayFactory,
+  public function __construct(
+    FormArrayFactoryInterface $formArrayFactory,
     FormValidatorInterface $formValidator,
     FormValidationMapperInterface $formValidationMapper,
     FormRequestHandlerInterface $formRequestHandler,

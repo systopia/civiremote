@@ -1,8 +1,6 @@
 parameters:
 	paths:
 		- src
-		#- tests
-		#- civiremote_activity.module
 	bootstrapFiles:
 		- vendor/autoload.php
 	scanDirectories:

@@ -1,16 +1,22 @@
 name: PHPStan - civiremote_entity
 
 on:
-  push: ~
   pull_request:
-    branches: [ main ]
+    paths:
+      - 'modules/civiremote_entity/src/**.php'
+      - modules/civiremote_entity/composer.json
+      - modules/civiremote_entity/tools/phpstan/composer.json
+      - modules/civiremote_entity/ci/composer.json
+      - modules/civiremote_entity/phpstan.ci.neon
+      - modules/civiremote_entity/phpstan.neon.dist
+      - 'src/**.php'
 
 jobs:
   phpstan:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.2']
+        php-versions: ['7.4', '8.0', '8.3']
         prefer: ['prefer-stable', 'prefer-lowest']
     name: PHPStan with PHP ${{ matrix.php-versions }} ${{ matrix.prefer }}
     defaults:
