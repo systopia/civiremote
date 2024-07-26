@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    autowire: true
+    public: false # Controller classes and services directly fetched from container need to be public
+
+  Drupal\civiremote_case\Api\CaseApi:
+    class: Drupal\civiremote_case\Api\CaseApi
+
+  Drupal\civiremote_case\Controller\CaseCreateController:
+    class: Drupal\civiremote_case\Controller\CaseCreateController
+    public: true
+
+  Drupal\civiremote_case\Controller\CaseUpdateController:
+    class: Drupal\civiremote_case\Controller\CaseUpdateController
+    public: true
+
+  Drupal\civiremote_case\Form\RequestHandler\CaseCreateFormRequestHandler:
+    class: Drupal\civiremote_case\Form\RequestHandler\CaseCreateFormRequestHandler
+    public: true
+
+  Drupal\civiremote_case\Form\RequestHandler\CaseUpdateFormRequestHandler:
+    class: Drupal\civiremote_case\Form\RequestHandler\CaseUpdateFormRequestHandler
+    public: true

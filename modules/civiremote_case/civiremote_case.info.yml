@@ -1,0 +1,10 @@
+name: CiviRemote Case
+type: module
+description: 'CiviRemote Case'
+package: CiviCRM
+core_version_requirement: ^10
+dependencies:
+  - civiremote_entity
+
+project: civiremote
+version: 1.1.x-dev

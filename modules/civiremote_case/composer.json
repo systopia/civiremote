@@ -1,0 +1,69 @@
+{
+    "name": "custom/civiremote_case",
+    "description": "Drupal frontend to access CiviCRM Remote Case.",
+    "type": "drupal-custom-module",
+    "license": "AGPL-3.0-only",
+    "authors": [
+        {
+            "name": "SYSTOPIA GmbH",
+            "email": "info@systopia.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Drupal\\civiremote_case\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Drupal\\Tests\\civiremote_case\\": "tests/src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true,
+            "php-http/discovery": false
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "drupal/core-dev": "^10"
+    },
+    "scripts": {
+        "composer-phpstan": [
+            "@composer --working-dir=tools/phpstan"
+        ],
+        "composer-tools": [
+            "@composer-phpstan"
+        ],
+        "phpcs": [
+            "@php vendor/bin/phpcs"
+        ],
+        "phpcbf": [
+            "@php vendor/bin/phpcbf"
+        ],
+        "phpstan": [
+            "@php tools/phpstan/vendor/bin/phpstan"
+        ],
+        "phpunit": [
+            "@php vendor/bin/phpunit --coverage-text"
+        ],
+        "test": [
+            "@phpcs",
+            "@phpstan",
+            "@phpunit"
+        ]
+    }
+}

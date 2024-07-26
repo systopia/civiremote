@@ -1,0 +1,25 @@
+civiremote_case.create_form:
+  path: '/civiremote/case/add/{profile}'
+  defaults:
+    _controller: 'Drupal\civiremote_case\Controller\CaseCreateController::form'
+  options:
+    no_cache: TRUE
+    parameters:
+      profile:
+        type: string
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+civiremote_case.update_form:
+  path: '/civiremote/case/{id}/update/{profile}'
+  defaults:
+    _controller: 'Drupal\civiremote_case\Controller\CaseUpdateController::form'
+  options:
+    no_cache: TRUE
+    parameters:
+      id:
+        type: int
+      profile:
+        type: string
+  requirements:
+    _user_is_logged_in: 'TRUE'
