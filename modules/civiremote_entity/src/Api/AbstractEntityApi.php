@@ -43,7 +43,7 @@ abstract class AbstractEntityApi {
    * @phpstan-param array<int|string, mixed> $arguments JSON serializable.
    */
   public function getCreateForm(string $profile, array $arguments = []): EntityForm {
-    $result = $this->client->executeV4($this->getRemoteEntityName(), 'getUpdateForm', [
+    $result = $this->client->executeV4($this->getRemoteEntityName(), 'getCreateForm', [
       'profile' => $profile,
       'arguments' => $arguments,
       'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
@@ -57,7 +57,7 @@ abstract class AbstractEntityApi {
    * @phpstan-param array<int|string, mixed> $arguments JSON serializable.
    */
   public function submitCreateForm(string $profile, array $data, array $arguments = []): FormSubmitResponse {
-    $result = $this->client->executeV4($this->getRemoteEntityName(), 'submitUpdateForm', [
+    $result = $this->client->executeV4($this->getRemoteEntityName(), 'submitCreateForm', [
       'profile' => $profile,
       'data' => $data,
       'arguments' => $arguments,
@@ -72,7 +72,7 @@ abstract class AbstractEntityApi {
    * @phpstan-param array<int|string, mixed> $arguments JSON serializable.
    */
   public function validateCreateForm(string $profile, array $data, array $arguments = []): FormValidationResponse {
-    $result = $this->client->executeV4($this->getRemoteEntityName(), 'validateUpdateForm', [
+    $result = $this->client->executeV4($this->getRemoteEntityName(), 'validateCreateForm', [
       'profile' => $profile,
       'data' => $data,
       'arguments' => $arguments,
