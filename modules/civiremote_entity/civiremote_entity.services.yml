@@ -11,6 +11,10 @@ services:
     factory: [ 'Drupal', 'config' ]
     arguments: [ 'civiremote.settings' ]
 
+  civiremote_entity.logger:
+    parent: logger.channel_base
+    arguments: [ 'civiremote_entity' ]
+
   Drupal\civiremote_entity\Api\CiviCRMApiClientInterface:
     class: Drupal\civiremote_entity\Api\CiviCRMApiClient
     factory: [ 'Drupal\civiremote_entity\Api\CiviCRMApiClient', 'create' ]
@@ -28,4 +32,28 @@ services:
     class: Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerMessage
     arguments:
       $messenger: '@messenger'
+    public: true
+
+  Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageClientInterface:
+    class: Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageClient
+    factory: ['Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageClient', 'create']
+    arguments:
+      $cmrfCore: '@cmrf_core.core'
+      $config: '@civiremote.civiremote.settings'
+      $connectorConfigKey: '%civiremote.cmrf_connector_config_key%'
+      $httpClient: '@http_client'
+
+  Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageProxyInterface:
+    class: Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageProxy
+    arguments:
+      $logger: '@civiremote_entity.logger'
+
+  Drupal\civiremote_entity\CiviCRMPage\CiviCRMUrlStorageInterface:
+    class: Drupal\civiremote_entity\CiviCRMPage\CiviCRMUrlStorage
+    arguments:
+      $session: '@session'
+      $uuidGenerator: '@uuid'
+
+  Drupal\civiremote_entity\Controller\CiviCRMPageController:
+    class: Drupal\civiremote_entity\Controller\CiviCRMPageController
     public: true
