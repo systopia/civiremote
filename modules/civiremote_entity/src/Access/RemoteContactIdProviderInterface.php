@@ -22,6 +22,19 @@ namespace Drupal\civiremote_entity\Access;
 
 interface RemoteContactIdProviderInterface {
 
+  /**
+   * @throws \RuntimeException
+   *   If current user has no remote contact ID.
+   */
   public function getRemoteContactId(): string;
+
+  /**
+   * @return string|null
+   *   The user's remote contact ID, or NULL if the user has no remote contact
+   *   ID.
+   */
+  public function getRemoteContactIdOrNull(): ?string;
+
+  public function hasRemoteContactId(): bool;
 
 }

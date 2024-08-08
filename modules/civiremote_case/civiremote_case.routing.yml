@@ -8,7 +8,7 @@ civiremote_case.create_form:
       profile:
         type: string
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access civiremote case'
 
 civiremote_case.update_form:
   path: '/civiremote/case/{id}/update/{profile}'
@@ -22,4 +22,4 @@ civiremote_case.update_form:
       profile:
         type: string
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _permission: 'access civiremote case'
