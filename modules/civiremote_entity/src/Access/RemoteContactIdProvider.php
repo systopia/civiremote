@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Drupal\civiremote_entity\Access;
 
-use Assert\Assertion;
 use Drupal\Core\Session\AccountProxyInterface;
 
 final class RemoteContactIdProvider implements RemoteContactIdProviderInterface {
@@ -31,16 +30,33 @@ final class RemoteContactIdProvider implements RemoteContactIdProviderInterface 
     $this->currentUser = $currentUser;
   }
 
+  /**
+   * @{inheritDoc}
+   */
   public function getRemoteContactId(): string {
+    if (!$this->hasRemoteContactId()) {
+      throw new \RuntimeException(sprintf('User "%s" has no remote contact ID', $this->currentUser->getAccountName()));
+    }
+
+    // @phpstan-ignore property.notFound
+    return $this->currentUser->getAccount()->civiremote_id;
+  }
+
+  /**
+   * @{inheritDoc}
+   */
+  public function getRemoteContactIdOrNull(): ?string {
+    return $this->hasRemoteContactId() ? $this->getRemoteContactId() : NULL;
+  }
+
+  /**
+   * @{inheritDoc}
+   */
+  public function hasRemoteContactId(): bool {
     $account = $this->currentUser->getAccount();
-    Assertion::propertyExists($account, 'civiremote_id');
-    // @phpstan-ignore-next-line
-    $remoteContactId = $account->civiremote_id;
+    $remoteContactId = $account->civiremote_id ?? NULL;
 
-    Assertion::string($remoteContactId);
-    Assertion::notEmpty($remoteContactId);
-
-    return $remoteContactId;
+    return is_string($remoteContactId) && '' !== $remoteContactId;
   }
 
 }

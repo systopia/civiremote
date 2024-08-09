@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2023 SYSTOPIA GmbH
+ * Copyright (C) 2024 SYSTOPIA GmbH
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,23 +18,14 @@
 
 declare(strict_types=1);
 
-namespace Drupal\civiremote_entity\Access;
+namespace Drupal\civiremote_case\Api;
 
-interface RemoteContactIdProviderInterface {
+use Drupal\civiremote_entity\Api\AbstractEntityApi;
 
-  /**
-   * @throws \RuntimeException
-   *   If current user has no remote contact ID.
-   */
-  public function getRemoteContactId(): string;
+final class CaseApi extends AbstractEntityApi {
 
-  /**
-   * @return string|null
-   *   The user's remote contact ID, or NULL if the user has no remote contact
-   *   ID.
-   */
-  public function getRemoteContactIdOrNull(): ?string;
-
-  public function hasRemoteContactId(): bool;
+  protected function getRemoteEntityName(): string {
+    return 'RemoteCase';
+  }
 
 }

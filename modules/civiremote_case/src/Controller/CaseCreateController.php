@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2023 SYSTOPIA GmbH
+ * Copyright (C) 2024 SYSTOPIA GmbH
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,23 +18,21 @@
 
 declare(strict_types=1);
 
-namespace Drupal\civiremote_entity\Access;
+namespace Drupal\civiremote_case\Controller;
 
-interface RemoteContactIdProviderInterface {
+use Drupal\civiremote_case\Form\CaseCreateForm;
+use Drupal\Core\Controller\ControllerBase;
 
-  /**
-   * @throws \RuntimeException
-   *   If current user has no remote contact ID.
-   */
-  public function getRemoteContactId(): string;
+final class CaseCreateController extends ControllerBase {
 
   /**
-   * @return string|null
-   *   The user's remote contact ID, or NULL if the user has no remote contact
-   *   ID.
+   * @phpstan-return array<int|string, mixed> JSON serializable.
    */
-  public function getRemoteContactIdOrNull(): ?string;
+  public function form(string $profile): array {
+    $form = $this->formBuilder()->getForm(CaseCreateForm::class);
+    $form['#title'] ??= $this->t('Add CiviCRM Case');
 
-  public function hasRemoteContactId(): bool;
+    return $form;
+  }
 
 }

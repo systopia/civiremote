@@ -46,7 +46,7 @@ abstract class AbstractEntityApi {
     $result = $this->client->executeV4($this->getRemoteEntityName(), 'getCreateForm', [
       'profile' => $profile,
       'arguments' => $arguments,
-      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
+      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactIdOrNull(),
     ]);
 
     return EntityForm::fromApiResultValue($result['values']);
@@ -61,7 +61,7 @@ abstract class AbstractEntityApi {
       'profile' => $profile,
       'data' => $data,
       'arguments' => $arguments,
-      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
+      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactIdOrNull(),
     ]);
 
     return FormSubmitResponse::fromApiResultValue($result['values']);
@@ -76,7 +76,7 @@ abstract class AbstractEntityApi {
       'profile' => $profile,
       'data' => $data,
       'arguments' => $arguments,
-      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
+      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactIdOrNull(),
     ]);
 
     return FormValidationResponse::fromApiResultValue($result['values']);
@@ -86,7 +86,7 @@ abstract class AbstractEntityApi {
     $result = $this->client->executeV4($this->getRemoteEntityName(), 'getUpdateForm', [
       'profile' => $profile,
       'id' => $id,
-      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
+      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactIdOrNull(),
     ]);
 
     return EntityForm::fromApiResultValue($result['values']);
@@ -100,7 +100,7 @@ abstract class AbstractEntityApi {
       'profile' => $profile,
       'id' => $id,
       'data' => $data,
-      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
+      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactIdOrNull(),
     ]);
 
     return FormSubmitResponse::fromApiResultValue($result['values']);
@@ -114,7 +114,7 @@ abstract class AbstractEntityApi {
       'profile' => $profile,
       'id' => $id,
       'data' => $data,
-      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactId(),
+      'remoteContactId' => $this->remoteContactIdProvider->getRemoteContactIdOrNull(),
     ]);
 
     return FormValidationResponse::fromApiResultValue($result['values']);

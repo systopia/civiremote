@@ -1,0 +1,55 @@
+name: PHPStan - civiremote_case
+
+on:
+  pull_request:
+    paths:
+      - 'modules/civiremote_case/src/**.php'
+      - modules/civiremote_case/composer.json
+      - modules/civiremote_case/tools/phpstan/composer.json
+      - modules/civiremote_case/ci/composer.json
+      - modules/civiremote_case/phpstan.ci.neon
+      - modules/civiremote_case/phpstan.neon.dist
+      - 'modules/civiremote_entity/src/**.php'
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['8.1', '8.3']
+        prefer: ['prefer-stable', 'prefer-lowest']
+    name: PHPStan with PHP ${{ matrix.php-versions }} ${{ matrix.prefer }}
+    defaults:
+      run:
+        working-directory: modules/civiremote_case
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+        env:
+          fail-fast: true
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.prefer }}-${{ hashFiles('modules/civiremote_case/**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.prefer }}-
+
+      - name: Install dependencies
+        run: |
+          composer update --no-progress --prefer-dist --${{ matrix.prefer }} --optimize-autoloader &&
+          composer composer-phpstan -- update --no-progress --prefer-dist --optimize-autoloader &&
+          composer --working-dir=ci update --no-progress --prefer-dist --${{ matrix.prefer }} --optimize-autoloader
+
+      - name: Run PHPStan
+        run: composer phpstan -- analyse -c phpstan.ci.neon
