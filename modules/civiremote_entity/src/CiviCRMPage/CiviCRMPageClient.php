@@ -87,14 +87,13 @@ final class CiviCRMPageClient implements CiviCRMPageClientInterface {
   }
 
   /**
-   * @phpstan-return array<string, string|null>
+   * @phpstan-return array<string, string>
    */
   private function buildHeaders(): array {
     return [
       'X-Civi-Auth' => 'Bearer ' . $this->apiKey,
       'X-Civi-Key' => $this->siteKey,
-      'X-Civi-Remote-Contact-Id' => $this->remoteContactIdProvider->hasRemoteContactId()
-        ? $this->remoteContactIdProvider->getRemoteContactId() : '',
+      'X-Civi-Remote-Contact-Id' => $this->remoteContactIdProvider->getRemoteContactIdOrNull() ?? '',
     ];
   }
 

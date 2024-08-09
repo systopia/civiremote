@@ -13,4 +13,4 @@ civiremote_entity.remote_page_get:
       filename:
         type: string
   requirements:
-    _user_is_logged_in: 'TRUE'
+    _access: 'TRUE'
