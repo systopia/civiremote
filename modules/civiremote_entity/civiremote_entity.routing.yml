@@ -1,0 +1,16 @@
+civiremote_entity.remote_page_get:
+  path: '/civiremote/get/{identifier}/{filename}'
+  defaults:
+    _controller: 'Drupal\civiremote_entity\Controller\CiviCRMPageController::get'
+    # The parameter filename is optional and is just used to show a convenient
+    # URL to the user.
+    filename: ~
+  options:
+    no_cache: TRUE
+    parameters:
+      identifier:
+        type: string
+      filename:
+        type: string
+  requirements:
+    _access: 'TRUE'
