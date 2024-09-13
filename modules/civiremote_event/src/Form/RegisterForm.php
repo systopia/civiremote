@@ -18,6 +18,7 @@ namespace Drupal\civiremote_event\Form;
 
 use Drupal;
 use Drupal\civiremote\Utils;
+use Drupal\civiremote_event\Form\Callbacks\FileValueCallback;
 use Drupal\civiremote_event\Utils as EventUtils;
 use Drupal\civiremote_event\CiviMRF;
 use Drupal\civiremote_event\Form\RegisterForm\RegisterFormInterface;
@@ -597,7 +598,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         $group[$field_name]['#weight'] = $field['weight'];
       }
       $group[$field_name]['#default_value'] = $default_value;
-      if ($type == 'select' || $type == 'radios' || $type == 'checkboxes') {
+      if ($type === 'file') {
+        $group[$field_name]['#value_callback'] = FileValueCallback::class . '::convert';
+      }
+      elseif ($type === 'select' || $type === 'radios' || $type === 'checkboxes') {
         $group[$field_name]['#options'] = $field['options'];
       }
       // Add "empty" option for non-required radio button groups, if it doesn't
@@ -881,6 +885,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
               break;
             case 'radio':
               $group[$field_name]['#markup'] = $value == $field_name ? $this->t('Yes') : $this->t('No');
+              break;
+            case 'file':
+              $group[$field_name]['#plain_text'] = $value['filename'] ?? '';
               break;
             case 'value':
               break;
