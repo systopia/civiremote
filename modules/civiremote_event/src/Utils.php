@@ -32,6 +32,7 @@ class Utils {
       'Date' => 'date',
       'Datetime' => 'datetime',
       'Timestamp' => 'date',
+      'File' => 'file',
       'Value' => 'value',
       'fieldset' => 'fieldset',
     ];
