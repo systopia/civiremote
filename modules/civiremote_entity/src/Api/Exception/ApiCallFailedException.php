@@ -33,7 +33,7 @@ final class ApiCallFailedException extends \RuntimeException implements Exceptio
     return new self($call, $reply['error_message'], (int) $reply['error_code']);
   }
 
-  public function __construct(Call $call, string $message = '', int $code = 0, \Throwable $previous = NULL) {
+  public function __construct(Call $call, string $message = '', int $code = 0, ?\Throwable $previous = NULL) {
     parent::__construct($message, $code, $previous);
     $this->call = $call;
   }

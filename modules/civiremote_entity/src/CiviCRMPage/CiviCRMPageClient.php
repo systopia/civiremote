@@ -22,8 +22,8 @@ namespace Drupal\civiremote_entity\CiviCRMPage;
 
 use Assert\Assertion;
 use CMRF\Core\Core;
-use Drupal\civiremote_entity\Access\RemoteContactIdProviderInterface;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\civiremote_entity\Access\RemoteContactIdProviderInterface;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 

@@ -23,8 +23,8 @@ namespace Drupal\civiremote_entity\Api;
 use Assert\Assertion;
 use CMRF\Core\Call;
 use CMRF\Core\Core;
-use Drupal\civiremote_entity\Api\Exception\ApiCallFailedException;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\civiremote_entity\Api\Exception\ApiCallFailedException;
 
 final class CiviCRMApiClient implements CiviCRMApiClientInterface {
 

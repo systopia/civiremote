@@ -20,9 +20,9 @@ declare(strict_types=1);
 
 namespace Drupal\civiremote_entity\Controller;
 
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageProxyInterface;
 use Drupal\civiremote_entity\CiviCRMPage\CiviCRMUrlStorageInterface;
-use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
