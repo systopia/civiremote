@@ -20,10 +20,10 @@ declare(strict_types=1);
 
 namespace Drupal\civiremote_entity\Form\ResponseHandler;
 
-use Drupal\civiremote_entity\Api\Form\FormSubmitResponse;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\civiremote_entity\Api\Form\FormSubmitResponse;
 
 class FormResponseHandlerMessage implements FormResponseHandlerInterface {
 
