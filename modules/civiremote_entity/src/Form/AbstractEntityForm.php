@@ -119,6 +119,7 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
     }
     catch (ApiCallFailedException $e) {
       $this->messenger()->addError($this->t('Submitting form failed: @error', ['@error' => $e->getMessage()]));
+      $formState->setRebuild(TRUE);
 
       return;
     }
