@@ -57,7 +57,13 @@ class CiviCRMPageProxy implements CiviCRMPageProxyInterface {
       $remoteResponse = $this->client->request('GET', $uri);
     }
     catch (GuzzleException $e) {
-      $this->logger->error(sprintf('Loading "%s" from CiviCRM failed: %s', $uri, $e->getMessage()));
+      $this->logger->error(
+        'Loading "%uri" from CiviCRM failed: %message',
+        [
+          '%uri' => $uri,
+          '%message' => $e->getMessage(),
+        ]
+      );
 
       throw new ServiceUnavailableHttpException(NULL, '', $e, $e->getCode());
     }
@@ -91,10 +97,14 @@ class CiviCRMPageProxy implements CiviCRMPageProxyInterface {
       );
     }
 
-    $this->logger->error(sprintf('Unexpected response while loading "%s" from CiviCRM', $uri), [
-      'statusCode' => $remoteResponse->getStatusCode(),
-      'reasonPhrase' => $remoteResponse->getReasonPhrase(),
-    ]);
+    $this->logger->error(
+      'Unexpected response while loading "%uri" from CiviCRM',
+      [
+        '%uri' => $uri,
+        'statusCode' => $remoteResponse->getStatusCode(),
+        'reasonPhrase' => $remoteResponse->getReasonPhrase(),
+      ]
+    );
 
     throw new ServiceUnavailableHttpException();
   }
