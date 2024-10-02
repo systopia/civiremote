@@ -26,8 +26,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CiviRemote 1.0\n"
-"POT-Creation-Date: 2023-05-19 15:55+0200\n"
-"PO-Revision-Date: 2023-05-26 11:35+0200\n"
+"POT-Creation-Date: 2024-10-01 12:11+0200\n"
+"PO-Revision-Date: 2024-10-02 11:52+0200\n"
 "Last-Translator: \n"
 "Language-Team: info@systopia.de\n"
 "Language: de_DE\n"
@@ -37,22 +37,21 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: civiremote.tokens.inc:12 civiremote.module:50
+#: civiremote.tokens.inc:12 civiremote.module:49
 msgid "CiviRemote ID"
-msgstr "CiviRemote-ID\t"
+msgstr "CiviRemote-ID"
 
-#: civiremote.tokens.inc:13 civiremote.module:51
+#: civiremote.tokens.inc:13 civiremote.module:50
 msgid "The unique CiviRemote ID for the user in the connected CiviCRM."
 msgstr "Die eindeutige CiviRemote-ID für den Benutzer im verbundenen CiviCRM."
 
-#: civiremote.module:33
+#: civiremote.module:32
 msgid ""
 "Could not complete login. Please try again later or contact the site "
 "administrator."
 msgstr ""
 
 #: civiremote.info.yml:0 civiremote.links.menu.yml:0
-#: config/install/cmrf_core.cmrf_connector.civiremote.yml:0
 msgid "CiviRemote"
 msgstr ""
 
@@ -60,7 +59,11 @@ msgstr ""
 msgid "Core and Tools module for CiviRemote"
 msgstr "Kern- und Werkzeugmodul für CiviRemote"
 
-#: civiremote.info.yml:0 modules/civiremote_event/civiremote_event.info.yml:0
+#: civiremote.info.yml:0
+#: modules/civiremote_activity/civiremote_activity.info.yml:0
+#: modules/civiremote_case/civiremote_case.info.yml:0
+#: modules/civiremote_entity/civiremote_entity.info.yml:0
+#: modules/civiremote_event/civiremote_event.info.yml:0
 msgid "CiviCRM"
 msgstr ""
 
@@ -76,6 +79,34 @@ msgstr "CiviRemote administrieren"
 msgid "CiviRemote Configuration"
 msgstr "CiviRemote-Konfiguration"
 
+#: config/schema/civiremote.schema.yml:0 src/Form/CiviRemoteConfigForm.php:74
+msgid "CiviMRF Connector"
+msgstr "CiviMRF-Konnektor"
+
+#: config/schema/civiremote.schema.yml:0 src/Form/CiviRemoteConfigForm.php:89
+msgid "Acquire CiviRemote ID"
+msgstr "CiviRemote-ID abrufen"
+
+#: config/schema/civiremote.schema.yml:0 src/Form/CiviRemoteConfigForm.php:96
+msgid "Match blocked users"
+msgstr "Blockierte Benutzer zuordnen"
+
+#: config/schema/civiremote.schema.yml:0 src/Form/CiviRemoteConfigForm.php:106
+msgid "Parameter mapping"
+msgstr "Parameterzuordnung"
+
+#: config/schema/civiremote.schema.yml:0
+msgid "Mapping of a Drupal user field to a CiviCRM contact field"
+msgstr "Zuordnung eines Drupal-Benutzerfeldes zu einem CiviCRM-Kontaktfeld"
+
+#: config/schema/civiremote.schema.yml:0 src/Form/CiviRemoteConfigForm.php:131
+msgid "Drupal user field"
+msgstr "Drupal-Benutzerfeld"
+
+#: config/schema/civiremote.schema.yml:0 src/Form/CiviRemoteConfigForm.php:132
+msgid "CiviCRM contact field"
+msgstr "CiviCRM-Kontaktfeld"
+
 #: config/schema/civiremote.schema.yml:0
 #: src/Plugin/Action/UserMatchContact.php:25
 msgid "CiviRemote: Match contact(s)"
@@ -90,9 +121,56 @@ msgstr "CiviRemote: CiviRemote-Rollen synchronisieren"
 msgid "Close"
 msgstr "Schließen"
 
+#: modules/civiremote_activity/civiremote_activity.info.yml:0;0
+msgid "CiviRemote Activity"
+msgstr ""
+
+#: modules/civiremote_activity/src/Controller/ActivityCreateController.php:33
+msgid "Add CiviCRM Activity"
+msgstr "CiviCRM-Aktivität hinzufügen"
+
+#: modules/civiremote_activity/src/Controller/ActivityUpdateController.php:33
+msgid "Update CiviCRM Activity"
+msgstr "CiviCRM-Aktivität aktualisieren"
+
+#: modules/civiremote_case/civiremote_case.info.yml:0;0
+msgid "CiviRemote Case"
+msgstr ""
+
+#: modules/civiremote_case/civiremote_case.permissions.yml:0
+msgid "Access Cases in CiviCRM"
+msgstr "Zugriff auf CiviCRM-Fälle"
+
+#: modules/civiremote_case/src/Controller/CaseCreateController.php:33
+msgid "Add CiviCRM Case"
+msgstr "CiviCRM-Fall hinzufügen"
+
+#: modules/civiremote_case/src/Controller/CaseUpdateController.php:33
+msgid "Update CiviCRM Case"
+msgstr "CiviCRM-Fall aktualisieren"
+
+#: modules/civiremote_entity/civiremote_entity.info.yml:0;0
+msgid "CiviRemote Entity"
+msgstr ""
+
+#: modules/civiremote_entity/src/CiviCRMPage/CiviCRMPageProxy.php:70
+msgid "Authentication at CiviCRM failed"
+msgstr "Authentifizierung in CiviCRM fehlgeschlagen"
+
+#: modules/civiremote_entity/src/Form/AbstractEntityForm.php:67
+msgid "Loading form failed: @error"
+msgstr "Abrufen des Formulars fehlgeschlagen: @error"
+
+#: modules/civiremote_entity/src/Form/AbstractEntityForm.php:98
+msgid "Error validating form: @error"
+msgstr "Fehler beim Validieren des Formulars: @error"
+
+#: modules/civiremote_entity/src/Form/AbstractEntityForm.php:121
+msgid "Submitting form failed: @error"
+msgstr "Übermitteln des Formulars fehlgeschlagen: @error"
+
 #: modules/civiremote_event/civiremote_event.info.yml:0;0
 #: modules/civiremote_event/civiremote_event.links.menu.yml:0
-#: modules/civiremote_event/config/optional/cmrf_views.cmrf_dataset.civiremote_event_events.yml:0
 msgid "CiviRemote Events"
 msgstr ""
 
@@ -102,13 +180,15 @@ msgstr "Einstellungen für CiviRemote Events konfigurieren."
 
 #: modules/civiremote_event/civiremote_event.permissions.yml:0
 msgid "Check-in CiviCRM Event Participants"
-msgstr ""
+msgstr "CiviCRM-Veranstaltungsteilnehmer einbuchen"
 
 #: modules/civiremote_event/civiremote_event.permissions.yml:0
 msgid ""
 "Grants access to the check-in form for checking in CiviCRM event "
 "participants via CiviRemote."
 msgstr ""
+"Gewährt Zugriff auf das Einbuchungsformular zum Einbuchen von CiviCRM-"
+"Veranstaltungsteilnehmern über CiviRemote."
 
 #: modules/civiremote_event/civiremote_event.routing.yml:0
 msgid "CiviRemote Events Configuration"
@@ -136,37 +216,37 @@ msgstr "Formular-ID"
 msgid "Form redirect route"
 msgstr "Umleitungs-Route für Formulare"
 
-#: modules/civiremote_event/src/CiviMRF.php:73
+#: modules/civiremote_event/src/CiviMRF.php:72
 msgid "Could not retrieve remote event."
 msgstr "Entfernte Veranstaltung konnte nicht abgeufen werden."
 
-#: modules/civiremote_event/src/CiviMRF.php:118
+#: modules/civiremote_event/src/CiviMRF.php:116
 msgid "Retrieving form failed."
 msgstr "Abrufen des Formulars fehlgeschlagen."
 
-#: modules/civiremote_event/src/CiviMRF.php:168
+#: modules/civiremote_event/src/CiviMRF.php:165
 msgid "The event registration validation failed."
 msgstr "Die Validierung der Veranstaltungsanmeldung ist fehlgeschlagen."
 
-#: modules/civiremote_event/src/CiviMRF.php:213
+#: modules/civiremote_event/src/CiviMRF.php:209
 msgid "The event registration failed."
 msgstr "Die Veranstaltungsanmeldung ist fehlgeschlagen."
 
-#: modules/civiremote_event/src/CiviMRF.php:258
+#: modules/civiremote_event/src/CiviMRF.php:253
 msgid "The event registration update failed."
 msgstr "Die Aktualisierung der Veranstaltungsanmeldung ist fehlgeschlagen."
 
-#: modules/civiremote_event/src/CiviMRF.php:298
+#: modules/civiremote_event/src/CiviMRF.php:292
 msgid "The event registration cancellation failed."
 msgstr "Die Stornierung der Veranstaltungsanmeldung ist fehlgeschlagen."
 
-#: modules/civiremote_event/src/CiviMRF.php:343
+#: modules/civiremote_event/src/CiviMRF.php:336
 msgid "The event checkin verification failed."
-msgstr ""
+msgstr "Die Überprüfung der Veranstaltungseinbuchung ist fehlgeschlagen."
 
-#: modules/civiremote_event/src/CiviMRF.php:386
+#: modules/civiremote_event/src/CiviMRF.php:378
 msgid "The event checkin failed."
-msgstr ""
+msgstr "Die Veranstaltungseinbuchung ist fehlgeschlagen."
 
 #: modules/civiremote_event/src/Element/Confirm.php:115
 msgid "@fieldTitle (Confirm)"
@@ -178,25 +258,25 @@ msgstr "Die Angaben stimmen nicht überein."
 
 #: modules/civiremote_event/src/Form/CheckinForm.php:125
 msgid "Check-In as %status"
-msgstr ""
+msgstr "als %status einbuchen"
 
 #: modules/civiremote_event/src/Form/CheckinForm.php:151;154
-#: modules/civiremote_event/src/Form/RegisterForm.php:859;862
+#: modules/civiremote_event/src/Form/RegisterForm.php:880;883
 msgid "Yes"
 msgstr ""
 
 #: modules/civiremote_event/src/Form/CheckinForm.php:151;154
-#: modules/civiremote_event/src/Form/RegisterForm.php:859;862
+#: modules/civiremote_event/src/Form/RegisterForm.php:880;883
 msgid "No"
 msgstr ""
 
 #: modules/civiremote_event/src/Form/CheckinForm.php:200
 msgid "Successfully checked-in the participant."
-msgstr ""
+msgstr "Der Teilnehmer wurde erfolgreich eingebucht."
 
 #: modules/civiremote_event/src/Form/CheckinForm.php:215
 msgid "Check-in failed, please try again later."
-msgstr ""
+msgstr "Einbuchung fehlgeschlagen, bitte später erneut versuchen."
 
 #: modules/civiremote_event/src/Form/CiviRemoteEventConfigForm.php:43
 msgid "Define which forms should handle which CiviRemote Events profiles"
@@ -213,12 +293,12 @@ msgid "Drupal form ID"
 msgstr "Drupal-Formular-ID"
 
 #: modules/civiremote_event/src/Form/CiviRemoteEventConfigForm.php:86
-#: src/Form/CiviRemoteConfigForm.php:152
+#: src/Form/CiviRemoteConfigForm.php:162
 msgid "Remove"
 msgstr "Entfernen"
 
 #: modules/civiremote_event/src/Form/CiviRemoteEventConfigForm.php:114
-#: src/Form/CiviRemoteConfigForm.php:180
+#: src/Form/CiviRemoteConfigForm.php:190
 msgid "Add mapping"
 msgstr "Zuordnung hinzufügen"
 
@@ -232,47 +312,43 @@ msgstr ""
 "Veranstaltungsformularen verwendet werden soll. Dies wird durch den "
 "Parameter <code>destination</code> in der Formular-URL übersteuert."
 
-#: modules/civiremote_event/src/Form/RegisterForm.php:124
-msgid "Invalid CiviRemote Event form context"
-msgstr "Ungültiger CiviRemote Event-Formularkontext"
-
-#: modules/civiremote_event/src/Form/RegisterForm.php:156
-msgid "No profile found for CiviRemote event form."
-msgstr "Kein Profil für CiviRemote-Veranstaltungsformular gefunden."
-
-#: modules/civiremote_event/src/Form/RegisterForm.php:501
+#: modules/civiremote_event/src/Form/RegisterForm.php:460
 msgid "Submit"
 msgstr ""
 
-#: modules/civiremote_event/src/Form/RegisterForm.php:513
+#: modules/civiremote_event/src/Form/RegisterForm.php:472
 msgid "Next"
 msgstr ""
 
-#: modules/civiremote_event/src/Form/RegisterForm.php:524
+#: modules/civiremote_event/src/Form/RegisterForm.php:483
 msgid "Back"
 msgstr ""
 
-#: modules/civiremote_event/src/Form/RegisterForm.php:594;636;649
+#: modules/civiremote_event/src/Form/RegisterForm.php:572;612;625
 msgid "- None -"
 msgstr ""
 
-#: modules/civiremote_event/src/Form/RegisterForm.php:646
+#: modules/civiremote_event/src/Form/RegisterForm.php:622
 msgid "- Select -"
 msgstr ""
 
-#: modules/civiremote_event/src/Form/RegisterForm.php:1070
+#: modules/civiremote_event/src/Form/RegisterForm.php:677
+msgid "Add participant"
+msgstr "Teilnehmer hinzufügen"
+
+#: modules/civiremote_event/src/Form/RegisterForm.php:689
+msgid "Remove participant"
+msgstr "Teilnehmer entfernen"
+
+#: modules/civiremote_event/src/Form/RegisterForm.php:1141
 msgid "Registration validation failed, please try again later."
 msgstr ""
 "Validierung der Anmeldung fehlgeschlagen, bitte versuchen Sie es später "
 "erneut."
 
-#: modules/civiremote_event/src/Form/RegistrationCancelForm.php:124
+#: modules/civiremote_event/src/Form/RegistrationCancelForm.php:89
 msgid "Cancel registration for %event_title?"
 msgstr "Anmeldung für %event_title stornieren?"
-
-#: src/Form/CiviRemoteConfigForm.php:74
-msgid "CiviMRF Connector"
-msgstr "CiviMRF-Konnektor"
 
 #: src/Form/CiviRemoteConfigForm.php:75
 msgid ""
@@ -285,10 +361,6 @@ msgstr ""
 msgid "Configure CiviMRF Connectors"
 msgstr "CiviMRF-Konnektoren konfigurieren"
 
-#: src/Form/CiviRemoteConfigForm.php:89
-msgid "Acquire CiviRemote ID"
-msgstr "CiviRemote-ID abrufen"
-
 #: src/Form/CiviRemoteConfigForm.php:90
 msgid ""
 "Whether to match a new user to a CiviCRM contact and store the CiviRemote ID "
@@ -297,11 +369,15 @@ msgstr ""
 "Ob neue Benutzer einem CiviCRM-Kontakt zugeordnet und die von CiviCRM "
 "zurückgegebene CiviRemote-ID gespeichert werden soll."
 
-#: src/Form/CiviRemoteConfigForm.php:96
-msgid "Parameter mapping"
-msgstr "Parameter-Zuordnung"
-
 #: src/Form/CiviRemoteConfigForm.php:97
+msgid ""
+"Whether to match blocked users to a CiviCRM contact. If unchecked, only "
+"active users will be matched."
+msgstr ""
+"Ob blockierte Benutzer einem CiviCRM-Kontakt zugeordnet werden sollen. Wenn "
+"deaktiviert, werden nur aktive Benutzer zugeordnet."
+
+#: src/Form/CiviRemoteConfigForm.php:107
 msgid ""
 "Acquiring CiviRemote IDs involves matching CiviCRM contacts based on Drupal "
 "user data. Configure the mapping between those two."
@@ -309,11 +385,3 @@ msgstr ""
 "Das Abrufen von CiviRemote-IDs beinhaltet eine Zuordnung zu CiviCRM-"
 "Kontakten basierend auf Drupal-Benutzerdaten. Konfigurieren Sie die "
 "Zuordnung zwischen diesen beiden."
-
-#: src/Form/CiviRemoteConfigForm.php:121
-msgid "Drupal user field"
-msgstr "Drupal-Benutzerfeld"
-
-#: src/Form/CiviRemoteConfigForm.php:122
-msgid "CiviCRM contact field"
-msgstr "CiviCRM-Kontaktfeld"
