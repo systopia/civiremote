@@ -91,6 +91,16 @@ class CiviRemoteConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('acquire_civiremote_id'),
     ];
 
+    $form['match_blocked_users'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Match blocked users'),
+      '#description' => $this->t('Whether to match blocked users to a CiviCRM contact. If unchecked, only active users will be matched.'),
+      '#default_value' => $config->get('match_blocked_users'),
+      '#states' => [
+        'visible' => [':input[name="acquire_civiremote_id"]' => ['checked' => TRUE]],
+      ],
+    ];
+
     $form['match_contact_mapping'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Parameter mapping'),
@@ -198,6 +208,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     $config = $this->config('civiremote.settings');
     $config->set('cmrf_connector', $form_state->getValue('cmrf_connector'));
     $config->set('acquire_civiremote_id', $form_state->getValue('acquire_civiremote_id'));
+    $config->set('match_blocked_users', $form_state->getValue('match_blocked_users'));
     $config->set('match_contact_mapping', $form_state->getValue('match_contact_mapping_table'));
     $config->save();
     parent::submitForm($form, $form_state);

@@ -59,6 +59,11 @@ class User {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
     $cmrf = Drupal::service('civiremote.cmrf');
     $config = Drupal::config('civiremote.settings');
+
+    // Only match locked users when configured.
+    if ($user->isBlocked() && !($config->get('match_blocked_users') ?? FALSE)) {
+      return;
+    }
     $params = [];
 
     // Use base URL as default key prefix.
