@@ -61,6 +61,13 @@ class FileArrayFactory extends AbstractConcreteFormArrayFactory {
       ] + BasicFormPropertiesFactory::createFieldProperties($definition, $formState),
     ];
 
+    // If the default value was fetched from the temporary values, it should
+    // be an array. If it was fetched from the field definition, it should be
+    // an \stdClass.
+    if (is_array($form['file']['#default_value'] ?? NULL)) {
+      $form['file']['#default_value'] = (object) $form['file']['#default_value'];
+    }
+
     if (($form['file']['#default_value'] ?? NULL) instanceof \stdClass
       && is_string($form['file']['#default_value']->url ?? NULL)
       && is_string($form['file']['#default_value']->filename ?? NULL)
