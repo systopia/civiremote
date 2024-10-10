@@ -72,6 +72,9 @@ class FileArrayFactory extends AbstractConcreteFormArrayFactory {
       && is_string($form['file']['#default_value']->url ?? NULL)
       && is_string($form['file']['#default_value']->filename ?? NULL)
     ) {
+      // @phpstan-ignore offsetAccess.nonOffsetAccessible, offsetAccess.nonOffsetAccessible
+      $form['file']['#attached']['library'][] = 'civiremote_entity/file-field';
+
       $url = $form['file']['#default_value']->url;
       $filename = $form['file']['#default_value']->filename;
 
@@ -82,7 +85,7 @@ class FileArrayFactory extends AbstractConcreteFormArrayFactory {
         '#title' => $filename,
         '#url' => $this->civiCRMUrlManager->addRemoteUrl($url, $filename),
         '#attributes' => ['target' => '_blank'],
-        '#prefix' => '<p>',
+        '#prefix' => '<p class="civiremote-form-file-link">',
         '#suffix' => '</p>',
       ];
 

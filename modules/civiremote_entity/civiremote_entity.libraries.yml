@@ -1,0 +1,4 @@
+file-field:
+  css:
+    theme:
+      css/file-field.css: {}
