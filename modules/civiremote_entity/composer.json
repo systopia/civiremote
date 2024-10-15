@@ -26,7 +26,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true,
-            "php-http/discovery": false
+            "php-http/discovery": false,
+            "tbachert/spi": true
         }
     },
     "repositories": [
@@ -61,7 +62,7 @@
             "@php vendor/bin/phpcbf"
         ],
         "phpstan": [
-            "@php tools/phpstan/vendor/bin/phpstan"
+            "@php tools/phpstan/vendor/bin/phpstan -v"
         ],
         "phpunit": [
             "@php vendor/bin/phpunit --coverage-text"
