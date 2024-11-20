@@ -10,6 +10,15 @@ civiremote.settings:
     match_blocked_users:
       type: boolean
       label: 'Match blocked users'
+    match_on_login:
+      type: boolean
+      label: 'Acquire CiviRemote ID on login'
+    match_on_login_exclude_roles:
+      type: sequence
+      label: 'Roles to exclude when matching on login'
+      sequence:
+        type: string
+        label: 'Role'
     match_contact_mapping:
       type: sequence
       label: 'Parameter mapping'

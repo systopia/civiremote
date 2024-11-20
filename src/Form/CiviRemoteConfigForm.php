@@ -16,27 +16,33 @@
 namespace Drupal\CiviRemote\Form;
 
 use Drupal;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\user\RoleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\cmrf_core;
+use Drupal\user\RoleStorageInterface;
 
 class CiviRemoteConfigForm extends ConfigFormBase {
 
-  /* @var cmrf_core\Core $cmrf_core */
-  public $cmrf_core;
+  public cmrf_core\Core $cmrf_core;
+
+  public RoleStorageInterface $roleStorage;
 
   /**
    * CiviRemoteConfigForm constructor.
    *
    * @param cmrf_core\Core $cmrf_core
+   * @param \Drupal\user\RoleStorageInterface $roleStorage
    */
-  public function __construct(cmrf_core\Core $cmrf_core) {
+  public function __construct(cmrf_core\Core $cmrf_core, RoleStorageInterface $roleStorage) {
     $this->cmrf_core = $cmrf_core;
+    $this->roleStorage = $roleStorage;
   }
 
   /**
@@ -46,10 +52,13 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     /**
      * Inject dependencies.
      * @var cmrf_core\Core $cmrf
+     * @var \Drupal\user\RoleStorageInterface $roleStorage
      */
     $cmrf = $container->get('cmrf_core.core');
+    $roleStorage = $container->get('entity_type.manager')->getStorage('user_role');
     return new static(
-      $cmrf
+      $cmrf,
+      $roleStorage
     );
   }
 
@@ -84,20 +93,49 @@ class CiviRemoteConfigForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
-    $form['acquire_civiremote_id'] = [
+    $form['match_contacts'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('CiviCRM Contact Matching'),
+    ];
+
+    $form['match_contacts']['acquire_civiremote_id'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Acquire CiviRemote ID'),
       '#description' => $this->t('Whether to match a new user to a CiviCRM contact and store the CiviRemote ID returned by CiviCRM.'),
       '#default_value' => $config->get('acquire_civiremote_id'),
     ];
 
-    $form['match_blocked_users'] = [
+    $form['match_contacts']['match_blocked_users'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Match blocked users'),
       '#description' => $this->t('Whether to match blocked users to a CiviCRM contact. If unchecked, only active users will be matched.'),
       '#default_value' => $config->get('match_blocked_users'),
       '#states' => [
         'visible' => [':input[name="acquire_civiremote_id"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    $form['match_contacts']['match_on_login'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Acquire CiviRemote ID on login'),
+      '#description' => $this->t('Whether to match existing users without a CiviRemote ID when they log in.'),
+      '#default_value' => $config->get('match_on_login'),
+      '#states' => [
+        'visible' => [':input[name="acquire_civiremote_id"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    $form['match_contacts']['match_on_login_exclude_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Roles to exclude when matching on login'),
+      '#description' => $this->t('Users with one of the selected roles will be excluded from acquiring a CiviCRM Contact ID during login.'),
+      '#options' => array_map(fn(RoleInterface $role) => Html::escape($role->label()), $this->roleStorage->loadMultiple()),
+      '#default_value' => $config->get('match_on_login_exclude_roles') ?? [],
+      '#states' => [
+        'visible' => [
+          ':input[name="acquire_civiremote_id"]' => ['checked' => TRUE],
+          ':input[name="match_on_login"]' => ['checked' => TRUE],
+        ],
       ],
     ];
 
@@ -207,8 +245,10 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     $form_state->cleanValues();
     $config = $this->config('civiremote.settings');
     $config->set('cmrf_connector', $form_state->getValue('cmrf_connector'));
-    $config->set('acquire_civiremote_id', $form_state->getValue('acquire_civiremote_id'));
-    $config->set('match_blocked_users', $form_state->getValue('match_blocked_users'));
+    $config->set('acquire_civiremote_id', (bool) $form_state->getValue('acquire_civiremote_id'));
+    $config->set('match_blocked_users', (bool) $form_state->getValue('match_blocked_users'));
+    $config->set('match_on_login', (bool) $form_state->getValue('match_on_login'));
+    $config->set('match_on_login_exclude_roles', $form_state->getValue('match_on_login_exclude_roles'));
     $config->set('match_contact_mapping', $form_state->getValue('match_contact_mapping_table'));
     $config->save();
     parent::submitForm($form, $form_state);

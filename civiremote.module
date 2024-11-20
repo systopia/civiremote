@@ -4,9 +4,7 @@ use Drupal\civiremote;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Url;
 use Drupal\user\UserInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_entity_insert().
@@ -22,19 +20,7 @@ function civiremote_entity_insert(EntityInterface $entity) {
  * Implements hook_user_login().
  */
 function civiremote_user_login(UserInterface $account) {
-  // Synchronise user roles with CiviRemote roles retrieved from CiviCRM.
-  try {
-    civiremote\User::synchroniseRoles($account);
-  }
-  catch (Exception $exception) {
-    user_logout();
-    Drupal::messenger()->addError(
-      t('Could not complete login. Please try again later or contact the site administrator.')
-    );
-    $url = Url::fromRoute('<front>')->toString();
-    $response = new RedirectResponse($url);
-    $response->send();
-  }
+  civiremote\User::login($account);
 }
 
 /**
