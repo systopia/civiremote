@@ -30,9 +30,6 @@ class User {
   /**
    * Act on User entity creation.
    *
-   * @param UserInterface $user
-   *   The User entity object.
-   *
    * @throws Entity\EntityStorageException
    *
    * @see civiremote_entity_insert()
@@ -42,6 +39,39 @@ class User {
     $config = Drupal::config('civiremote.settings');
     if ($config->get('acquire_civiremote_id')) {
       self::matchContact($user);
+    }
+  }
+
+  /**
+   * Act on user login.
+   *
+   * @see civiremote_user_login()
+   */
+  public static function login(UserInterface $user): void {
+    try {
+      // Acquire CiviRemote ID on login if configured.
+      if (!$civiremote_id = $user->get('civiremote_id')->getValue()) {
+        $config = Drupal::config('civiremote.settings');
+        if (
+          $config->get('acquire_civiremote_id')
+          && ($config->get('match_on_login') ?? FALSE)
+          && [] === array_intersect($user->getRoles(), $config->get('match_on_login_exclude_roles') ?? [])
+        ) {
+          self::matchContact($user);
+        }
+      }
+
+      // Synchronise user roles with CiviRemote roles retrieved from CiviCRM.
+      self::synchroniseRoles($user);
+    }
+    catch (\Exception $exception) {
+      user_logout();
+      Drupal::messenger()->addError(
+        t('Could not complete login. Please try again later or contact the site administrator.')
+      );
+      $url = Url::fromRoute('<front>')->toString();
+      $response = new RedirectResponse($url);
+      $response->send();
     }
   }
 
