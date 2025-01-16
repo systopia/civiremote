@@ -15,8 +15,10 @@
 
 namespace Drupal\civiremote;
 
+use CMRF\Core\Call;
+use CMRF\Core\Core;
+use CMRF\Exception\ApiCallFailedException;
 use Drupal;
-use Drupal\cmrf_core\Core;
 use Drupal\civiremote\Event\ConnectorEvent;
 use \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 
@@ -27,10 +29,7 @@ use \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
  */
 class CiviMRF {
 
-  /**
-   * @var Core
-   */
-  public $core;
+  public Core $core;
 
   public function __construct(Core $core) {
     $this->core = $core;
@@ -74,6 +73,31 @@ class CiviMRF {
       $callback,
       $api_version
     );
+  }
+
+  /**
+   * @phpstan-param array<string, mixed> $params
+   */
+  protected function createCallV4(string $entity, string $action, array $params, $callback = NULL): Call {
+    return $this->createCall($entity, $action, $params, [], $callback, '4');
+  }
+
+  /**
+   * @phpstan-param array<string, mixed> $params
+   *
+   * @phpstan-return array<string, mixed>
+   *
+   * @throws \CMRF\Exception\ApiCallFailedException
+   */
+  protected function executeCallV4(string $entity, string $action, array $params, $callback = NULL): array {
+    $call = $this->createCallV4($entity, $action, $params, $callback);
+
+    $result = $this->core->executeCall($call);
+    if (NULL === $result || Call::STATUS_FAILED === $call->getStatus()) {
+      throw ApiCallFailedException::fromCall($call);
+    }
+
+    return $result;
   }
 
   /**

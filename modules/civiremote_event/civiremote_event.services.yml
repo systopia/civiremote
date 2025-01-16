@@ -1,19 +1,32 @@
 services:
+  _defaults:
+    autowire: true
+    public: false # Controller classes and services directly fetched from container need to be public
+
   civiremote_event.cmrf:
     class: Drupal\civiremote_event\CiviMRF
     arguments: [ '@cmrf_core.core' ]
+    public: true
+  Drupal\civiremote_event\CiviMRF: '@civiremote_event.cmrf'
   civiremote_event.event_converter:
     class: Drupal\civiremote_event\Routing\CiviRemoteEventConverter
     arguments: ['@civiremote_event.cmrf']
     tags:
       - { name: paramconverter }
+    public: true
   civiremote_event.event_token_converter:
     class: Drupal\civiremote_event\Routing\EventTokenConverter
     arguments: ['@civiremote_event.cmrf']
     tags:
       - { name: paramconverter }
+    public: true
   civiremote_event.checkin_token_converter:
     class: Drupal\civiremote_event\Routing\CheckinTokenConverter
     arguments: [ '@civiremote_event.cmrf' ]
     tags:
       - { name: paramconverter }
+    public: true
+
+  Drupal\civiremote_event\Controller\MailingListConfirmSubscriptionController:
+    class: Drupal\civiremote_event\Controller\MailingListConfirmSubscriptionController
+    public: true
