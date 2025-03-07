@@ -1,7 +1,8 @@
 services:
   _defaults:
     autowire: true
-    public: false # Controller classes and services directly fetched from container need to be public
+    # Controller classes and services directly fetched from container need to be public.
+    public: false
 
   civiremote_event.cmrf:
     class: Drupal\civiremote_event\CiviMRF
