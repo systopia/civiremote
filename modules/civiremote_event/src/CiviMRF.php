@@ -381,6 +381,17 @@ class CiviMRF extends civiremote\CiviMRF {
   }
 
   /**
+   * @phpstan-return array{success: bool, message: string}
+   *
+   * @throws \CMRF\Exception\ApiCallFailedException
+   */
+  public function confirmMailingListSubscription(string $token): array {
+    $result = $this->executeCallV4('RemoteEventMailingList', 'confirmSubscription', ['token' => $token]);
+
+    return $result['values'];
+  }
+
+  /**
    * Adds the currently logged-in user's CiviRemote ID to the given parameters
    * array.
    *

@@ -123,3 +123,15 @@ civiremote_event.checkin_form:
     parameters:
       checkin_token:
         type: civiremote_checkin_token
+
+civiremote_event.mailing_list_confirm_subscription:
+  path: '/civiremote/event/mailing-list-subscribe/confirm/{token}'
+  defaults:
+    _controller: 'Drupal\civiremote_event\Controller\MailingListConfirmSubscriptionController:confirm'
+  options:
+    no_cache: TRUE
+    parameters:
+      context:
+        token: string
+  requirements:
+    _access: 'TRUE'
