@@ -115,6 +115,16 @@ class CiviRemoteConfigForm extends ConfigFormBase {
       ],
     ];
 
+    $form['match_contacts']['match_on_unblock'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Acquire CiviRemote ID when unblocking user'),
+      '#description' => $this->t('Whether to match existing users without a CiviRemote ID when they are unblocked.'),
+      '#default_value' => $config->get('match_on_unblock'),
+      '#states' => [
+        'visible' => [':input[name="acquire_civiremote_id"]' => ['checked' => TRUE]],
+      ],
+    ];
+
     $form['match_contacts']['match_on_login'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Acquire CiviRemote ID on login'),
@@ -247,6 +257,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
     $config->set('cmrf_connector', $form_state->getValue('cmrf_connector'));
     $config->set('acquire_civiremote_id', (bool) $form_state->getValue('acquire_civiremote_id'));
     $config->set('match_blocked_users', (bool) $form_state->getValue('match_blocked_users'));
+    $config->set('match_on_unblock', (bool) $form_state->getValue('match_on_unblock'));
     $config->set('match_on_login', (bool) $form_state->getValue('match_on_login'));
     $config->set('match_on_login_exclude_roles', $form_state->getValue('match_on_login_exclude_roles'));
     $config->set('match_contact_mapping', $form_state->getValue('match_contact_mapping_table'));

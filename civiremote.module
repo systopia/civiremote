@@ -1,32 +1,41 @@
 <?php
 
 use Drupal\civiremote;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\UserInterface;
 
 /**
- * Implements hook_entity_insert().
+ * Implements hook_ENTITY_TYPE_insert().
  */
-function civiremote_entity_insert(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() == 'user') {
-    /* @var UserInterface $entity */
-    civiremote\User::create($entity);
+function civiremote_user_insert(UserInterface $user): void {
+  civiremote\User::onInsert($user);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function civiremote_user_update(UserInterface $user): void {
+  /** @var \Drupal\user\UserInterface $original */
+  $original = $user->original;
+  if ($original->isBlocked() && !$user->isBlocked()) {
+    civiremote\User::onUnblock($user);
   }
 }
 
 /**
  * Implements hook_user_login().
  */
-function civiremote_user_login(UserInterface $account) {
-  civiremote\User::login($account);
+function civiremote_user_login(UserInterface $account): void {
+  civiremote\User::onLogin($account);
 }
 
 /**
  * Implements hook_entity_base_field_info().
+ *
+ * @return array<string, \Drupal\Core\Field\FieldDefinitionInterface>
  */
-function civiremote_entity_base_field_info(EntityTypeInterface $entity_type) {
+function civiremote_entity_base_field_info(EntityTypeInterface $entity_type): array {
   // Add a base field to the User entity for storing the CiviRFemote ID.
   $fields = [];
 

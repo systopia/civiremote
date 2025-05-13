@@ -10,6 +10,9 @@ civiremote.settings:
     match_blocked_users:
       type: boolean
       label: 'Match blocked users'
+    match_on_unblock:
+      type: boolean
+      label: 'Acquire CiviRemote ID when unblocking user'
     match_on_login:
       type: boolean
       label: 'Acquire CiviRemote ID on login'

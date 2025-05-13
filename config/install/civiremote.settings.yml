@@ -1,5 +1,6 @@
 cmrf_connector: civiremote
 acquire_civiremote_id: false
 match_blocked_users: false
+match_on_unblock: false
 match_on_login: false
 match_on_login_exclude_roles: []

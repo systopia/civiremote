@@ -35,7 +35,7 @@ class User {
    * @see civiremote_entity_insert()
    *
    */
-  public static function create(UserInterface $user) {
+  public static function onInsert(UserInterface $user) {
     $config = Drupal::config('civiremote.settings');
     if ($config->get('acquire_civiremote_id')) {
       self::matchContact($user);
@@ -47,7 +47,7 @@ class User {
    *
    * @see civiremote_user_login()
    */
-  public static function login(UserInterface $user): void {
+  public static function onLogin(UserInterface $user): void {
     try {
       // Acquire CiviRemote ID on login if configured.
       if (!$civiremote_id = $user->get('civiremote_id')->getValue()) {
@@ -72,6 +72,28 @@ class User {
       $url = Url::fromRoute('<front>')->toString();
       $response = new RedirectResponse($url);
       $response->send();
+    }
+  }
+
+  /**
+   * Act on user unblock.
+   *
+   * @see civicrmote_user_update()
+   */
+  public static function onUnblock(UserInterface $user): void {
+    try {
+      $config = Drupal::config('civiremote.settings');
+      if (
+        $config->get('acquire_civiremote_id')
+        && ($config->get('match_on_unblock') ?? FALSE)
+      ) {
+        self::matchContact($user);
+      }
+    }
+    catch (\Exception $exception) {
+      Drupal::messenger()->addError(
+        t('Could not acquire CiviRemote ID. Please try again later or contact the site administrator.')
+      );
     }
   }
 
