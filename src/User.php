@@ -145,7 +145,15 @@ class User {
       }
 
       // Fetch all CiviRemote roles known to Drupal.
-      $all_roles = user_role_names(TRUE);
+      $roles = Role::loadMultiple();
+
+      // Exclude the 'anonymous' role.
+      $all_roles = [];
+      foreach ($roles as $role_id => $role) {
+        if ($role_id !== 'anonymous') {
+          $all_roles[$role_id] = $role->label();
+        }
+      }
       $civiremote_roles = [];
       foreach ($all_roles as $id => $label) {
         if (strpos($id, 'civiremote_') === 0) {
