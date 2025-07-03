@@ -19,6 +19,7 @@ use Drupal;
 use Drupal\Core\Entity;
 use Drupal\user\UserInterface;
 use Drupal\user\Entity\Role;
+use Drupal\user\RoleInterface;
 
 /**
  * Class User
@@ -167,9 +168,13 @@ class User {
       }
 
       // Fetch all CiviRemote roles known to Drupal.
-      $all_roles = user_role_names(TRUE);
+      $allRoles = array_filter(
+        Role::loadMultiple(),
+        fn(RoleInterface $role) => RoleInterface::ANONYMOUS_ID !== $role->id()
+      );
+      $allRoleNames = array_map(fn(RoleInterface $role) => $role->label(), $allRoles);
       $civiremote_roles = [];
-      foreach ($all_roles as $id => $label) {
+      foreach ($allRoleNames as $id => $label) {
         if (strpos($id, 'civiremote_') === 0) {
           $civiremote_roles[$id] = $label;
         }
@@ -179,7 +184,7 @@ class User {
       $user_civiremote_roles = [];
       foreach ($user->getRoles() as $id) {
         if (strpos($id, 'civiremote_') === 0) {
-          $user_civiremote_roles[$id] = $all_roles[$id];
+          $user_civiremote_roles[$id] = $allRoleNames[$id];
         }
       }
 
