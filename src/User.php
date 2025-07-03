@@ -168,14 +168,10 @@ class User {
       }
 
       // Fetch all CiviRemote roles known to Drupal.
-      $allRoles = array_filter(
-        Role::loadMultiple(),
-        fn(RoleInterface $role) => RoleInterface::ANONYMOUS_ID !== $role->id()
-      );
-      $allRoleNames = array_map(fn(RoleInterface $role) => $role->label(), $allRoles);
+      $allRoleNames = array_map(fn(RoleInterface $role) => $role->label(), Role::loadMultiple());
       $civiremote_roles = [];
       foreach ($allRoleNames as $id => $label) {
-        if (strpos($id, 'civiremote_') === 0) {
+        if (str_starts_with($id, 'civiremote_')) {
           $civiremote_roles[$id] = $label;
         }
       }
@@ -183,7 +179,7 @@ class User {
       // Fetch the user's current CiviRemote roles.
       $user_civiremote_roles = [];
       foreach ($user->getRoles() as $id) {
-        if (strpos($id, 'civiremote_') === 0) {
+        if (str_starts_with($id, 'civiremote_')) {
           $user_civiremote_roles[$id] = $allRoleNames[$id];
         }
       }
