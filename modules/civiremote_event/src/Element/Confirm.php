@@ -20,7 +20,7 @@ declare(strict_types=1);
 namespace Drupal\civiremote_event\Element;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
+use Drupal\Core\Render\Element\FormElementBase;
 
 /**
  * Provides a form element for double-input of values.
@@ -34,7 +34,7 @@ use Drupal\Core\Render\Element\FormElement;
  *
  * @FormElement("confirm")
  */
-final class Confirm extends FormElement {
+final class Confirm extends FormElementBase {
 
   /**
    * {@inheritdoc}
