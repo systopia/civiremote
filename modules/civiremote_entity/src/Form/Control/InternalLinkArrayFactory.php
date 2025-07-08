@@ -22,8 +22,8 @@ declare(strict_types=1);
 namespace Drupal\civiremote_entity\Form\Control;
 
 use Assert\Assertion;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\civiremote_entity\CiviCRMPage\CiviCRMUrlStorageInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\json_forms\Form\AbstractConcreteFormArrayFactory;
 use Drupal\json_forms\Form\Control\Rule\StatesArrayFactory;
 use Drupal\json_forms\Form\FormArrayFactoryInterface;
@@ -73,7 +73,7 @@ class InternalLinkArrayFactory extends AbstractConcreteFormArrayFactory {
 
     if (NULL !== $definition->getRule()) {
       $statesArrayFactory = new StatesArrayFactory();
-      $form['#states'] = $statesArrayFactory->createStatesArray($definition->getRule());
+      $form['#states'] = $statesArrayFactory->createStatesArray($definition);
     }
 
     return $form;
