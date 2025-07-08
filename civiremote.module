@@ -13,9 +13,9 @@ function civiremote_user_insert(UserInterface $user): void {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_update().
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function civiremote_user_update(UserInterface $user): void {
+function civiremote_user_presave(UserInterface $user): void {
   /** @var \Drupal\user\UserInterface $original */
   $original = $user->original;
   if ($original->isBlocked() && !$user->isBlocked()) {

@@ -88,7 +88,8 @@ class User {
         $config->get('acquire_civiremote_id')
         && ($config->get('match_on_unblock') ?? FALSE)
       ) {
-        self::matchContact($user);
+        // Update the user object, but do not save, as we're in a save action already.
+        self::matchContact($user, '', FALSE);
       }
     }
     catch (\Exception $exception) {
@@ -105,10 +106,13 @@ class User {
    *   The User entity object.
    * @param string $prefix
    *   A prefix to be added to the CiviRemote ID by the CiviRemote API.
+   * @param bool $save
+   *   Whether to save the user object to the database. Will only update the
+   *   $user object otherwise.
    *
    * @throws Entity\EntityStorageException
    */
-  public static function matchContact(UserInterface $user, $prefix = '') {
+  public static function matchContact(UserInterface $user, $prefix = '', $save = TRUE) {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
     $cmrf = Drupal::service('civiremote.cmrf');
     $config = Drupal::config('civiremote.settings');
@@ -135,7 +139,9 @@ class User {
     // Send API call and store the returned CiviRemote ID.
     if ($civiremote_id = $cmrf->matchContact($params)) {
       $user->set('civiremote_id', $civiremote_id);
-      $user->save();
+      if ($save) {
+        $user->save();
+      }
     }
   }
 
