@@ -39,9 +39,7 @@ class User {
   public static function onInsert(UserInterface $user) {
     $config = Drupal::config('civiremote.settings');
     if ($config->get('acquire_civiremote_id')) {
-      if (NULL !== self::matchContact($user)) {
-        $user->save();
-      }
+      self::matchContact($user);
     }
   }
 
