@@ -50,7 +50,9 @@ class UserMatchContact extends ActionBase {
     if (!$civiremote_id = $user->get('civiremote_id')->getValue()) {
       $config = Drupal::config('civiremote.settings');
       if ($config->get('acquire_civiremote_id')) {
-        User::matchContact($user);
+        if (NULL !== User::matchContact($user)) {
+          $user->save();
+        }
       }
     }
   }

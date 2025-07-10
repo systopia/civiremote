@@ -6,19 +6,15 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\UserInterface;
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function civiremote_user_insert(UserInterface $user): void {
-  civiremote\User::onInsert($user);
-}
-
-/**
- * Implements hook_ENTITY_TYPE_update().
- */
-function civiremote_user_update(UserInterface $user): void {
-  /** @var \Drupal\user\UserInterface $original */
+function civiremote_user_presave(UserInterface $user): void {
+  /** @var \Drupal\user\UserInterface|null $original */
   $original = $user->original;
-  if ($original->isBlocked() && !$user->isBlocked()) {
+  if (NULL === $original) {
+    civiremote\User::onInsert($user);
+  }
+  elseif ($original->isBlocked() && !$user->isBlocked()) {
     civiremote\User::onUnblock($user);
   }
 }

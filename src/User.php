@@ -58,7 +58,9 @@ class User {
           && ($config->get('match_on_login') ?? FALSE)
           && [] === array_intersect($user->getRoles(), $config->get('match_on_login_exclude_roles') ?? [])
         ) {
-          self::matchContact($user);
+          if (NULL !== self::matchContact($user)) {
+            $user->save();
+          }
         }
       }
 
@@ -88,6 +90,7 @@ class User {
         $config->get('acquire_civiremote_id')
         && ($config->get('match_on_unblock') ?? FALSE)
       ) {
+        // Update the user object, but do not save, as we're in a save action already.
         self::matchContact($user);
       }
     }
@@ -100,27 +103,31 @@ class User {
 
   /**
    * Match a CiviCRM contact and set the returned CiviRemote ID on the user.
+   * The user object will not be saved and needs to be saved manually by calling \Drupal\user\UserInterface::save().
    *
-   * @param UserInterface $user
+   * @param Drupal\user\UserInterface $user
    *   The User entity object.
    * @param string $prefix
    *   A prefix to be added to the CiviRemote ID by the CiviRemote API.
    *
+   * @return string|null
+   *   The acquired CivIRemote ID, or NULL if none was acquired.
+   *
    * @throws Entity\EntityStorageException
    */
-  public static function matchContact(UserInterface $user, $prefix = '') {
+  public static function matchContact(UserInterface $user, string $prefix = ''): ?string {
     /* @var \Drupal\civiremote\CiviMRF $cmrf */
     $cmrf = Drupal::service('civiremote.cmrf');
     $config = Drupal::config('civiremote.settings');
 
     // Only match locked users when configured.
     if ($user->isBlocked() && !($config->get('match_blocked_users') ?? FALSE)) {
-      return;
+      return NULL;
     }
     $params = [];
 
     // Use base URL as default key prefix.
-    if (empty($prefix)) {
+    if ('' === $prefix) {
       global $base_url;
       $base_url_parts = parse_url($base_url);
       $prefix = $base_url_parts['host'];
@@ -135,8 +142,10 @@ class User {
     // Send API call and store the returned CiviRemote ID.
     if ($civiremote_id = $cmrf->matchContact($params)) {
       $user->set('civiremote_id', $civiremote_id);
-      $user->save();
+      return $civiremote_id;
     }
+
+    return NULL;
   }
 
   /**
