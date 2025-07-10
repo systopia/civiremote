@@ -12,7 +12,7 @@
     "homepage": "https://github.com/systopia/civiremote",
     "require": {
         "beberlei/assert": "*",
-        "drupal/cmrf_core": "^2.1@beta"
+        "drupal/cmrf_core": "^2.1"
     },
     "conflict": {
         "drupal/cmrf_core": "2.1.0-beta5"
