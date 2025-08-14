@@ -638,7 +638,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       // Extract dependencies for later processing via #states.
       if (!empty($field['dependencies'])) {
         foreach ($field['dependencies'] as $dependency) {
-          $dependencies[$field['name']][$dependency['dependent_field']] = $dependency;
+          $dependencies[$field['name']][$dependency['dependent_field'] ?? $dependency['dependee_field']] = $dependency;
         }
       }
 
@@ -724,41 +724,49 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Apply dependencies via #ajax.
     if (!empty($dependencies)) {
       foreach ($dependencies as $field_name => $field_dependencies) {
-        // Register an Ajax callback for the onChange event on the field.
         $field_group_parents = $this->groupParents($field_name);
         $field_exists = NULL;
         $field_group = &NestedArray::getValue($form, $field_group_parents, $field_exists);
         if ($field_exists) {
-          $field_group[$field_name]['#civiremote_event_dependencies'] = $field_dependencies;
-          $field_group[$field_name]['#ajax'] = [
-            'callback' => '::dependencyAjaxCallback',
-            'event' => 'change',
-            'effect' => 'fade',
-          ];
-          $field_group[$field_name]['#limit_validation_errors'] = [
-            [$field_name]
-          ];
-          $field_group[$field_name]['#submit'] = [[$this, 'submitForm']];
-
-          // Process dependent fields.
-          foreach ($field_dependencies as $dependent_field_name => $dependency) {
-            // Wrap dependent fields with a wrapper element.
-            $dependent_group_parents = $this->groupParents($field_name);
-            $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
-            if (empty($dependent_group[$dependent_field_name]['#prefix'])) {
-              $dependent_group[$dependent_field_name]['#prefix'] = '';
-            }
-            $dependent_group[$dependent_field_name]['#prefix'] =
-              '<div id="dependency-wrapper-' . $dependent_field_name . '">'
-              . $dependent_group[$dependent_field_name]['#prefix'];
-            if (empty($dependent_group[$dependent_field_name]['#suffix'])) {
-              $dependent_group[$dependent_field_name]['#suffix'] = '';
-            }
-            $dependent_group[$dependent_field_name]['#suffix'] .= '</div>';
+          if ('hide' === $dependency['command']) {
+            // Use the States API for hiding the field.
+            $field_group[$field_name]['#states'] = [
+              'visible' => [[':input[name="' . $dependency['dependee_field'] . '"]' => ['value' => $dependency['dependee_value']]]],
+            ];
           }
+          else {
+            // Register an Ajax callback for the onChange event on the field.
+            $field_group[$field_name]['#civiremote_event_dependencies'] = $field_dependencies;
+            $field_group[$field_name]['#ajax'] = [
+              'callback' => '::dependencyAjaxCallback',
+              'event' => 'change',
+              'effect' => 'fade',
+            ];
+            $field_group[$field_name]['#limit_validation_errors'] = [
+              [$field_name]
+            ];
+            $field_group[$field_name]['#submit'] = [[$this, 'submitForm']];
 
-          // Initially apply dependencies on dependent fields.
-          $this->applyDependencies($field_group[$field_name], $form, $form_state);
+            // Process dependent fields.
+            foreach ($field_dependencies as $dependent_field_name => $dependency) {
+              // Wrap dependent fields with a wrapper element.
+              $dependent_group_parents = $this->groupParents($field_name);
+              $dependent_group = &NestedArray::getValue($form, $dependent_group_parents);
+              if (empty($dependent_group[$dependent_field_name]['#prefix'])) {
+                $dependent_group[$dependent_field_name]['#prefix'] = '';
+              }
+              $dependent_group[$dependent_field_name]['#prefix'] =
+                '<div id="dependency-wrapper-' . $dependent_field_name . '">'
+                . $dependent_group[$dependent_field_name]['#prefix'];
+              if (empty($dependent_group[$dependent_field_name]['#suffix'])) {
+                $dependent_group[$dependent_field_name]['#suffix'] = '';
+              }
+              $dependent_group[$dependent_field_name]['#suffix'] .= '</div>';
+            }
+
+            // Initially apply dependencies on dependent fields.
+            $this->applyDependencies($field_group[$field_name], $form, $form_state);
+          }
         }
       }
     }
