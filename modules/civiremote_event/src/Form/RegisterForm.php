@@ -731,8 +731,19 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
           if ('hide' === $dependency['command']) {
             // Use the States API for hiding the field.
             $field_group[$field_name]['#states'] = [
-              'visible' => [[':input[name="' . $dependency['dependee_field'] . '"]' => ['value' => $dependency['dependee_value']]]],
+              'visible' => [
+                [':input[name="' . $dependency['dependee_field'] . '"]' => ['value' => $dependency['dependee_value']]]
+              ],
             ];
+
+            // Do not make the dependent field always required; validation depends on API validation.
+            if (!empty($form_state->get('fields')[$field_name]['required'])) {
+              $field_group[$field_name]['#required'] = FALSE;
+              $field_group[$field_name]['#states']['required'] = [
+                [':input[name="' . $dependency['dependee_field'] . '"]' => ['value' => $dependency['dependee_value']]]
+              ];
+              $field_group[$field_name]['#label_attributes']['display_required'] = TRUE;
+            }
           }
           else {
             // Register an Ajax callback for the onChange event on the field.
