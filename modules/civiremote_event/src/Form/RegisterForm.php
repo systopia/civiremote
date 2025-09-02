@@ -732,6 +732,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
             // Use the States API for hiding the field.
             $field_group[$field_name]['#states'] = [
               'visible' => [
+                // TODO: Add support for checkbox fields (property "checked" instead of "value").
                 [':input[name="' . $dependency['dependee_field'] . '"]' => ['value' => $dependency['dependee_value']]]
               ],
             ];
