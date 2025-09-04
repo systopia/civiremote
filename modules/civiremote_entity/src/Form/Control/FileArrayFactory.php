@@ -21,17 +21,34 @@ declare(strict_types=1);
 namespace Drupal\civiremote_entity\Form\Control;
 
 use Assert\Assertion;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\civiremote_entity\CiviCRMPage\CiviCRMUrlStorageInterface;
-use Drupal\civiremote_entity\Form\Control\Callbacks\FileValueCallback;
+use Drupal\civiremote_entity\Form\Control\Callbacks\FileCallbacks;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\file\FileStorageInterface;
 use Drupal\json_forms\Form\AbstractConcreteFormArrayFactory;
 use Drupal\json_forms\Form\Control\ObjectArrayFactory;
 use Drupal\json_forms\Form\Control\Util\BasicFormPropertiesFactory;
 use Drupal\json_forms\Form\FormArrayFactoryInterface;
+use Drupal\json_forms\Form\Util\FormCallbackRegistrator;
 use Drupal\json_forms\JsonForms\Definition\Control\ControlDefinition;
 use Drupal\json_forms\JsonForms\Definition\DefinitionInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class FileArrayFactory extends AbstractConcreteFormArrayFactory {
+
+  public function __construct(
+    CiviCRMUrlStorageInterface $civiCRMUrlManager,
+    AccountInterface $currentUser,
+    FileStorageInterface $fileStorage,
+    SessionInterface $session
+  ) {
+    $this->civiCRMUrlManager = $civiCRMUrlManager;
+    $this->currentUser = $currentUser;
+    $this->fileStorage = $fileStorage;
+    $this->session = $session;
+  }
 
   public static function getPriority(): int {
     return ObjectArrayFactory::getPriority() + 1;
@@ -39,9 +56,11 @@ class FileArrayFactory extends AbstractConcreteFormArrayFactory {
 
   private CiviCRMUrlStorageInterface $civiCRMUrlManager;
 
-  public function __construct(CiviCRMUrlStorageInterface $civiCRMUrlManager) {
-    $this->civiCRMUrlManager = $civiCRMUrlManager;
-  }
+  private AccountInterface $currentUser;
+
+  private FileStorageInterface $fileStorage;
+
+  private SessionInterface $session;
 
   /**
    * {@inheritDoc}
@@ -55,44 +74,52 @@ class FileArrayFactory extends AbstractConcreteFormArrayFactory {
     /** @var \Drupal\json_forms\JsonForms\Definition\Control\ControlDefinition $definition */
 
     $form = [
-      'file' => [
-        '#type' => 'file',
-        '#value_callback' => FileValueCallback::class . '::convert',
-      ] + BasicFormPropertiesFactory::createFieldProperties($definition, $formState),
-    ];
+      '#type' => 'managed_file',
+      '#upload_location' => 'private://civiremote_entity/upload/',
+      '#attached' => [
+        'library' => [
+          'file/drupal.file',
+          'civiremote_entity/file-field',
+        ],
+      ],
+    ] + BasicFormPropertiesFactory::createFieldProperties($definition, $formState);
+
+    // @phpstan-ignore-next-line
+    $form['#attributes']['class'][] = 'civiremote-entity-file';
+    /** @var list<int|string> $elementKey */
+    $elementKey = $form['#parents'];
 
     // If the default value was fetched from the temporary values, it should
     // be an array. If it was fetched from the field definition, it should be
     // an \stdClass.
-    if (is_array($form['file']['#default_value'] ?? NULL)) {
-      $form['file']['#default_value'] = (object) $form['file']['#default_value'];
+    if (is_array($form['#default_value'] ?? NULL)) {
+      $form['#default_value'] = (object) $form['#default_value'];
     }
 
-    if (($form['file']['#default_value'] ?? NULL) instanceof \stdClass
-      && is_string($form['file']['#default_value']->url ?? NULL)
-      && is_string($form['file']['#default_value']->filename ?? NULL)
+    if (($form['#default_value'] ?? NULL) instanceof \stdClass
+      && is_string($form['#default_value']->url ?? NULL)
+      && is_string($form['#default_value']->filename ?? NULL)
     ) {
-      // @phpstan-ignore offsetAccess.nonOffsetAccessible, offsetAccess.nonOffsetAccessible
-      $form['file']['#attached']['library'][] = 'civiremote_entity/file-field';
-
-      $url = $form['file']['#default_value']->url;
-      $filename = $form['file']['#default_value']->filename;
-
-      $form['file']['#required'] = FALSE;
-
-      $form['link'] = [
-        '#type' => 'link',
-        '#title' => $filename,
-        '#url' => $this->civiCRMUrlManager->addRemoteUrl($url, $filename),
-        '#attributes' => ['target' => '_blank'],
-        '#prefix' => '<p class="civiremote-form-file-link">',
-        '#suffix' => '</p>',
-      ];
-
-      if (isset($form['file']['#states'])) {
-        $form['link']['#states'] = $form['file']['#states'];
-      }
+      // Use the file ID from submit values. (On first AJAX request the form
+      // state isn't cached.)
+      $input = $formState->getUserInput();
+      // @phpstan-ignore offsetAccess.nonOffsetAccessible
+      $initialFileId = NestedArray::getValue($input, $elementKey)['fids']
+        ?? $this->getFileIdForDefaultValue($form['#default_value']);
+      $formState->set(array_merge($elementKey, ['default_value']), $form['#default_value']);
+      $formState->set(array_merge($elementKey, ['initial_file_id']), $initialFileId);
+      $form['#default_value'] = [$initialFileId];
     }
+    else {
+      unset($form['#default_value']);
+    }
+
+    FormCallbackRegistrator::registerPreSchemaValidationCallback(
+      $formState,
+      $definition->getFullScope(),
+      [FileCallbacks::class, 'convertValue'],
+      $elementKey,
+    );
 
     return $form;
   }
@@ -101,6 +128,28 @@ class FileArrayFactory extends AbstractConcreteFormArrayFactory {
     return $definition instanceof ControlDefinition
       && 'object' === $definition->getType()
       && 'file' === $definition->getControlFormat();
+  }
+
+  private function getFileIdForDefaultValue(\stdClass $defaultValue): string {
+    // Stored as "non-permanent", i.e. is going to be removed by Drupal Cron.
+    $file = $this->fileStorage->create([
+      'uri' => $this->civiCRMUrlManager->addRemoteUrl($defaultValue->url, $defaultValue->filename)
+        ->setAbsolute()->toString(),
+      'filename' => $defaultValue->filename,
+      'filemime' => $defaultValue->mimeType ?? 'application/octet-stream',
+      'filesize' => $defaultValue->filesize ?? NULL,
+      'uid' => $this->currentUser->id(),
+    ]);
+    $this->fileStorage->save($file);
+
+    if ($this->currentUser->isAnonymous()) {
+      /** @var array<int, string> $allowedTempFiles */
+      $allowedTempFiles = $this->session->get('anonymous_allowed_file_ids', []);
+      $allowedTempFiles[$file->id()] = $file->id();
+      $this->session->set('anonymous_allowed_file_ids', $allowedTempFiles);
+    }
+
+    return (string) $file->id();
   }
 
 }
