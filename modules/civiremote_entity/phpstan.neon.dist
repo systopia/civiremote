@@ -6,6 +6,8 @@ parameters:
 	scanDirectories:
 		- ../../src
 	level: 9
+	universalObjectCratesClasses:
+		- Drupal\Core\Session\AccountInterface
 	checkTooWideReturnTypesInProtectedAndPublicMethods: true
 	checkUninitializedProperties: true
 	checkMissingCallableSignature: true
