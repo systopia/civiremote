@@ -79,6 +79,7 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
       $form_state->get('jsonSchema'),
       // @phpstan-ignore-next-line
       $form_state->get('uiSchema'),
+      self::FLAG_RECALCULATE_ONCHANGE
     );
   }
 
