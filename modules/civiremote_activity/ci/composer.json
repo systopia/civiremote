@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "drupal/core": "^9.5 || ^10",
+        "drupal/core": "^10 || ^11",
         "drupal/json_forms": "~0.1"
     }
 }

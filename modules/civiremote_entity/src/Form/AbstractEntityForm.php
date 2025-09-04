@@ -21,11 +21,11 @@ declare(strict_types=1);
 namespace Drupal\civiremote_entity\Form;
 
 use Assert\Assertion;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\civiremote_entity\Api\Exception\ApiCallFailedException;
 use Drupal\civiremote_entity\Api\Form\EntityForm;
 use Drupal\civiremote_entity\Form\RequestHandler\FormRequestHandlerInterface;
 use Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\json_forms\Form\AbstractJsonFormsForm;
 use Drupal\json_forms\Form\FormArrayFactoryInterface;
 use Drupal\json_forms\Form\Util\FieldNameUtil;
@@ -39,6 +39,7 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
 
   protected FormResponseHandlerInterface $formResponseHandler;
 
+  // @phpstan-ignore parameter.notOptional, parameter.notOptional
   public function __construct(
     FormArrayFactoryInterface $formArrayFactory,
     FormValidatorInterface $formValidator,
