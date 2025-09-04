@@ -2,5 +2,7 @@ includes:
 	- phpstan.neon.dist
 
 parameters:
+	scanDirectories:
+		- ci/vendor/drupal/core/modules/file/src
 	bootstrapFiles:
 		- ci/vendor/autoload.php
