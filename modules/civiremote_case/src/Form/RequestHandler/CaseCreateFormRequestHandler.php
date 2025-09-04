@@ -25,8 +25,11 @@ use Drupal\civiremote_entity\Form\RequestHandler\EntityCreateFormRequestHandler;
 
 final class CaseCreateFormRequestHandler extends EntityCreateFormRequestHandler {
 
-  // For autowiring:
-  // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod.Found
+  /**
+   * For autowiring.
+   *
+   * phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod.Found
+   */
   public function __construct(CaseApi $caseApi) {
   // phpcs:enable
     parent::__construct($caseApi);

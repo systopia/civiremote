@@ -25,10 +25,13 @@ use Drupal\civiremote_entity\Form\RequestHandler\EntityUpdateFormRequestHandler;
 
 final class CaseUpdateFormRequestHandler extends EntityUpdateFormRequestHandler {
 
-  // For autowiring:
-  // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod.Found
+  /**
+   * For autowiring.
+   *
+   * phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod.Found
+   */
   public function __construct(CaseApi $caseApi) {
-    // phpcs:enable
+  // phpcs:enable
     parent::__construct($caseApi);
   }
 
