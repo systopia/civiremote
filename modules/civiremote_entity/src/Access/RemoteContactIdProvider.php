@@ -38,7 +38,6 @@ final class RemoteContactIdProvider implements RemoteContactIdProviderInterface 
       throw new \RuntimeException(sprintf('User "%s" has no remote contact ID', $this->currentUser->getAccountName()));
     }
 
-    // @phpstan-ignore property.notFound
     return $this->currentUser->getAccount()->civiremote_id;
   }
 
