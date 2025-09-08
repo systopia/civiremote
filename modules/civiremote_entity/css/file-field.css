@@ -1,9 +1,3 @@
-.form-item:has(+.civiremote-form-file-link) {
-  /* No margin between file form item and link. */
-  margin-bottom: 0;
-}
-
-.civiremote-form-file-link {
-  /* No margin between file form item and link. */
-  margin-top: 0;
+.civiremote-entity-file {
+  overflow-wrap: anywhere;
 }

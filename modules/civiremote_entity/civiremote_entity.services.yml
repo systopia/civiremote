@@ -57,3 +57,17 @@ services:
   Drupal\civiremote_entity\Controller\CiviCRMPageController:
     class: Drupal\civiremote_entity\Controller\CiviCRMPageController
     public: true
+
+  civiremote_entity.drupal.file.storage:
+    class: Drupal\file\FileStorage
+    factory: ['@entity_type.manager', 'getStorage']
+    arguments:
+      - 'file'
+    public: true
+
+  Drupal\civiremote_entity\Form\Control\FileArrayFactory:
+    class: Drupal\civiremote_entity\Form\Control\FileArrayFactory
+    arguments:
+      $currentUser: '@current_user'
+      $fileStorage: '@civiremote_entity.drupal.file.storage'
+      $session: '@session'
