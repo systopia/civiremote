@@ -28,10 +28,19 @@ services:
     arguments:
       - '@current_user'
 
-  Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerInterface:
+  Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerMessage:
     class: Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerMessage
     arguments:
       $messenger: '@messenger'
+
+  Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerRedirect:
+    class: Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerRedirect
+
+  Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerInterface:
+    class: Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerChain
+    arguments:
+      - '@Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerMessage'
+      - '@Drupal\civiremote_entity\Form\ResponseHandler\FormResponseHandlerRedirect'
     public: true
 
   Drupal\civiremote_entity\CiviCRMPage\CiviCRMPageClientInterface:

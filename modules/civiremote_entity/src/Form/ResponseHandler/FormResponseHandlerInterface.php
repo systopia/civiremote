@@ -22,9 +22,14 @@ namespace Drupal\civiremote_entity\Form\ResponseHandler;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\civiremote_entity\Api\Form\FormSubmitResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 interface FormResponseHandlerInterface {
 
-  public function handleSubmitResponse(FormSubmitResponse $submitResponse, FormStateInterface $formState): void;
+  public function handleSubmitResponse(
+    Request $request,
+    FormSubmitResponse $submitResponse,
+    FormStateInterface $formState
+  ): void;
 
 }
