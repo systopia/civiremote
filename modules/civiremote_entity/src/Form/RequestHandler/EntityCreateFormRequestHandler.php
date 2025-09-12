@@ -41,7 +41,7 @@ class EntityCreateFormRequestHandler implements FormRequestHandlerInterface {
     $profile = $routeMatch->getParameter('profile');
     Assertion::string($profile);
 
-    return $this->entityApi->getCreateForm($profile);
+    return $this->entityApi->getCreateForm($profile, $this->getArguments($request, NULL));
   }
 
   public function validateForm(Request $request, array $data): FormValidationResponse {
@@ -49,7 +49,7 @@ class EntityCreateFormRequestHandler implements FormRequestHandlerInterface {
     $profile = $routeMatch->getParameter('profile');
     Assertion::string($profile);
 
-    return $this->entityApi->validateCreateForm($profile, $data);
+    return $this->entityApi->validateCreateForm($profile, $data, $this->getArguments($request, $data));
   }
 
   public function submitForm(Request $request, array $data): FormSubmitResponse {
@@ -57,7 +57,16 @@ class EntityCreateFormRequestHandler implements FormRequestHandlerInterface {
     $profile = $routeMatch->getParameter('profile');
     Assertion::string($profile);
 
-    return $this->entityApi->submitCreateForm($profile, $data);
+    return $this->entityApi->submitCreateForm($profile, $data, $this->getArguments($request, $data));
+  }
+
+  /**
+   * @param array<int|string, mixed>|null $data
+   *
+   * @return array<int|string, mixed>
+   */
+  protected function getArguments(Request $request, ?array $data): array {
+    return $request->query->all();
   }
 
 }
