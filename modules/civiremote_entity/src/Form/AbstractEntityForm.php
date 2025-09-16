@@ -72,7 +72,7 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
       $form_state->set('uiSchema', $entityForm->getUiSchema());
     }
 
-    return $this->buildJsonFormsForm(
+    $form = $this->buildJsonFormsForm(
       $form,
       $form_state,
       // @phpstan-ignore-next-line
@@ -81,6 +81,18 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
       $form_state->get('uiSchema'),
       self::FLAG_RECALCULATE_ONCHANGE
     );
+
+    // @phpstan-ignore property.nonObject
+    $submitMethod = $form_state->get('uiSchema')->options->submitMethod ?? NULL;
+    if (NULL !== $submitMethod) {
+      $form['#method'] = $submitMethod;
+      if ('GET' === $submitMethod && TRUE !== $form_state->get('$calculateUsed')) {
+        // Prevent some Drupal specific parameters in URL query.
+        $form['#after_build'][] = [static::class, 'onAfterBuild'];
+      }
+    }
+
+    return $form;
   }
 
   public function validateForm(array &$form, FormStateInterface $formState): void {
@@ -148,6 +160,20 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
     unset($data['_submit']);
 
     return $data;
+  }
+
+  /**
+   * @param array<int|string, mixed> $form
+   *
+   * @return array<int|string, mixed>
+   */
+  public static function onAfterBuild(array $form, FormStateInterface $formState): array {
+    // @phpstan-ignore offsetAccess.nonOffsetAccessible
+    $form['form_build_id']['#access'] = FALSE;
+    $form['form_id']['#access'] = FALSE;
+    $form['form_token']['#access'] = FALSE;
+
+    return $form;
   }
 
 }
