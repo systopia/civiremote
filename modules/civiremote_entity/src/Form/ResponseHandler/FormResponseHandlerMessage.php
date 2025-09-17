@@ -24,6 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\civiremote_entity\Api\Form\FormSubmitResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class FormResponseHandlerMessage implements FormResponseHandlerInterface {
 
@@ -35,8 +36,14 @@ class FormResponseHandlerMessage implements FormResponseHandlerInterface {
     $this->messenger = $messenger;
   }
 
-  public function handleSubmitResponse(FormSubmitResponse $submitResponse, FormStateInterface $formState): void {
-    $this->messenger->addMessage($submitResponse->getMessage());
+  public function handleSubmitResponse(
+    Request $request,
+    FormSubmitResponse $submitResponse,
+    FormStateInterface $formState
+  ): void {
+    if (NULL !== $submitResponse->getMessage()) {
+      $this->messenger->addMessage($submitResponse->getMessage());
+    }
   }
 
 }

@@ -22,21 +22,41 @@ namespace Drupal\civiremote_entity\Api\Form;
 
 class FormSubmitResponse {
 
-  private string $message;
+  /**
+   * @var array<int|string, mixed>
+   */
+  private array $response;
 
   /**
-   * @phpstan-param array{message: string} $value
+   * @param array<int|string, mixed> $value
    */
   public static function fromApiResultValue(array $value): self {
-    return new self($value['message']);
+    return new self($value);
   }
 
-  public function __construct(string $message) {
-    $this->message = $message;
+  /**
+   * @param array<int|string, mixed> $response
+   */
+  protected function __construct(array $response) {
+    $this->response = $response;
   }
 
-  public function getMessage(): string {
-    return $this->message;
+  public function getEntityId(): ?int {
+    // @phpstan-ignore return.type
+    return $this->get('entityId');
+  }
+
+  public function getMessage(): ?string {
+    // @phpstan-ignore return.type
+    return $this->get('message');
+  }
+
+  public function get(int|string $key, mixed $default = NULL): mixed {
+    return $this->response[$key] ?? $default;
+  }
+
+  public function has(int|string $key): bool {
+    return array_key_exists($key, $this->response);
   }
 
 }

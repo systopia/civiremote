@@ -22,6 +22,7 @@ namespace Drupal\civiremote_entity\Form\ResponseHandler;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\civiremote_entity\Api\Form\FormSubmitResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @codeCoverageIgnore
@@ -37,9 +38,13 @@ final class FormResponseHandlerChain implements FormResponseHandlerInterface {
     $this->formResponseHandlers = $formResponseHandlers;
   }
 
-  public function handleSubmitResponse(FormSubmitResponse $submitResponse, FormStateInterface $formState): void {
+  public function handleSubmitResponse(
+    Request $request,
+    FormSubmitResponse $submitResponse,
+    FormStateInterface $formState
+  ): void {
     foreach ($this->formResponseHandlers as $formResponseHandler) {
-      $formResponseHandler->handleSubmitResponse($submitResponse, $formState);
+      $formResponseHandler->handleSubmitResponse($request, $submitResponse, $formState);
     }
   }
 
