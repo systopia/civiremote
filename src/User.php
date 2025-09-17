@@ -17,9 +17,11 @@ namespace Drupal\civiremote;
 
 use Drupal;
 use Drupal\Core\Entity;
-use Drupal\user\UserInterface;
+use Drupal\Core\Url;
 use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
+use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class User
@@ -68,6 +70,7 @@ class User {
       self::synchroniseRoles($user);
     }
     catch (\Exception $exception) {
+      Drupal::logger('civiremote')->error($exception->getMessage(), ['exception' => $exception]);
       user_logout();
       Drupal::messenger()->addError(
         t('Could not complete login. Please try again later or contact the site administrator.')
