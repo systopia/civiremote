@@ -86,9 +86,25 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
     $submitMethod = $form_state->get('uiSchema')->options->submitMethod ?? NULL;
     if (NULL !== $submitMethod) {
       $form['#method'] = $submitMethod;
-      if ('GET' === $submitMethod && TRUE !== $form_state->get('$calculateUsed')) {
-        // Prevent some Drupal specific parameters in URL query.
-        $form['#after_build'][] = [static::class, 'onAfterBuild'];
+      if ('GET' === $submitMethod) {
+        $destination = $this->getRequest()->query->get('destination');
+        if (NULL !== $destination) {
+          // Keep "destination" URL query on submit.
+          // The hidden field is prepended to not overwrite an already existing
+          // destination value just in case the JSON Forms specification already
+          // contains one.
+          $form = [
+            'destination' => [
+              '#type' => 'hidden',
+              '#value' => $destination,
+            ],
+          ] + $form;
+        }
+
+        if (TRUE !== $form_state->get('$calculateUsed')) {
+          // Prevent some Drupal specific parameters in URL query.
+          $form['#after_build'][] = [static::class, 'onAfterBuild'];
+        }
       }
     }
 
