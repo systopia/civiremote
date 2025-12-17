@@ -190,7 +190,7 @@ class CiviRemoteConfigForm extends ConfigFormBase {
       /* @var \Drupal\Core\Entity\EntityFieldManager $entityFieldManager */
       $entityFieldManager = Drupal::service('entity_field.manager');
       $user_fields = $entityFieldManager->getFieldDefinitions('user', 'user');
-      array_walk($user_fields, function (&$field) {
+      array_walk($user_fields, function (&$field): void {
         /* @var BaseFieldDefinition | FieldConfig $field */
         $field = $field->getLabel();
       });
