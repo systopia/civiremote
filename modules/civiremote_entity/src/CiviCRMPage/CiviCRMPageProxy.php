@@ -86,7 +86,7 @@ class CiviCRMPageProxy implements CiviCRMPageProxyInterface {
 
     if (Response::HTTP_OK === $remoteResponse->getStatusCode()) {
       return new StreamedResponse(
-        function () use ($remoteResponse) {
+        function () use ($remoteResponse): void {
           $body = $remoteResponse->getBody();
           while (!$body->eof()) {
             echo $body->read(1024);
