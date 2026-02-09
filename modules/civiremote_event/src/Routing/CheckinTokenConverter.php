@@ -52,7 +52,7 @@ class CheckinTokenConverter implements ParamConverterInterface {
     }
     catch (Exception $exception) {
       Utils::setMessages([['message' => $exception->getMessage(), 'severity' => 'error']]);
-      throw new AccessDeniedHttpException($exception->getMessage());
+      return NULL;
     }
   }
 
