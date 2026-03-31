@@ -1,10 +1,11 @@
-name: CiviRemote Activity
+name: CiviRemote Contact
 type: module
-description: 'CiviRemote Activity'
+description: 'CiviRemote Contact'
 package: CiviCRM
-core_version_requirement: ^10 || ^11
+core_version_requirement: ^10
 dependencies:
   - civiremote_entity
 
 project: civiremote
 version: 1.2.0
+
