@@ -11,4 +11,4 @@ dependencies:
 'interface translation server pattern': https://systopia.github.io/civiremote/translations/%language.po
 
 project: civiremote
-version: 1.2.0
+version: 1.2.1-dev
