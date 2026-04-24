@@ -34,6 +34,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Url;
 use Exception;
@@ -521,7 +522,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Add event form intro text.
     if (!empty($this->event->intro_text)) {
       $form[] = [
-        '#markup' => $this->event->intro_text,
+        '#markup' => Markup::create($this->event->intro_text),
       ];
     }
 
@@ -669,9 +670,9 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         && $field_name == 'additional_participants'
       ) {
         $group[$field_name]['#prefix'] = '<div id="additional-participants-wrapper">'
-        . ($group[$field_name]['#prefix'] ?? '');
+          . ($group[$field_name]['#prefix'] ?? '');
         $group[$field_name]['#suffix'] = ($group[$field_name]['#suffix'] ?? '')
-        . '</div>';
+          . '</div>';
         $group[$field_name]['actions'] = [
           '#type' => 'actions',
         ];
@@ -789,7 +790,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         '#type' => 'container',
         '#weight' => self::highestWeight($form) + 1,
         [
-          '#markup' => $this->event->footer_text,
+          '#markup' => Markup::create($this->event->footer_text),
         ],
       ];
       $this->addConfirmDependencies([], 'footer_text', $form);
@@ -824,11 +825,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // Add confirmation text.
     if (
-    !$is_invitation_rejected
-    && !empty($this->event->confirm_text)
+      !$is_invitation_rejected
+      && !empty($this->event->confirm_text)
     ) {
       $form[] = [
-        '#markup' => $this->event->confirm_text,
+        '#markup' => Markup::create($this->event->confirm_text),
       ];
     }
 
@@ -965,7 +966,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       && !empty($this->event->confirm_footer_text)
     ) {
       $form[] = [
-        '#markup' => $this->event->confirm_footer_text,
+        '#markup' => Markup::create($this->event->confirm_footer_text),
         '#weight' => self::highestWeight($form) + 1,
       ];
     }
@@ -995,7 +996,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Add confirmation text.
     if (!empty($this->event->thankyou_text)) {
       $form[] = [
-        '#markup' => $this->event->thankyou_text,
+        '#markup' => Markup::create($this->event->thankyou_text),
       ];
     }
 
@@ -1004,7 +1005,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     // Add confirmation footer text.
     if (!empty($this->event->thankyou_footer_text)) {
       $form[] = [
-        '#markup' => $this->event->thankyou_footer_text,
+        '#markup' => Markup::create($this->event->thankyou_footer_text),
       ];
     }
 
