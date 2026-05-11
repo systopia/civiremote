@@ -77,7 +77,7 @@ class RegisterFormController extends ControllerBase {
    *
    * @see \Drupal\civiremote_event\Routing\EventTokenConverter
    */
-  public function formWithToken(RouteMatch $route_match, string $context, stdClass $event_token, string $profile = NULL) {
+  public function formWithToken(RouteMatch $route_match, string $context, stdClass $event_token, ?string $profile = NULL) {
     return self::form(
       $route_match,
       $context,
@@ -87,7 +87,7 @@ class RegisterFormController extends ControllerBase {
     );
   }
 
-  public function form(RouteMatch $route_match, string $context, stdClass $event, string $raw_event_token = NULL, string $profile = NULL) {
+  public function form(RouteMatch $route_match, string $context, stdClass $event, ?string $raw_event_token = NULL, ?string $profile = NULL) {
     // Retrieve the form definition.
     try {
       $form = $this->cmrf->getForm(
@@ -222,7 +222,7 @@ class RegisterFormController extends ControllerBase {
    *
    * @return AccessResult|AccessResultAllowed|AccessResultNeutral
    */
-  public function access(string $context, stdClass $event, string $profile = NULL) {
+  public function access(string $context, stdClass $event, ?string $profile = NULL) {
     $event ??= $event_token;
     // Grant access depending on flags on the remote event.
     return AccessResult::allowedIf(
