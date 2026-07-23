@@ -444,8 +444,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         // Generic form step, can be replaced in implementations.
         $steps[] = 'form';
       }
-      // Confirmation step, right before final submission.
-      $steps[] = 'confirm';
+      if ($event->is_confirm_enabled) {
+        // Confirmation step, right before final submission.
+        $steps[] = 'confirm';
+      }
       // Thank you step, right after final submission.
       $steps[] = 'thankyou';
 
@@ -457,11 +459,11 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     $steps = $form_state->get('steps');
 
     // Build form depending on current step.
-    if ($step == array_search('confirm', $steps)) {
+    if ($step === array_search('confirm', $steps)) {
       $form = $this->buildConfirmForm($form, $form_state);
       $submit_label = $this->t('Submit');
     }
-    elseif ($step == array_search('thankyou', $steps)) {
+    elseif ($step === array_search('thankyou', $steps)) {
       $form = $this->buildThankyouPage($form, $form_state);
       $form_state->setSubmitted();
     }
@@ -471,7 +473,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
         Utils::setMessages($this->messages);
       }
       $form = $this->buildRegisterForm($form, $form_state);
-      $submit_label = $this->t('Next');
+      $submit_label = $event->is_confirm_enabled ? $this->t('Next') : $this->t('Submit');
     }
 
     // Add submit buttons.
@@ -479,7 +481,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       '#type' => 'actions',
       '#weight' => self::highestWeight($form) + 1,
     ];
-    if ($step > 0 && $step != array_search('thankyou', $steps)) {
+    if ($step > 0 && $step !== array_search('thankyou', $steps)) {
       $form['actions']['back'] = [
         '#type' => 'submit',
         '#value' => $this->t('Back'),
@@ -497,7 +499,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
 
     // Do not validate the confirm form, since it only contains "Item" fields.
-    if ($step == array_search('confirm', $steps)) {
+    if ($step === array_search('confirm', $steps)) {
       $form['actions']['submit']['#limit_validation_errors'] = [];
       $form['actions']['submit']['#submit'] = [[$this, 'submitForm']];
     }
@@ -1002,7 +1004,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     // TODO: Show summary?
 
-    // Add confirmation footer text.
+    // Add thankyou footer text.
     if (!empty($this->event->thankyou_footer_text)) {
       $form[] = [
         '#markup' => Markup::create($this->event->thankyou_footer_text),
@@ -1117,7 +1119,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       isset($form['actions']['submit'])
       && $triggering_element['#value'] == $form['actions']['submit']['#value']
     ) {
-      if ($form_state->get('step') == array_search('confirm', $form_state->get('steps'))) {
+      if ($form_state->get('step') === array_search('confirm', $form_state->get('steps'))) {
         $values = $form_state->get('values');
       }
       else {
@@ -1210,18 +1212,18 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
     }
     else {
       // Handle forward navigation.
-      if ($step == array_search('confirm', $form_state->get('steps'))) {
+      if ($step === array_search('thankyou', $form_state->get('steps')) - 1) {
         // Submit the form values to the CiviRemote Event API.
-        $values = $form_state->get('values') ?: [];
+        if ($form_state->get('step') === array_search('confirm', $form_state->get('steps'))) {
+          $values = $form_state->get('values');
+        }
+        else {
+          $values = $form_state->cleanValues()->getValues();
+        }
+
         $this->preprocessValues($values);
         try {
-          $result = $this->cmrf->createEventRegistration(
-            $this->event->id,
-            $this->profile,
-            $this->remote_token,
-            $values,
-            TRUE
-          );
+          $result = $this->submitCmrf($values);
 
           // Advance to "Thank you" step (when this is no invitation or it has
           // been confirmed).
@@ -1293,4 +1295,22 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
     return $response;
   }
+
+  /**
+   * @param array<string, mixed> $values
+   *
+   * @return array<string, mixed>
+   *
+   * @throws \Exception
+   */
+  protected function submitCmrf(array $values): array {
+    return $this->cmrf->createEventRegistration(
+      $this->event->id,
+      $this->profile,
+      $this->remote_token,
+      $values,
+      TRUE
+    );
+  }
+
 }
