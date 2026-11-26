@@ -186,7 +186,9 @@ abstract class AbstractEntityForm extends AbstractJsonFormsForm {
   public static function onAfterBuild(array $form, FormStateInterface $formState): array {
     // @phpstan-ignore offsetAccess.nonOffsetAccessible
     $form['form_build_id']['#access'] = FALSE;
+    // @phpstan-ignore offsetAccess.nonOffsetAccessible
     $form['form_id']['#access'] = FALSE;
+    // @phpstan-ignore offsetAccess.nonOffsetAccessible
     $form['form_token']['#access'] = FALSE;
 
     return $form;
