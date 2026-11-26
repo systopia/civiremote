@@ -145,12 +145,12 @@ class RegistrationCancelForm extends ConfirmFormBase {
   public function buildForm(
     array $form,
     FormStateInterface $form_state,
-    stdClass $event = NULL,
-    string $profile = NULL,
-    string $context = NULL,
-    string $raw_event_token = NULL,
-    array $fields = NULL,
-    array $messages = NULL
+    ?stdClass $event = NULL,
+    ?string $profile = NULL,
+    ?string $context = NULL,
+    ?string $raw_event_token = NULL,
+    ?array $fields = NULL,
+    ?array $messages = NULL
   ) {
     // Initialize.
     $this->event = $event;

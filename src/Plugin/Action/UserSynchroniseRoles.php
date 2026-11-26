@@ -35,7 +35,7 @@ class UserSynchroniseRoles extends ActionBase {
   /**
    * @inheritDoc
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var UserInterface $object */
     return
       $object->access('update', $account, $return_as_object)
@@ -45,7 +45,7 @@ class UserSynchroniseRoles extends ActionBase {
   /**
    * @inheritDoc
    */
-  public function execute(UserInterface $user = NULL) {
+  public function execute(?UserInterface $user = NULL) {
     User::synchroniseRoles($user);
   }
 
