@@ -422,12 +422,12 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
   public function buildForm(
     array $form,
     FormStateInterface $form_state,
-    stdClass $event = NULL,
-    string $profile = NULL,
-    string $context = NULL,
-    string $raw_event_token = NULL,
-    array $fields = NULL,
-    array $messages = NULL
+    ?stdClass $event = NULL,
+    ?string $profile = NULL,
+    ?string $context = NULL,
+    ?string $raw_event_token = NULL,
+    ?array $fields = NULL,
+    ?array $messages = NULL
   ) {
     // Initialize.
     $this->event = $event;
@@ -895,7 +895,7 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
 
           // Set markup.
           switch ($type) {
-            case 'date';
+            case 'date':
               try {
                 $group[$field_name]['#markup'] = Drupal::service('date.formatter')
                   ->format(strtotime($group[$field_name]['#value']));

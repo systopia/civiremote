@@ -36,7 +36,7 @@ class UserMatchContact extends ActionBase {
   /**
    * @inheritDoc
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var UserInterface $object */
     return
       $object->access('update', $account, $return_as_object)
@@ -46,7 +46,7 @@ class UserMatchContact extends ActionBase {
   /**
    * @inheritDoc
    */
-  public function execute(UserInterface $user = NULL) {
+  public function execute(?UserInterface $user = NULL) {
     if (!$civiremote_id = $user->get('civiremote_id')->getValue()) {
       $config = Drupal::config('civiremote.settings');
       if ($config->get('acquire_civiremote_id')) {

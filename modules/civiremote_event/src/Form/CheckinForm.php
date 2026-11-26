@@ -139,7 +139,7 @@ class CheckinForm extends FormBase {
       // Set markup.
       $type = EventUtils::fieldType($field, 'confirm');
       switch ($type) {
-        case 'date';
+        case 'date':
           try {
             $form[$field['path']]['#markup'] = Drupal::service('date.formatter')
               ->format(strtotime($field['value']));
