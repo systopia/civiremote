@@ -443,10 +443,10 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       if ($this->hasFields()) {
         // Generic form step, can be replaced in implementations.
         $steps[] = 'form';
-      }
-      if ($event->is_confirm_enabled) {
-        // Confirmation step, right before final submission.
-        $steps[] = 'confirm';
+        if ($event->is_confirm_enabled) {
+          // Confirmation step, right before final submission.
+          $steps[] = 'confirm';
+        }
       }
       // Thank you step, right after final submission.
       $steps[] = 'thankyou';
@@ -468,12 +468,15 @@ class RegisterForm extends FormBase implements RegisterFormInterface {
       $form_state->setSubmitted();
     }
     else {
+      $form = $this->buildRegisterForm($form, $form_state);
+      $submit_label = $event->is_confirm_enabled ? $this->t('Next') : $this->t('Submit');
+    }
+
+    if ($step !== array_search('thankyou', $steps) || ['thankyou'] === $steps) {
       // Show messages returned by the API.
       if (!empty($this->messages)) {
         Utils::setMessages($this->messages);
       }
-      $form = $this->buildRegisterForm($form, $form_state);
-      $submit_label = $event->is_confirm_enabled ? $this->t('Next') : $this->t('Submit');
     }
 
     // Add submit buttons.
